@@ -1,6 +1,6 @@
 {
     "name": "christophrumpel/laravel-factories-reloaded",
-    "description": "This package sits on top of Laravel factories and provides you dedicated classes for every model.",
+    "description": "This package sits on top of Laravel factories and provides you wtih dedicated factory classes for every model.",
     "keywords": [
         "christophrumpel",
         "laravel-factories-reloaded"
