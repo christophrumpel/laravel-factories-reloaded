@@ -20,6 +20,9 @@ abstract class BaseFactory
 
     public static function createMultiple(int $count): Collection
     {
+        if ( ! $count) {
+            throw new \InvalidArgumentException('Please provide a count bigger than zero.');
+        }
         $className = (new static())->className;
 
         return collect(range(1, $count))->transform(function () use ($className) {
