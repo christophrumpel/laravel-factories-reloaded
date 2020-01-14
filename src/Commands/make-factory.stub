@@ -1,0 +1,25 @@
+<?php
+
+namespace DummyNamespace;
+
+use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
+use DummyFullModelClass;
+
+class DummyFactory extends BaseFactory
+{
+
+    protected $className = DummyModelClass::class;
+
+    public static function create(): DummyModelClass
+    {
+        return self::build();
+    }
+
+    protected function getData(): array
+    {
+        return [
+        ];
+    }
+
+}
+

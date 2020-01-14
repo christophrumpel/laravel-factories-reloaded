@@ -1,0 +1,57 @@
+{
+    "name": "christophrumpel/laravel-factories-reloaded",
+    "description": "This package sits on top of Laravel factories and provides you dedicated classes for every model.",
+    "keywords": [
+        "christophrumpel",
+        "laravel-factories-reloaded"
+    ],
+    "homepage": "https://github.com/christophrumpel/laravel-factories-reloaded",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Christoph Rumpel",
+            "email": "christoph@christoph-rumpel.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.3",
+        "illuminate/support": "^6.0",
+        "laravel/framework": "^6.0",
+        "nikic/php-parser": "^4.3"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.4",
+        "mockery/mockery": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Christophrumpel\\LaravelFactoriesReloaded\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Christophrumpel\\LaravelFactoriesReloaded\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Christophrumpel\\LaravelFactoriesReloaded\\LaravelFactoriesReloadedServiceProvider"
+            ],
+            "aliases": {
+                "LaravelFactoriesReloaded": "Christophrumpel\\LaravelFactoriesReloaded\\LaravelFactoriesReloadedFacade"
+            }
+        }
+    }
+}
