@@ -29,6 +29,7 @@ php artisan make:factoryReloaded
 After running this command, you have to select one of your models. Here you decide for which model you are creating a factory for. I will select the user model.
 
 
+![Screenshot of the command](http://screenshots.nomoreencore.com/laravel_factories_reloaded.png)
 
 This will give you a new `UserFactory` under the `Tests\Factories` namespace. Inside this class, you can now define the properties of the model. It is very similar to what you would do with Laravel default factory.
 
