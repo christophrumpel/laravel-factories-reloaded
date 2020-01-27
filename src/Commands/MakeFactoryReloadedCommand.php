@@ -2,11 +2,13 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Commands;
 
-use Christophrumpel\LaravelFactoriesReloaded\ModelFinder;
+use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
 use Illuminate\Console\GeneratorCommand;
 
 class MakeFactoryReloadedCommand extends GeneratorCommand
 {
+
+    use PicksClasses;
 
     /**
      * The name and signature of the console command.
@@ -38,18 +40,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     public function handle()
     {
 
-        $finder = new ModelFinder(app()->make('files'));
-        $classNames = $finder->getModelsInDirectory(config('factories-reloaded.models_path'));
-
-        if ($classNames->isEmpty()) {
-            $this->error('Sorry, but no models have been found.');
-
-            return false;
-        }
-
-        $this->fullClassName = $this->choice('For which model do you want to create a Factory?',
-            $classNames->toArray());
-        $this->className = last(explode('\\', $this->fullClassName));
+        $this->className = $this->askToPickModel(config('factories-reloaded.models_path'));
 
         $this->info("Thank you! $this->className it is.");
         $classPath = config('factories-reloaded.factories_path').'/'.$this->className.'Factory.php';
