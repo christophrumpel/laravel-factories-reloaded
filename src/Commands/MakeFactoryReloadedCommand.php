@@ -40,7 +40,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     public function handle()
     {
 
-        $this->className = $this->askToPickModel(config('factories-reloaded.models_path'));
+        $this->className = $this->askToPickModels(config('factories-reloaded.models_path'));
 
         $this->info("Thank you! $this->className it is.");
         $classPath = config('factories-reloaded.factories_path').'/'.$this->className.'Factory.php';
