@@ -48,7 +48,7 @@ class UserFactory extends BaseFactory
 
     protected string $modelClass = User::class;
 
-    public function create(array $extra = []): Recipe
+    public function create(array $extra = []): User
     {
         return parent::create($extra);
     }
