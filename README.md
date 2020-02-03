@@ -104,6 +104,8 @@ If you discover any security-related issues, please email christoph@christoph-ru
 - [Christoph Rumpel](https://github.com/christophrumpel)
 - [All Contributors](../../contributors)
 
+The current implementation was improved with help from [Brent's article](https://stitcher.io/blog/laravel-beyond-crud-09-test-factories) about how they deal with factories at Spatie.
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
