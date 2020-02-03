@@ -24,7 +24,9 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         parent::tearDown();
 
-        unlink(__DIR__.'/factories/tmp/GroupFactory.php');
+        if(file_exists('__DIR__.\'/factories/tmp/GroupFactory.php')) {
+            unlink(__DIR__.'/factories/tmp/GroupFactory.php');
+        }
     }
 
     /**
