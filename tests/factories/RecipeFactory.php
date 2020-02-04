@@ -16,11 +16,19 @@ class RecipeFactory extends BaseFactory
         return parent::create($extra);
     }
 
+    public function published(): self
+    {
+        $this->stateData = ['published' => true];
+
+        return $this;
+    }
+
     public function getData(Generator $faker): array
     {
         return [
             'name' => 'Lasagne',
-            'description' => 'Our family lasagne recipe.'
+            'description' => 'Our family lasagne recipe.',
+            'published' => false,
         ];
     }
 

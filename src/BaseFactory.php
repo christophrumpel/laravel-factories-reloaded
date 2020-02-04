@@ -10,6 +10,8 @@ abstract class BaseFactory implements FactoryInterface
 
     protected string $modelClass;
 
+    protected array $stateData = [];
+
     public static function new(): self
     {
         return new static;
@@ -17,7 +19,7 @@ abstract class BaseFactory implements FactoryInterface
 
     public function create(array $extra = [])
     {
-        return $this->modelClass::create(array_merge($this->getData(Factory::create()), $extra));
+        return $this->modelClass::create(array_merge($this->getData(Factory::create()), $extra, $this->stateData));
     }
 
     public function times(int $times, array $extra = []): Collection

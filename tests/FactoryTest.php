@@ -77,4 +77,12 @@ class FactoryTest extends TestCase
         $this->assertIsInt(GroupFactoryUsingFaker::new()->create()->size);
     }
 
+    /** @test * */
+    public function it_lets_you_define_states()
+    {
+        $publishedRecipe = RecipeFactory::new()->published()->create();
+
+        $this->assertEquals(true, $publishedRecipe->published);
+    }
+
 }

@@ -17,6 +17,7 @@ class CreateRecipesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('description');
+            $table->boolean('published')->nullable();
             $table->timestamps();
         });
     }
