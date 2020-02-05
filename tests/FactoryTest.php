@@ -2,9 +2,9 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
-use Christophrumpel\LaravelFactoriesReloaded\Tests\factories\GroupFactory;
+use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\GroupFactory;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\GroupFactoryUsingFaker;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\factories\RecipeFactory;
+use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\RecipeFactory;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
