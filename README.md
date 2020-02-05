@@ -42,7 +42,7 @@ After running this command, you have to select one of your models. Here you deci
 
 This will give you a new `UserFactory` under the `Tests\Factories` namespace. Here is your new basic factory class:
 
-```
+```php
 class UserFactory extends BaseFactory
 {
 
