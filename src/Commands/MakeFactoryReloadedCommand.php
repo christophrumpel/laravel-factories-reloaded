@@ -59,7 +59,8 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         $this->makeDirectory($classPath);
 
         $this->files->put($classPath, $this->sortImports($this->buildClass($this->fullClassName)));
-        $this->info($this->type.' created successfully.');
+
+        $this->info(config('factories-reloaded.factories_namespace') . '\\' . $this->className.$this->type . ' created successfully.');
     }
 
     /**
