@@ -14,10 +14,10 @@ class TestCase extends \Orchestra\Testbench\TestCase
         parent::setUp();
 
         Config::set('factories-reloaded.models_path', __DIR__.'/Models');
-        Config::set('factories-reloaded.factories_path', __DIR__.'/factories/tmp');
+        Config::set('factories-reloaded.factories_path', __DIR__.'/Factories/tmp');
 
         $this->loadLaravelMigrations();
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/Database/Migrations');
     }
 
     public function tearDown(): void
