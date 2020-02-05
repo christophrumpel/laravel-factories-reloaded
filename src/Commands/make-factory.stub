@@ -1,0 +1,25 @@
+<?php
+
+namespace DummyNamespace;
+
+use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
+use DummyFullModelClass;
+use Faker\Generator;
+
+class DummyFactory extends BaseFactory
+{
+
+    protected string $modelClass = DummyModelClass::class;
+
+    public function create(array $extra = []): DummyModelClass
+    {
+        return parent::create($extra);
+    }
+
+    public function getData(Generator $faker): array
+    {
+        return [];
+    }
+
+}
+
