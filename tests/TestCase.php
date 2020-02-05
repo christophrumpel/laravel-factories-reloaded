@@ -13,7 +13,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
-        Config::set('factories-reloaded.models_path', __DIR__.'/models');
+        Config::set('factories-reloaded.models_path', __DIR__.'/Models');
         Config::set('factories-reloaded.factories_path', __DIR__.'/factories/tmp');
 
         $this->loadLaravelMigrations();
