@@ -38,11 +38,11 @@ php artisan make:factoryReloaded
 After running this command, you have to select one of your models. Here you decide for which model you are creating a factory for. I will choose the user model. (Through a config you can define where your models live)
 
 
-![Screenshot of the command](http://screenshots.nomoreencore.com/laravel_command_file_picker_models_v1.png)
+![Screenshot of the command](http://screenshots.nomoreencore.com/laravel_factories_reloaded_pick_v2.png)
 
 This will give you a new `UserFactory` under the `Tests\Factories` namespace. Here is your new basic factory class:
 
-```
+```php
 class UserFactory extends BaseFactory
 {
 
@@ -55,21 +55,18 @@ class UserFactory extends BaseFactory
 
     public function getData(Generator $faker): array
     {
-        return [
-            'email' => $faker->email,
-            'name' => $faker->name,
-        ];
+        return [];
     }
 
 }
 ```
 
-Inside this class, you can define the properties of the model with the `getData` method. It is very similar to what you would do with a Laravel default factory. The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
+Inside this class, you can define the properties of the model with the `getData` method. It is very similar to what you would do with a Laravel default factory and you can make use of Faker as well. The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
 
 
 ## Usage
 
-Now you can start using your new user factory class. The static `new` method gives you a new instance of the class. This is useful to chain other methods, like `create` for example.
+Now you can start using your new user factory class in your tests. The static `new` method gives you a new instance of the factory. This is useful to chain other methods, like `create` for example.
 
 ``` php
 $user = UserFactory::new()->create();
