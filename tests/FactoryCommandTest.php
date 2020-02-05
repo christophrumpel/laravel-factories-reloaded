@@ -26,7 +26,7 @@ class FactoryCommandTest extends TestCase
     {
         $this->artisan('make:factoryReloaded')
             ->expectsQuestion('Please pick a model',
-                '<href=file://'.__DIR__.'/models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
+                '<href=file://'.__DIR__.'/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
             ->assertExitCode(0);
 
         $this->assertTrue(File::exists(__DIR__.'/factories/tmp/GroupFactory.php'));
@@ -39,7 +39,7 @@ class FactoryCommandTest extends TestCase
     {
         $this->artisan('make:factoryReloaded')
             ->expectsQuestion('Please pick a model',
-                '<href=file://'.__DIR__.'/models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
+                '<href=file://'.__DIR__.'/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
             ->assertExitCode(0);
 
         $generatedFactoryContent = file_get_contents(__DIR__.'/factories/tmp/GroupFactory.php');
