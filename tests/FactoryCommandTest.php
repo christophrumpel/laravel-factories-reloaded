@@ -29,7 +29,7 @@ class FactoryCommandTest extends TestCase
                 '<href=file://'.__DIR__.'/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
             ->assertExitCode(0);
 
-        $this->assertTrue(File::exists(__DIR__.'/factories/tmp/GroupFactory.php'));
+        $this->assertTrue(File::exists(__DIR__.'/Factories/tmp/GroupFactory.php'));
     }
 
     /**
@@ -42,7 +42,7 @@ class FactoryCommandTest extends TestCase
                 '<href=file://'.__DIR__.'/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
             ->assertExitCode(0);
 
-        $generatedFactoryContent = file_get_contents(__DIR__.'/factories/tmp/GroupFactory.php');
+        $generatedFactoryContent = file_get_contents(__DIR__.'/Factories/tmp/GroupFactory.php');
 
         $this->assertTrue(Str::contains($generatedFactoryContent, [
             'GroupFactory',
