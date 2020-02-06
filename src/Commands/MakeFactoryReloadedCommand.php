@@ -38,6 +38,9 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      */
     public function handle()
     {
+        //we will generate the path to the location where this class' file should get written
+        $this->makeDirectory(config('factories-reloaded.factories_path'));
+
         $this->fullClassName = $this->askToPickModels(config('factories-reloaded.models_path'));
         $this->className = class_basename($this->fullClassName);
 
@@ -53,14 +56,26 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
             return false;
         }
 
-        // Next, we will generate the path to the location where this class' file should get
-        // written. Then, we will build the class and make the proper replacements on the
+        //we will build the class and make the proper replacements on the
         // stub files so that it gets the correctly formatted namespace and class name.
-        $this->makeDirectory($classPath);
-
         $this->files->put($classPath, $this->sortImports($this->buildClass($this->fullClassName)));
 
         $this->info(config('factories-reloaded.factories_namespace') . '\\' . $this->className.$this->type . ' created successfully.');
+    }
+
+    /**
+     * Build the directory .
+     *
+     * @param  string  $path
+     * @return string
+     */
+    protected function makeDirectory($path)
+    {
+        if (!$this->files->isDirectory($path)) {
+            $this->files->makeDirectory($path, 0777, true, true);
+        }
+
+        return $path;
     }
 
     /**
