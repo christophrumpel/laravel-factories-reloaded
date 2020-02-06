@@ -31,8 +31,8 @@ composer require christophrumpel/laravel-factories-reloaded
 
 First, you need to create a new factory class. This is done via a new command this package comes with. In this example, we want to create a new user factory.
 
-``` php
-php artisan make:factoryReloaded
+```php
+php artisan make:factory-reloaded
 ```
 
 After running this command, you have to select one of your models. Here you decide for which model you are creating a factory for. I will choose the user model. (Through a config you can define where your models live)
