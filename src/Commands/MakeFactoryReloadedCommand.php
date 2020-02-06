@@ -6,6 +6,7 @@ use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class MakeFactoryReloadedCommand extends GeneratorCommand
 {
@@ -109,6 +110,27 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         });
 
         return $diff;
+    }
+
+    /**
+     * Getting class name if it model and get,
+     * factory get class name without factory append.
+     *
+     * @param string $fullClassName
+     *
+     * @return string
+     */
+    protected function getClassName($fullClassName)
+    {
+        $className = class_basename($fullClassName);
+
+        if(!Str::contains($className,$this->type)) {
+           return $className;
+        }
+
+        $className = Str::before($className,$this->type);
+
+        return $className;
     }
 
     /**
