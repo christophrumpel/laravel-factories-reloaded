@@ -2,6 +2,7 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Commands;
 
+use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
 use Illuminate\Console\GeneratorCommand;
 
@@ -41,6 +42,8 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         //we will generate the path to the location where this class' file should get written
         $this->makeDirectory(config('factories-reloaded.factories_path'));
 
+        $models = $this->getModelsDontHasFactory(config('factories-reloaded.factories_path'), config('factories-reloaded.models_path'));
+
         $this->fullClassName = $this->askToPickModels(config('factories-reloaded.models_path'));
         $this->className = class_basename($this->fullClassName);
 
@@ -76,6 +79,29 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         }
 
         return $path;
+    }
+
+    /**
+     * Getting the difference between actual models and model factories.
+     *
+     * @param  string  $factoriesPath
+     * @param  string  $modelsPath
+     *
+     * @return Illuminate\Support\Collection
+     */
+    protected function getModelsDontHasFactory($factoriesPath, $modelsPath)
+    {
+
+        $finder = new ClassFinder($this->laravel->make('files'));
+
+        $factories = $finder->getClassesInDirectory($factoriesPath);
+        $models = $finder->getClassesInDirectory($modelsPath,true);
+
+        $diff = $models->diffUsing($factories->toArray(),function($a, $b){
+            return ($this->getClassName($a['name']) == $this->getClassName($b['name'])) ? 0 : -1;
+        });
+
+        return $diff;
     }
 
     /**
