@@ -14,7 +14,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'make:factoryReloaded';
+    protected $signature = 'make:factory:reloaded';
 
     /**
      * The console command description.
