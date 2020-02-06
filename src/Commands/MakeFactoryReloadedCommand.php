@@ -5,6 +5,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Commands;
 use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Collection;
 
 class MakeFactoryReloadedCommand extends GeneratorCommand
 {
@@ -44,7 +45,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
 
         $models = $this->getModelsDontHasFactory(config('factories-reloaded.factories_path'), config('factories-reloaded.models_path'));
 
-        $this->fullClassName = $this->askToPickModels(config('factories-reloaded.models_path'));
+        $this->fullClassName = $this->askChoice($models);
         $this->className = class_basename($this->fullClassName);
 
         $this->info("Thank you! $this->className it is.");
@@ -89,7 +90,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      *
      * @return Illuminate\Support\Collection
      */
-    protected function getModelsDontHasFactory($factoriesPath, $modelsPath)
+    protected function getModelsDontHasFactory($factoriesPath, $modelsPath) : Collection
     {
 
         $finder = new ClassFinder($this->laravel->make('files'));
