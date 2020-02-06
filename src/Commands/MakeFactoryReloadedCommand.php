@@ -45,6 +45,12 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
 
         $models = $this->getModelsDontHasFactory(config('factories-reloaded.factories_path'), config('factories-reloaded.models_path'));
 
+        if($models->isEmpty())
+        {
+            $this->info("There is no more model");
+            return false;
+        }
+
         $this->fullClassName = $this->askChoice($models);
         $this->className = class_basename($this->fullClassName);
 

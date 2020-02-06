@@ -10,14 +10,12 @@ class FactoryCommandTest extends TestCase
 {
 
     /** @test */
-    public function it_fails_if_no_models_found()
+    public function it_dosenot_fails_if_no_models_found()
     {
-        $this->expectException(\LogicException::class);
-
         // Set to a path with no models given
         Config::set('factories-reloaded.models_path', __DIR__.'/');
 
-        $this->artisan('make:factory-reloaded');
+        $this->artisan('make:factory-reloaded')->expectsOutput("There is no more model");
     }
 
     /** @test */
