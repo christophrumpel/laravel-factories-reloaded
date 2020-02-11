@@ -23,7 +23,7 @@ abstract class BaseFactory implements FactoryInterface
 
         if ($this->relatedModel) {
             $model->{$this->relatedModel[1]}()
-                ->save($this->relatedModel[0]);
+                ->saveMany($this->relatedModel[0]);
         }
 
         return $model;
@@ -37,11 +37,11 @@ abstract class BaseFactory implements FactoryInterface
             ->transform(fn() => $this->create($extra));
     }
 
-    public function with(string $relatedModelClass, $relationshipName)
+    public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
     {
         $this->relatedModel = [
             $this->getFactoryFromClassName($relatedModelClass)
-                ->create(),
+                ->times($times),
             $relationshipName,
         ];
 

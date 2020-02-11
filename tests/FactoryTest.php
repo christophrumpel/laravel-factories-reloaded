@@ -80,13 +80,23 @@ class FactoryTest extends TestCase
     /** @test **/
     public function it_lets_you_add_a_related_model()
     {
-
     	$group = GroupFactory::new()
             ->with(Recipe::class, 'recipes')
             ->create();
 
     	$this->assertEquals(1, $group->recipes->count());
     	$this->assertInstanceOf(Recipe::class, $group->recipes->first());
+    }
+
+    /** @test **/
+    public function it_lets_you_add_multiple_related_models()
+    {
+        $group = GroupFactory::new()
+            ->with(Recipe::class, 'recipes', 4)
+            ->create();
+
+        $this->assertEquals(4, $group->recipes->count());
+        $this->assertInstanceOf(Recipe::class, $group->recipes->first());
     }
 
 }
