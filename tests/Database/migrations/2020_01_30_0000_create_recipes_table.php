@@ -15,6 +15,7 @@ class CreateRecipesTable extends Migration
     {
         Schema::create('recipes', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('group_id')->nullable();
             $table->string('name');
             $table->string('description');
             $table->timestamps();

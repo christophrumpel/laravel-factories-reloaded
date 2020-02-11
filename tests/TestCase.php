@@ -15,6 +15,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         Config::set('factories-reloaded.models_path', __DIR__.'/Models');
         Config::set('factories-reloaded.factories_path', __DIR__.'/Factories/tmp');
+        Config::set('factories-reloaded.factories_namespace', 'Christophrumpel\LaravelFactoriesReloaded\Tests\Factories');
 
         $this->loadLaravelMigrations();
         $this->loadMigrationsFrom(__DIR__.'/database/migrations');

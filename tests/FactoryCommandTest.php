@@ -26,7 +26,7 @@ class FactoryCommandTest extends TestCase
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
                 '<href=file://'.__DIR__.'/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
-            ->expectsOutput('Tests\Factories\GroupFactory created successfully.')
+            ->expectsOutput('Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\GroupFactory created successfully.')
             ->assertExitCode(0);
 
         $this->assertTrue(File::exists(__DIR__.'/Factories/tmp/GroupFactory.php'));
