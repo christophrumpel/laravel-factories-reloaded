@@ -21,9 +21,9 @@ abstract class BaseFactory implements FactoryInterface
     {
         $model = $this->modelClass::create(array_merge($this->getData(FakerFactory::create()), $extra));
 
-        if($this->relatedModel)
-        {
-            $model->{$this->relatedModel[1]}()->save($this->relatedModel[0]);
+        if ($this->relatedModel) {
+            $model->{$this->relatedModel[1]}()
+                ->save($this->relatedModel[0]);
         }
 
         return $model;
@@ -39,18 +39,20 @@ abstract class BaseFactory implements FactoryInterface
 
     public function with(string $relatedModelClass, $relationshipName)
     {
-        $this->relatedModel = [$this->getFactoryFromClassName($relatedModelClass)
-            ->create(), $relationshipName];
+        $this->relatedModel = [
+            $this->getFactoryFromClassName($relatedModelClass)
+                ->create(),
+            $relationshipName,
+        ];
 
         return $this;
     }
 
-    private function getFactoryFromClassName(string $className)
+    private function getFactoryFromClassName(string $className): FactoryInterface
     {
         $baseClassName = (new \ReflectionClass($className))->getShortName();
+        $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
 
-        $factoryClass = config('factories-reloaded.factories_namespace') . '\\' . $baseClassName. 'Factory';
-
-        return $factoryClass::new();
+        return new $factoryClass;
     }
 }
