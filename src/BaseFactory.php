@@ -10,7 +10,9 @@ abstract class BaseFactory implements FactoryInterface
 
     protected string $modelClass;
 
-    private array $relatedModel = [];
+    private $relatedModel;
+
+    private string $relatedModelRelationshipName;
 
     public static function new(): self
     {
@@ -22,8 +24,8 @@ abstract class BaseFactory implements FactoryInterface
         $model = $this->modelClass::create(array_merge($this->getData(FakerFactory::create()), $extra));
 
         if ($this->relatedModel) {
-            $model->{$this->relatedModel[1]}()
-                ->saveMany($this->relatedModel[0]);
+            $model->{$this->relatedModelRelationshipName}()
+                ->saveMany($this->relatedModel);
         }
 
         return $model;
@@ -39,11 +41,9 @@ abstract class BaseFactory implements FactoryInterface
 
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
     {
-        $this->relatedModel = [
-            $this->getFactoryFromClassName($relatedModelClass)
-                ->times($times),
-            $relationshipName,
-        ];
+        $this->relatedModel =$this->getFactoryFromClassName($relatedModelClass)
+                ->times($times);
+        $this->relatedModelRelationshipName = $relationshipName;
 
         return $this;
     }
