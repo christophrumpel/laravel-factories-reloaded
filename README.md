@@ -61,7 +61,7 @@ class UserFactory extends BaseFactory
 }
 ```
 
-Inside this class, you can define the properties of the model with the `getData` method. It is very similar to what you would do with a Laravel default factory and you can make use of Faker as well. The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
+Inside this class, you can define the properties of the model with the `getData` method. It is very similar to what you would do with a Laravel default factory, and you can make use of Faker as well. The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
 
 
 ## Usage
@@ -77,6 +77,85 @@ This will give you back a newly created user instance from the database. If you 
 ``` php
 $user = UserFactory::new()->times(4);
 ```
+
+### Relations
+
+There will be times when you need to add related models to your test data. This is already pretty easy with using multiple factory classes.
+
+```php
+$user = UserFactory::new()->create();
+$user->recipes()->saveMany(RecipeFactory::new()->times(4));
+```
+
+Of course, the relations need to be set up before. Besides this, there is also an in-built solution.
+
+```php
+$user = UserFactory::new()
+    ->with(Recipe::class, 'recipes')
+    ->create();
+```
+
+With the `with` method, you can easily add relations in a more fluently way. The first parameter defines the mode and the second one the name of the relationship. If you need to add more than one related model, you can add a third argument to define the count.
+
+```php
+$user = UserFactory::new()
+    ->with(Recipe::class, 'recipes', 4)
+    ->create();
+```
+
+> :warning: **Note**: For this to work, you need to have created a RecipeFactory before.
+
+But there is one more way to add related data. Since you own your factory classes, you can add a method on the class itself. This way you can pick a much more expressive name like `withRecipes`.
+
+```php
+$user = UserFactory::new()
+    ->withRecipes(4)
+    ->create();
+```
+
+This way you can define yourself how to set up recipes and you are more flexible doing it. Here is an example of how your `UserFactory` could look like with a custom relation method.
+
+```php
+class UserFactory extends BaseFactory
+{
+
+    protected string $modelClass = User::class;
+
+    /** @var Collection */
+    private $recipes;
+
+    public function create(array $extra = []): User
+    {
+        $user = parent::create($extra);
+
+        if ($this->recipes) {
+            $user->recipes()->saveMany($this->recipes);
+        }
+
+        return $user;
+    }
+
+    public function withRecipes(int $times = 1)
+    {
+        $this->recipes = RecipeFactory::new()
+            ->times($times);
+
+        return $this;
+    }
+
+    public function getData(Generator $faker): array
+    {
+        return [
+            'name' => $faker->name,
+            'email' => 'test@email.at',
+            'password' => bcrypt('test'),
+        ];
+    }
+
+}
+```
+
+
 
 ### Testing
 
