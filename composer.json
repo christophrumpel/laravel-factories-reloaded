@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^7.3",
         "christophrumpel/laravel-command-file-picker": "^0.0.4",
         "illuminate/support": "^6.0",
         "laravel/framework": "^6.0",

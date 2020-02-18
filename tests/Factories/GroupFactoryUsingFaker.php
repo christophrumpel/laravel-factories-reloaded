@@ -10,7 +10,10 @@ use Faker\Generator;
 class GroupFactoryUsingFaker extends BaseFactory implements FactoryInterface
 {
 
-    protected string $modelClass = Group::class;
+    /**
+     * @string
+     */
+    protected $modelClass = Group::class;
 
     public function create(array $extra = []): Group
     {

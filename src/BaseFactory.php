@@ -8,11 +8,17 @@ use Illuminate\Support\Collection;
 abstract class BaseFactory implements FactoryInterface
 {
 
-    protected string $modelClass;
+    /**
+     * @string
+     */
+    protected $modelClass;
 
     private $relatedModel;
 
-    private string $relatedModelRelationshipName;
+    /**
+     * @string
+     */
+    private $relatedModelRelationshipName;
 
     public static function new(): self
     {
@@ -36,7 +42,9 @@ abstract class BaseFactory implements FactoryInterface
     {
         return collect()
             ->times($times)
-            ->transform(fn() => $this->create($extra));
+            ->transform(function() use ($extra) {
+                return $this->create($extra);
+           });
     }
 
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
