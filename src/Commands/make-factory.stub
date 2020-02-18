@@ -10,7 +10,7 @@ class DummyFactory extends BaseFactory
 {
 
     /**
-     * @string
+     * @var string
      */
     protected $modelClass = DummyModelClass::class;
 

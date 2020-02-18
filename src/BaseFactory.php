@@ -9,14 +9,14 @@ abstract class BaseFactory implements FactoryInterface
 {
 
     /**
-     * @string
+     * @var string
      */
     protected $modelClass;
 
     private $relatedModel;
 
     /**
-     * @string
+     * @var string
      */
     private $relatedModelRelationshipName;
 

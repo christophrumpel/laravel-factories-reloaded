@@ -10,7 +10,7 @@ class RecipeFactory extends BaseFactory
 {
 
     /**
-     * @string
+     * @var string
      */
     protected $modelClass = Recipe::class;
 

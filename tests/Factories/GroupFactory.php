@@ -11,7 +11,7 @@ class GroupFactory extends BaseFactory
 {
 
     /**
-     * @string
+     * @var string
      */
     protected $modelClass = Group::class;
 
