@@ -36,14 +36,20 @@ class FactoryTest extends TestCase
     public function it_gives_you_multiple_factory_model_instances()
     {
         $this->assertInstanceOf(Collection::class, RecipeFactory::new()
-            ->times(3));
+            ->times(3)
+            ->create());
+
         $this->assertCount(3, RecipeFactory::new()
-            ->times(3));
+            ->times(3)
+            ->create());
 
         $this->assertInstanceOf(Collection::class, GroupFactory::new()
-            ->times(12));
+            ->times(12)
+            ->create());
+
         $this->assertCount(12, GroupFactory::new()
-            ->times(12));
+            ->times(12)
+            ->create());
     }
 
     /** @test * */
@@ -73,22 +79,25 @@ class FactoryTest extends TestCase
     /** @test * */
     public function it_lets_you_use_faker_for_defining_data()
     {
-        $this->assertIsString(GroupFactoryUsingFaker::new()->create()->name);
-        $this->assertIsInt(GroupFactoryUsingFaker::new()->create()->size);
+        $this->assertIsString(GroupFactoryUsingFaker::new()
+            ->create()->name);
+        $this->assertIsInt(GroupFactoryUsingFaker::new()
+            ->create()->size);
     }
 
-    /** @test **/
+    /** @test * */
     public function it_lets_you_add_a_related_model()
     {
-    	$group = GroupFactory::new()
+        $group = GroupFactory::new()
             ->with(Recipe::class, 'recipes')
             ->create();
 
-    	$this->assertEquals(1, $group->recipes->count());
-    	$this->assertInstanceOf(Recipe::class, $group->recipes->first());
+
+        $this->assertEquals(1, $group->recipes->count());
+        $this->assertInstanceOf(Recipe::class, $group->recipes->first());
     }
 
-    /** @test **/
+    /** @test * */
     public function it_lets_you_add_multiple_related_models()
     {
         $group = GroupFactory::new()
