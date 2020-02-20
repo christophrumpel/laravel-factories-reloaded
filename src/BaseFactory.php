@@ -39,7 +39,7 @@ abstract class BaseFactory implements FactoryInterface
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
     {
         $this->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
-            ->times($times)->create();
+            ->times($times)->make();
         $this->relatedModelRelationshipName = $relationshipName;
 
         return $this;

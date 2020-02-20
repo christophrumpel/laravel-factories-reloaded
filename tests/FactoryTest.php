@@ -53,7 +53,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_gives_you_a_collection_of_factory_model_instances()
+    public function it_gives_you_a_collection_of_created_factory_model_instances()
     {
         $this->assertInstanceOf(Collection::class, RecipeFactory::new()
             ->times(3)
@@ -71,6 +71,28 @@ class FactoryTest extends TestCase
             ->times(12)
             ->create());
     }
+
+    /** @test * */
+    public function it_gives_you_a_collection_of_made_factory_model_instances()
+    {
+        $this->assertInstanceOf(Collection::class, RecipeFactory::new()
+            ->times(3)
+            ->make());
+
+        $this->assertCount(3, RecipeFactory::new()
+            ->times(3)
+            ->make());
+
+        $this->assertInstanceOf(Collection::class, GroupFactory::new()
+            ->times(12)
+            ->make());
+
+        $this->assertCount(12, GroupFactory::new()
+            ->times(12)
+            ->make());
+    }
+
+
 
     /** @test * */
     public function it_uses_default_model_data()

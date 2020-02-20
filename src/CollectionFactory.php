@@ -23,8 +23,18 @@ class CollectionFactory
 
     public function create(array $extra = []): Collection
     {
+        return $this->build($extra);
+    }
+
+    public function make(array $extra = []): Collection
+    {
+        return $this->build($extra, 'make');
+    }
+
+    private function build(array $extra = [], string $creationType = 'create'): Collection
+    {
         return collect()
             ->times($this->times)
-            ->transform(fn() => $this->modelClass::create(array_merge($this->modelData, $extra)));
+            ->transform(fn() => $this->modelClass::$creationType(array_merge($this->modelData, $extra)));
     }
 }
