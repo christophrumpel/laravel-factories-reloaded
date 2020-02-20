@@ -19,21 +19,9 @@ abstract class BaseFactory implements FactoryInterface
         return new static;
     }
 
-    public function create(array $extra = [])
+    protected function build(array $extra = [], string $creationType = 'create')
     {
-        $model = $this->modelClass::create(array_merge($this->getData(FakerFactory::create()), $extra));
-
-        if ($this->relatedModel) {
-            $model->{$this->relatedModelRelationshipName}()
-                ->saveMany($this->relatedModel);
-        }
-
-        return $model;
-    }
-
-    public function make(array $extra = [])
-    {
-        $model = $this->modelClass::make(array_merge($this->getData(FakerFactory::create()), $extra));
+        $model = $this->modelClass::$creationType(array_merge($this->getData(FakerFactory::create()), $extra));
 
         if ($this->relatedModel) {
             $model->{$this->relatedModelRelationshipName}()

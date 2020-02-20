@@ -13,12 +13,12 @@ class RecipeFactory extends BaseFactory
 
     public function create(array $extra = []): Recipe
     {
-        return parent::create($extra);
+        return parent::build($extra);
     }
 
     public function make(array $extra = []): Recipe
     {
-        return parent::make($extra);
+        return parent::build($extra, 'make');
     }
 
     public function getData(Generator $faker): array
