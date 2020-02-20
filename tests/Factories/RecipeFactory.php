@@ -16,6 +16,11 @@ class RecipeFactory extends BaseFactory
         return parent::create($extra);
     }
 
+    public function make(array $extra = []): Recipe
+    {
+        return parent::make($extra);
+    }
+
     public function getData(Generator $faker): array
     {
         return [

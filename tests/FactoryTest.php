@@ -23,17 +23,37 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_gives_you_a_new_factory_model_instance()
+    public function it_creates_you_a_new_factory_model_instance()
     {
         $this->assertInstanceOf(Recipe::class, RecipeFactory::new()
             ->create());
 
+        $this->assertCount(1, Recipe::all());
+
         $this->assertInstanceOf(Group::class, GroupFactory::new()
             ->create());
+
+        $this->assertCount(1, Group::all());
+
     }
 
     /** @test * */
-    public function it_gives_you_multiple_factory_model_instances()
+    public function it_makes_you_a_new_factory_model_instance_without_storing_it()
+    {
+        $this->assertInstanceOf(Recipe::class, RecipeFactory::new()
+            ->make());
+
+        $this->assertCount(0, Recipe::all());
+
+        $this->assertInstanceOf(Group::class, GroupFactory::new()
+            ->make());
+
+        $this->assertCount(0, Group::all());
+
+    }
+
+    /** @test * */
+    public function it_gives_you_a_collection_of_factory_model_instances()
     {
         $this->assertInstanceOf(Collection::class, RecipeFactory::new()
             ->times(3)
@@ -91,7 +111,6 @@ class FactoryTest extends TestCase
         $group = GroupFactory::new()
             ->with(Recipe::class, 'recipes')
             ->create();
-
 
         $this->assertEquals(1, $group->recipes->count());
         $this->assertInstanceOf(Recipe::class, $group->recipes->first());
