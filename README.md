@@ -50,7 +50,12 @@ class UserFactory extends BaseFactory
 
     public function create(array $extra = []): User
     {
-        return parent::create($extra);
+        return parent::build($extra);
+    }
+    
+    public function make(array $extra = []): User
+    {
+        return parent::build($extra, 'make');
     }
 
     public function getData(Generator $faker): array
@@ -75,16 +80,24 @@ $user = UserFactory::new()->create();
 This will give you back a newly created user instance from the database. If you want to create multiple instances, you can use the `times` method, which will use the `create` method behind the scenes and will return you a collection of the new model instances.
 
 ``` php
-$user = UserFactory::new()->times(4);
+$user = UserFactory::new()
+    ->times(4)
+    ->create();
+```
+
+Like with Laravel factories you can also `make` a new model which gets `not` stored to the database yet.
+
+``` php
+$user = UserFactory::new()->make();
 ```
 
 ### Relations
 
-There will be times when you need to add related models to your test data. This is already pretty easy with using multiple factory classes.
+There will be situations when you need to add related models to your test data. This is already pretty easy with using multiple factory classes.
 
 ```php
 $user = UserFactory::new()->create();
-$user->recipes()->saveMany(RecipeFactory::new()->times(4));
+$user->recipes()->saveMany(RecipeFactory::new()->times(4)->create());
 ```
 
 Of course, the relations need to be set up before. Besides this, there is also an in-built solution.
@@ -138,7 +151,7 @@ class UserFactory extends BaseFactory
     public function withRecipes(int $times = 1)
     {
         $this->recipes = RecipeFactory::new()
-            ->times($times);
+            ->times($times)->make();
 
         return $this;
     }
