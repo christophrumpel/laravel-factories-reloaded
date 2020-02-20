@@ -31,9 +31,7 @@ class FactoryCommandTest extends TestCase
         $this->assertTrue(File::exists(__DIR__.'/Factories/tmp/GroupFactory.php'));
     }
 
-    /**
-     * @test
-     **/
+    /** @test **/
     public function it_replaces_the_the_dummy_code_in_the_new_factory_class()
     {
         $this->artisan('make:factory-reloaded')
@@ -43,10 +41,12 @@ class FactoryCommandTest extends TestCase
 
         $generatedFactoryContent = file_get_contents(__DIR__.'/Factories/tmp/GroupFactory.php');
 
-        $this->assertTrue(Str::contains($generatedFactoryContent, [
+        $this->assertTrue(Str::containsAll($generatedFactoryContent, [
             'GroupFactory',
             'Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group',
             'Group',
-        ]));
+            'create(',
+            'make(',
+        ],));
     }
 }
