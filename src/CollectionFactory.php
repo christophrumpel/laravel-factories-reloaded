@@ -12,13 +12,13 @@ class CollectionFactory
 
     private int $times;
 
-    private array $modelData;
+    private Collection $modelsDefaultData;
 
-    public function __construct(string $modelClass, int $times, array $modelData)
+    public function __construct(string $modelClass, int $times, Collection $modelData)
     {
         $this->modelClass = $modelClass;
         $this->times = $times;
-        $this->modelData = $modelData;
+        $this->modelsDefaultData = $modelData;
     }
 
     public function create(array $extra = []): Collection
@@ -35,6 +35,6 @@ class CollectionFactory
     {
         return collect()
             ->times($this->times)
-            ->transform(fn() => $this->modelClass::$creationType(array_merge($this->modelData, $extra)));
+            ->transform(fn($value, $key) => $this->modelClass::$creationType(array_merge($this->modelsDefaultData[$key], $extra)));
     }
 }

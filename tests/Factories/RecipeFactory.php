@@ -24,7 +24,7 @@ class RecipeFactory extends BaseFactory
     public function getData(Generator $faker): array
     {
         return [
-            'name' => 'Lasagne',
+            'name' => $faker->name,
             'description' => 'Our family lasagne recipe.'
         ];
     }

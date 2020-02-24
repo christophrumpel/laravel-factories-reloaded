@@ -33,13 +33,20 @@ abstract class BaseFactory implements FactoryInterface
 
     public function times(int $times): CollectionFactory
     {
-        return new CollectionFactory($this->modelClass, $times, $this->getData(FakerFactory::create()));
+        $collectionData = collect()
+            ->times($times)
+            ->map(function ($key) {
+                return $this->getData(FakerFactory::create());
+            });
+
+        return new CollectionFactory($this->modelClass, $times, $collectionData);
     }
 
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
     {
         $this->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
-            ->times($times)->make();
+            ->times($times)
+            ->make();
         $this->relatedModelRelationshipName = $relationshipName;
 
         return $this;
