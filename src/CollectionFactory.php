@@ -3,7 +3,6 @@
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Illuminate\Support\Collection;
-use Faker\Factory as FakerFactory;
 
 class CollectionFactory
 {
