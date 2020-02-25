@@ -17,9 +17,9 @@ class DummyFactory extends BaseFactory
     }
 
     public function make(array $extra = []): DummyModelClass
-        {
-            return parent::build($extra, 'make');
-        }
+    {
+        return parent::build($extra, 'make');
+    }
 
     public function getData(Generator $faker): array
     {
