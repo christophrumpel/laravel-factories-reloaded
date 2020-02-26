@@ -7,6 +7,7 @@ use Illuminate\Console\GeneratorCommand;
 
 class MakeFactoryReloadedCommand extends GeneratorCommand
 {
+
     use PicksClasses;
 
     /**
@@ -14,7 +15,12 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'make:factory-reloaded';
+    protected $signature = 'make:factory-reloaded
+                            {model?}
+                            {--factories_path=}
+                            {--models_path=}
+                            {--factories_namespace=}
+                            {--force}';
 
     /**
      * The console command description.
@@ -32,24 +38,36 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     /** @var string */
     private $className;
 
+    /** @var string */
+    private $modelsPath;
+
+    /** @var string */
+    private $factoriesPath;
+
+    /** @var string */
+    private $factoriesNamespace;
+
     /**
      * Execute the console command.
      *
      */
     public function handle()
     {
-        $this->fullClassName = $this->askToPickModels(config('factories-reloaded.models_path'));
+        $this->modelsPath = $this->option('models_path') ?? config('factories-reloaded.models_path');
+        $this->factoriesPath = $this->option('factories_path') ?? config('factories-reloaded.factories_path');
+        $this->factoriesNamespace = $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace');
+        $this->fullClassName = $this->argument('model') ?? $this->askToPickModels($this->modelsPath);
+
         $this->className = class_basename($this->fullClassName);
 
         $this->info("Thank you! $this->className it is.");
-        $classPath = config('factories-reloaded.factories_path').'/'.$this->className.'Factory.php';
+        $classPath = $this->factoriesPath . '/' . $this->className . 'Factory.php';
 
         // First we will check to see if the class already exists. If it does, we don't want
         // to create the class and overwrite the user's code. So, we will bail out so the
         // code is untouched. Otherwise, we will continue generating this class' files.
-        if (( ! $this->hasOption('force') || ! $this->option('force')) && $this->files->exists($classPath)) {
-            $this->error($this->type.' already exists!');
-
+        if ((!$this->hasOption('force') || !$this->option('force')) && $this->files->exists($classPath)) {
+            $this->error($this->type . ' already exists!');
             return false;
         }
 
@@ -59,7 +77,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         $this->makeDirectory($classPath);
 
         $this->files->put($classPath, $this->sortImports($this->buildClass($this->fullClassName)));
-        $this->info(config('factories-reloaded.factories_namespace') . '\\' . $this->className.$this->type . ' created successfully.');
+        $this->info($this->factoriesNamespace . '\\' . $this->className . $this->type . ' created successfully.');
     }
 
     /**
@@ -69,7 +87,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/make-factory.stub';
+        return __DIR__ . '/make-factory.stub';
     }
 
     protected function getArguments()
@@ -80,8 +98,8 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     /**
      * Replace the class name for the given stub.
      *
-     * @param  string  $stub
-     * @param  string  $name
+     * @param string $stub
+     * @param string $name
      *
      * @return string
      */
@@ -90,14 +108,14 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         $stub = parent::replaceClass($stub, $name);
 
         return str_replace(['DummyFullModelClass', 'DummyModelClass', 'DummyFactory'],
-            [$this->fullClassName, $this->className, $this->className.'Factory'], $stub);
+            [$this->fullClassName, $this->className, $this->className . 'Factory'], $stub);
     }
 
     /**
      * Replace the namespace for the given stub.
      *
-     * @param  string  $stub
-     * @param  string  $name
+     * @param string $stub
+     * @param string $name
      *
      * @return $this
      */
@@ -106,7 +124,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         $stub = str_replace([
             'DummyNamespace',
         ], [
-            config('factories-reloaded.factories_namespace'),
+            $this->factoriesNamespace,
         ], $stub);
 
         return $this;
