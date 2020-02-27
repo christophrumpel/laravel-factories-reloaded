@@ -33,7 +33,7 @@ To publish the config file run:
 php artisan vendor:publish --provider="Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProvider"
 ```
 
-It will provide the package's config file where you can define the `path of your models`, the `path of the generated factories`, as well as the 'generated factories namespace'.
+It will provide the package's config file where you can define the `path of your models`, the `path of the generated factories`, as well as the `generated factories namespace`.
 
 ```php
 <?php
