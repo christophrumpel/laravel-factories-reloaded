@@ -14,6 +14,8 @@ abstract class BaseFactory implements FactoryInterface
 
     private string $relatedModelRelationshipName;
 
+    private array $overwrites = [];
+
     public static function new(): self
     {
         return new static;
@@ -21,7 +23,7 @@ abstract class BaseFactory implements FactoryInterface
 
     protected function build(array $extra = [], string $creationType = 'create')
     {
-        $model = $this->modelClass::$creationType(array_merge($this->getData(FakerFactory::create()), $extra));
+        $model = $this->modelClass::$creationType(array_merge($this->getData(FakerFactory::create()), $this->overwrites, $extra));
 
         if ($this->relatedModel) {
             $model->{$this->relatedModelRelationshipName}()
@@ -31,12 +33,12 @@ abstract class BaseFactory implements FactoryInterface
         return $model;
     }
 
-    public function times(int $times): CollectionFactory
+    public function times(int $times = 1): CollectionFactory
     {
         $collectionData = collect()
             ->times($times)
             ->map(function ($key) {
-                return $this->getData(FakerFactory::create());
+                return array_merge($this->getData(FakerFactory::create()), $this->overwrites);
             });
 
         return new CollectionFactory($this->modelClass, $times, $collectionData);
@@ -48,6 +50,14 @@ abstract class BaseFactory implements FactoryInterface
             ->times($times)
             ->make();
         $this->relatedModelRelationshipName = $relationshipName;
+
+        return $this;
+    }
+
+
+    public function overwrite(array $attributes): self
+    {
+        $this->overwrites = $attributes;
 
         return $this;
     }
