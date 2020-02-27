@@ -27,6 +27,29 @@ You can install the package via composer:
 composer require christophrumpel/laravel-factories-reloaded
 ```
 
+To publish the config file run:
+
+```bash
+php artisan vendor:publish --provider="Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProvider"
+```
+
+It will provide the package's config file where you can define the `path of your models`, the `path of the generated factories`, as well as the 'generated factories namespace'.
+
+```php
+<?php
+
+/*
+ * You can place your custom package configuration in here.
+ */
+return [
+    'models_path' => base_path('app'),
+
+    'factories_path' => base_path('tests/Factories'),
+
+    'factories_namespace' => 'Tests\Factories',
+];
+```
+
 ## Preparation
 
 First, you need to create a new factory class. This is done via a new command this package comes with. In this example, we want to create a new user factory.
