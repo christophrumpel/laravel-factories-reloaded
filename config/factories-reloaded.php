@@ -9,4 +9,6 @@ return [
     'factories_path' => base_path('tests/Factories'),
 
     'factories_namespace' => 'Tests\Factories',
+
+    'vanilla_factories_path' => database_path('factories'),
 ];
