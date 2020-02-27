@@ -47,6 +47,7 @@ class FactoryCommandTest extends TestCase
             'Group',
             'create(',
             'make(',
-        ],));
+            'someState('
+        ]));
     }
 }

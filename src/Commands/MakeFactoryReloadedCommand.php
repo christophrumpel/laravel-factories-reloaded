@@ -3,6 +3,7 @@
 namespace Christophrumpel\LaravelFactoriesReloaded\Commands;
 
 use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
+use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoryExtractor;
 use Illuminate\Console\GeneratorCommand;
 
 class MakeFactoryReloadedCommand extends GeneratorCommand
@@ -58,8 +59,33 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         // stub files so that it gets the correctly formatted namespace and class name.
         $this->makeDirectory($classPath);
 
-        $this->files->put($classPath, $this->sortImports($this->buildClass($this->fullClassName)));
+        $this->files->put($classPath, $this->replaceStub());
         $this->info(config('factories-reloaded.factories_namespace') . '\\' . $this->className.$this->type . ' created successfully.');
+    }
+
+    protected function replaceStub(): string
+    {
+        $extractor = LaravelFactoryExtractor::from($this->fullClassName);
+
+        $uses = '';
+        $dummyData = 'return [];';
+        $states = '';
+
+        if ($extractor->exists()) {
+            $dummyData = $extractor->getDefinitions();
+            $states = $extractor->getStates();
+            $uses = $extractor->getUses();
+        }
+
+        return $this->sortImports(str_replace([
+            '{{ uses }}',
+            '{{ dummyData }}',
+            '{{ states }}',
+        ], [
+            $uses,
+            $dummyData,
+            $states,
+        ], $this->buildClass($this->fullClassName)));
     }
 
     /**
