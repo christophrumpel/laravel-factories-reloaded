@@ -156,4 +156,17 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf(Recipe::class, $group->recipes->first());
     }
 
+    /** @test * */
+    public function the_factory_is_immutable_when_adding_related_models(): void
+    {
+        $group = GroupFactory::new()
+            ->with(Recipe::class, 'recipes', 4);
+
+        $firstGroup = $group->with(Recipe::class, 'recipes')->create();
+        $secondGroup = $group->create();
+
+        $this->assertEquals(1, $firstGroup->recipes()->count());
+        $this->assertEquals(4, $secondGroup->recipes()->count());
+    }
+
 }

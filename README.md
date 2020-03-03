@@ -173,10 +173,12 @@ class UserFactory extends BaseFactory
 
     public function withRecipes(int $times = 1)
     {
-        $this->recipes = RecipeFactory::new()
+        $clone = clone $this;
+
+        $clone->recipes = RecipeFactory::new()
             ->times($times)->make();
 
-        return $this;
+        return $clone;
     }
 
     public function getData(Generator $faker): array
