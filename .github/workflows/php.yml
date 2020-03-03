@@ -3,19 +3,37 @@ name: PhpUnit
 on: [push, pull_request]
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                laravel: [6.*, 7.*]
+                dependency-version: [prefer-lowest, prefer-stable]
+                include:
+                    -   laravel: 7.*
+                        testbench: 5.*
+                    -   laravel: 6.*
+                        testbench: 4.*
 
-    runs-on: ubuntu-latest
+        name: L${{ matrix.laravel }} - ${{ matrix.dependency-version }}
 
-    steps:
-    - uses: actions/checkout@v1
+        steps:
+            -   uses: actions/checkout@v1
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
+            -   name: Cache dependencies
+                uses: actions/cache@v1
+                with:
+                    path: ~/.composer/cache/files
+                    key: dependencies-laravel-${{ matrix.laravel }}-composer-${{ hashFiles('composer.json') }}
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
+            -   name: Validate composer.json and composer.lock
+                run: composer validate
 
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
-    - name: Run test suite
-      run: composer run-script test
+            -   name: Run test suite
+                run: composer run-script test
