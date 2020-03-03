@@ -1,7 +1,6 @@
 <?php
 
-namespace Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\CustomNamespace
-;
+namespace Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\CustomNamespace;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\CustomNamespace\NamespacedModel;
@@ -10,10 +9,7 @@ use Faker\Generator;
 class NamespacedModelFactory extends BaseFactory
 {
 
-    /**
-     * @var string
-     */
-    protected $modelClass = NamespacedModel::class;
+    protected string $modelClass = NamespacedModel::class;
 
     public function create(array $extra = []): NamespacedModel
     {
