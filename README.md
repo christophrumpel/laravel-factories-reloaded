@@ -193,6 +193,8 @@ class UserFactory extends BaseFactory
 }
 ```
 
+> :warning: **Note**: Whenever you return the factory itself from a method like `withRecipes`, you should use a `clone` of the instance like in the example above to prevent modifications.
+
 
 
 ### Testing
