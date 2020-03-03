@@ -4,6 +4,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 abstract class BaseFactory implements FactoryInterface
 {
@@ -54,8 +55,8 @@ abstract class BaseFactory implements FactoryInterface
 
     private function getFactoryFromClassName(string $className): FactoryInterface
     {
-        $baseClassName = (new \ReflectionClass($className))->getShortName();
-        $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
+        $namespacedClassName = Str::after($className, config('factories-reloaded.models_namespace'));
+        $factoryClass = config('factories-reloaded.factories_namespace').$namespacedClassName.'Factory';
 
         return new $factoryClass;
     }

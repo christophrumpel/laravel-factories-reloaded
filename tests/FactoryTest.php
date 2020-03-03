@@ -2,9 +2,11 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
+use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\CustomNamespace\NamespacedModelFactory;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\GroupFactory;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\GroupFactoryUsingFaker;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\RecipeFactory;
+use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\CustomNamespace\NamespacedModel;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -154,6 +156,15 @@ class FactoryTest extends TestCase
 
         $this->assertEquals(4, $group->recipes->count());
         $this->assertInstanceOf(Recipe::class, $group->recipes->first());
+    }
+
+    /** @test * */
+    public function it_lets_you_use_namespaced_models()
+    {
+        $this->assertInstanceOf(NamespacedModel::class, NamespacedModelFactory::new()
+            ->create());
+
+        $this->assertCount(1, NamespacedModel::all());
     }
 
 }

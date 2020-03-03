@@ -14,6 +14,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
         parent::setUp();
 
         Config::set('factories-reloaded.models_path', __DIR__.'/Models');
+        Config::set('factories-reloaded.models_namespace', 'Christophrumpel\LaravelFactoriesReloaded\Tests\Models');
         Config::set('factories-reloaded.factories_path', __DIR__.'/Factories/tmp');
         Config::set('factories-reloaded.factories_namespace', 'Christophrumpel\LaravelFactoriesReloaded\Tests\Factories');
 
