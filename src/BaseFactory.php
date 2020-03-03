@@ -44,12 +44,14 @@ abstract class BaseFactory implements FactoryInterface
 
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
     {
-        $this->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
+        $clone = clone $this;
+
+        $clone->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
             ->times($times)
             ->make();
-        $this->relatedModelRelationshipName = $relationshipName;
+        $clone->relatedModelRelationshipName = $relationshipName;
 
-        return $this;
+        return $clone;
     }
 
     private function getFactoryFromClassName(string $className): FactoryInterface
