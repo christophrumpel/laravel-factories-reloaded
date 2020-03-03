@@ -162,7 +162,7 @@ class UserFactory extends BaseFactory
 
     public function create(array $extra = []): User
     {
-        $user = parent::create($extra);
+        $user = parent::build($extra);
 
         if ($this->recipes) {
             $user->recipes()->saveMany($this->recipes);
