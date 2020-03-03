@@ -34,23 +34,17 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     /** @var string */
     protected $type = 'Factory';
 
-    /** @var string */
-    private $fullClassName;
+    private string $fullClassName;
 
-    /** @var string */
-    private $className;
+    private string $className;
 
-    /** @var string */
-    private $modelsPath;
+    private string $modelsPath;
 
-    /** @var string */
-    private $modelFile = '';
+    private string $modelFile;
 
-    /** @var string */
-    private $factoriesPath;
+    private string $factoriesPath;
 
-    /** @var string */
-    private $factoriesNamespace;
+    private string $factoriesNamespace;
 
     /**
      * Execute the console command.
