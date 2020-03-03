@@ -103,4 +103,27 @@ class FactoryCommandTest extends TestCase
 
         $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
     }
+
+    /** @test */
+    public function it_can_find_models_in_passed_models_path()
+    {
+        if (file_exists(__DIR__.'/Factories/tmp/IngredientFactory.php')) {
+            unlink(__DIR__.'/Factories/tmp/IngredientFactory.php');
+        }
+
+        Config::set('factories-reloaded.models_path', '');
+        Config::set('factories-reloaded.factories_path', '');
+        Config::set('factories-reloaded.factories_namespace', '');
+
+        $this->assertFalse(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+
+        $this->artisan('make:factory-reloaded Ingredient
+                --models_path='.__DIR__.'/Models/Models
+                --factories_path='.__DIR__.'/Factories/tmp
+                --factories_namespace=Christophrumpel\LaravelFactoriesReloaded\Tests\Factories
+             ')
+            ->assertExitCode(0);
+
+        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+    }
 }

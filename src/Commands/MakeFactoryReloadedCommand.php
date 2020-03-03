@@ -2,8 +2,10 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Commands;
 
+use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Filesystem\Filesystem;
 
 class MakeFactoryReloadedCommand extends GeneratorCommand
 {
@@ -42,6 +44,9 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     private $modelsPath;
 
     /** @var string */
+    private $modelFile = '';
+
+    /** @var string */
     private $factoriesPath;
 
     /** @var string */
@@ -56,7 +61,13 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
         $this->modelsPath = $this->option('models_path') ?? config('factories-reloaded.models_path');
         $this->factoriesPath = $this->option('factories_path') ?? config('factories-reloaded.factories_path');
         $this->factoriesNamespace = $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace');
-        $this->fullClassName = $this->argument('model') ?? $this->askToPickModels($this->modelsPath);
+        if ($this->argument('model')) {
+            $class_finder = new ClassFinder(new Filesystem());
+            $this->fullClassName = $class_finder->getFullyQualifiedClassNameFromFile($this->modelsPath.'/'.$this->argument('model') . '.php');
+        }
+        else {
+            $this->fullClassName = $this->askToPickModels($this->modelsPath);
+        }
 
         $this->className = class_basename($this->fullClassName);
 

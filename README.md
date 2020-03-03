@@ -78,10 +78,23 @@ By default, this command will stop and give you an error if a factory you're try
 ```php
 php artisan make:factory-reloaded Ingredient --force
 ```
-You can override the configurations as options as well:
-`--models_path=path/to/your/models`
+
+### Configuration
+You can publish a configuration file that lets you set the path to your models and factories as well as the namespace of your factories. Alternatively, you can set the configurations as options when you run the command:
+
+`--models_path=app/models`
+
 `--factories_path=path/to/your/factories`
+
 `--factories_namespace=Your\Factories\Namespace`
+
+Most people won't need to override these configuration on the fly, but if you splitting your app up into domains you might be keeping your factories closer to their models. In this case you could do something like this:
+
+```shell script
+php artisan make:factory-reloaded --models_path=app/domains/customers/models 
+    --factories_path=app/domains/customers/factories --factories_namespace=App\Domains\Customers\Factories
+```
+
 
 
 ## Usage

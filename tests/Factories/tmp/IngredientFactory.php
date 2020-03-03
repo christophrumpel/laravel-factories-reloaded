@@ -3,8 +3,8 @@
 namespace ChristophrumpelLaravelFactoriesReloadedTestsFactories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
+use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Models\Ingredient;
 use Faker\Generator;
-use Ingredient;
 
 class IngredientFactory extends BaseFactory
 {
