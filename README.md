@@ -91,6 +91,34 @@ class UserFactory extends BaseFactory
 
 Inside this class, you can define the properties of the model with the `getData` method. It is very similar to what you would do with a Laravel default factory, and you can make use of Faker as well. The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
 
+### Additional arguments and options
+
+If you don't want to select your model from a list, you can pass the class name of a model in your model path as an argument and your factory will immediately be created for you:
+```php
+php artisan make:factory-reloaded Ingredient
+```
+By default, this command will stop and give you an error if a factory you're trying to create already exists. You can overwrite an existing factory using the force option:
+```php
+php artisan make:factory-reloaded Ingredient --force
+```
+
+### Configuration
+You can publish a configuration file that lets you set the path to your models and factories as well as the namespace of your factories. Alternatively, you can set the configurations as options when you run the command:
+
+`--models_path=app/models`
+
+`--factories_path=path/to/your/factories`
+
+`--factories_namespace=Your\Factories\Namespace`
+
+Most people won't need to override these configuration on the fly, but if you splitting your app up into domains you might be keeping your factories closer to their models. In this case you could do something like this:
+
+```shell script
+php artisan make:factory-reloaded --models_path=app/domains/customers/models 
+    --factories_path=app/domains/customers/factories --factories_namespace=App\Domains\Customers\Factories
+```
+
+
 
 ## Usage
 
