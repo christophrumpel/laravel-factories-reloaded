@@ -118,8 +118,6 @@ php artisan make:factory-reloaded --models_path=app/domains/customers/models
     --factories_path=app/domains/customers/factories --factories_namespace=App\Domains\Customers\Factories
 ```
 
-
-
 ## Usage
 
 Now you can start using your new user factory class in your tests. The static `new` method gives you a new instance of the factory. This is useful to chain other methods, like `create` for example.
@@ -143,7 +141,15 @@ $user = UserFactory::new()->make();
 ```
 ### States
 
-You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there different ways to implement them. The easiest approach is by using a method to change a class property like here for a `published recipe`.
+You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there different ways to implement them. The easiest approach is by calling a method which sets a property in the class.
+
+```php
+$recipe = RecipeFactory::new()
+    ->published()
+    ->create();
+```
+
+And to make this work, we need to add the method to the factory class, as well as the property. In the `getData`method we then use the property to fill the model.
 
 ```php
 <?php
