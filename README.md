@@ -197,7 +197,7 @@ class RecipeFactory extends BaseFactory
 }
 ```
 
-> :warning: **Note**: We clone the factory class to make it immuteable. You can read more about it in [Brent's factory article](https://stitcher.io/blog/laravel-beyond-crud-09-test-factories).
+> :warning: **Note**: We clone the factory class to make it immuteable when using the published method. You can read more about it in [Brent's factory article](https://stitcher.io/blog/laravel-beyond-crud-09-test-factories).
 
 ### Relations
 
