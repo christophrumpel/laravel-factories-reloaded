@@ -141,6 +141,54 @@ Like with Laravel factories you can also `make` a new model which gets `not` sto
 ``` php
 $user = UserFactory::new()->make();
 ```
+### States
+
+You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there different ways to implement them. The easiest approach is by using a method to change a class property like here for a `published recipe`.
+
+```php
+<?php
+
+namespace Tests\Factories;
+
+use App\Recipe;
+use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
+use Faker\Generator;
+
+class RecipeFactory extends BaseFactory
+{
+
+    protected string $modelClass = Recipe::class;
+   
+    private bool $isPublished = false;
+
+    public function create(array $extra = []): Recipe
+    {
+        return parent::build($extra);
+    }
+
+    public function make(array $extra = []): Recipe
+    {
+        return parent::build($extra, 'make');
+    }
+
+    public function getData(Generator $faker): array
+    {
+        return [
+            'category_id' => 1,
+            'name' => $faker->name,
+            'is_published' => $this->isPublished,
+        ];
+    }
+
+    public function published(): self
+    {
+        $this->isPublished = true;
+
+        return $this;
+    }
+
+}
+```
 
 ### Relations
 
