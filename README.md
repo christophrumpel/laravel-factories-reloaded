@@ -148,7 +148,7 @@ There will be situations when you need to add related models to your test data. 
 
 ```php
 $user = UserFactory::new()->create();
-$user->recipes()->saveMany(RecipeFactory::new()->times(4)->create());
+$user->recipes()->saveMany(RecipeFactory::new()->times(4)->make());
 ```
 
 Of course, the relations need to be set up before. Besides this, there is also an in-built solution.
