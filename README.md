@@ -141,7 +141,7 @@ $user = UserFactory::new()->make();
 ```
 ### States
 
-You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there different ways to implement them. The easiest approach is by calling a method which sets a property in the class.
+You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there are different ways to implement state-like functionality. The easiest approach is by calling a method which sets a property in the class.
 
 ```php
 $recipe = RecipeFactory::new()
