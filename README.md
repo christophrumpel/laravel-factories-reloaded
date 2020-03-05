@@ -5,9 +5,9 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/christophrumpel/laravel-factories-reloaded.svg?style=flat-square)](https://scrutinizer-ci.com/g/christophrumpel/laravel-factories-reloaded)
 [![Total Downloads](https://img.shields.io/packagist/dt/christophrumpel/laravel-factories-reloaded.svg?style=flat-square)](https://packagist.org/packages/christophrumpel/laravel-factories-reloaded)
 
-This package will provide a new way to use factories in Laravel. Instead of using factory files, you can now generate dedicated `factory classes`.
+This package will generate `class-based factories` which you can use instead of the default Laravel factory files.
 
-**There are three benefits:**
+**Why Class-Based Factories?:**
 
 - You have a dedicated class for every factory, and the test data can be defined inside. This is a much cleaner solution than the default factory files.
 - If creating test data gets more complicated than creating just one model, you hide this inside the factory class so that your tests stay clean.
@@ -50,7 +50,7 @@ return [
 ];
 ```
 
-## Usage
+## Generate Factories
 
 First, you need to create a new factory class. This is done via a new command this package comes with. In this example, we want to create a new user factory.
 
@@ -91,7 +91,7 @@ class UserFactory extends BaseFactory
 
 Inside this class, you can define the properties of the model with the `getData` method. It is very similar to what you would do with a Laravel default factory, and you can make use of Faker as well. The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
 
-### Additional arguments and options
+### Additional Arguments And Options
 
 If you don't want to select your model from a list, you can pass the class name of a model in your model path as an argument and your factory will immediately be created for you:
 ```php
