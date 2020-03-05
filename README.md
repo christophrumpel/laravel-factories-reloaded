@@ -50,7 +50,7 @@ return [
 ];
 ```
 
-## Preparation
+## Usage
 
 First, you need to create a new factory class. This is done via a new command this package comes with. In this example, we want to create a new user factory.
 
