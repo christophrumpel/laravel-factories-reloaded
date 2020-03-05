@@ -188,13 +188,16 @@ class RecipeFactory extends BaseFactory
 
     public function published(): self
     {
-        $this->isPublished = true;
+        $clone = clone $this;
+        $clone->isPublished = true;
 
         return $this;
     }
 
 }
 ```
+
+> :warning: **Note**: We clone the factory class to make it immuteable. You can read more about it in [Brent's factory article](https://stitcher.io/blog/laravel-beyond-crud-09-test-factories).
 
 ### Relations
 
