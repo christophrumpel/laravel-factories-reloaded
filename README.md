@@ -9,14 +9,14 @@ This package will generate `class-based factories` which you can use instead of 
 
 **Why Class-Based Factories?:**
 
-- You have a dedicated class for every factory, and the test data can be defined inside. This is a much cleaner solution than the default factory files.
+- You have a dedicated class for every factory, and the default model data can be defined inside this class. This is a cleaner solution than the default factory files.
 - If creating test data gets more complicated than creating just one model, you hide this inside the factory class so that your tests stay clean.
-- The generated factory classes use return types so that your IDE know what gets returned. (This is something you do not have with the default factory handling of Laravel.)
+- The generated factory classes use return types so that your IDE knows what gets returned. (This is something you do not have with the default Laravel factories)
 
 I already know a lot of people using factory classes. So why not just create your own classes when you need them?
 
 - Automate everything! Even just calling an artisan command that creates a class is much faster than you doing it yourself.
-- This package will create classes that already provide factory features, you know, like creating a new model instance or multiple ones.
+- This package will create classes that already provide factory features, you know, like creating a new model instance, multiple ones and more.
 
 
 ## Installation
