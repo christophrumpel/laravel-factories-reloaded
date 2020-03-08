@@ -21,7 +21,8 @@ abstract class BaseFactory implements FactoryInterface
 
     protected function build(array $extra = [], string $creationType = 'create')
     {
-        $model = $this->modelClass::$creationType(array_merge($this->getData(FakerFactory::create()), $extra));
+        $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+        $model = $this->modelClass::$creationType(array_merge($this->getData($faker), $extra));
 
         if ($this->relatedModel) {
             $model->{$this->relatedModelRelationshipName}()
@@ -33,10 +34,12 @@ abstract class BaseFactory implements FactoryInterface
 
     public function times(int $times): CollectionFactory
     {
+        $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+
         $collectionData = collect()
             ->times($times)
-            ->map(function ($key) {
-                return $this->getData(FakerFactory::create());
+            ->map(function ($key) use ($faker) {
+                return $this->getData($faker);
             });
 
         return new CollectionFactory($this->modelClass, $times, $collectionData);
