@@ -3,7 +3,9 @@
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Support\Collection;
+use ReflectionClass;
 
 abstract class BaseFactory implements FactoryInterface
 {
@@ -14,15 +16,19 @@ abstract class BaseFactory implements FactoryInterface
 
     private string $relatedModelRelationshipName;
 
+    private Generator $faker;
+
     public static function new(): self
     {
-        return new static;
+        $factory = new static;
+        $factory->faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+
+        return $factory;
     }
 
     protected function build(array $extra = [], string $creationType = 'create')
     {
-        $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
-        $model = $this->modelClass::$creationType(array_merge($this->getData($faker), $extra));
+        $model = $this->modelClass::$creationType(array_merge($this->getData($this->faker), $extra));
 
         if ($this->relatedModel) {
             $model->{$this->relatedModelRelationshipName}()
@@ -34,12 +40,10 @@ abstract class BaseFactory implements FactoryInterface
 
     public function times(int $times): CollectionFactory
     {
-        $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
-
         $collectionData = collect()
             ->times($times)
-            ->map(function ($key) use ($faker) {
-                return $this->getData($faker);
+            ->map(function ($key) {
+                return $this->getData($this->faker);
             });
 
         return new CollectionFactory($this->modelClass, $times, $collectionData);
@@ -59,7 +63,7 @@ abstract class BaseFactory implements FactoryInterface
 
     private function getFactoryFromClassName(string $className): FactoryInterface
     {
-        $baseClassName = (new \ReflectionClass($className))->getShortName();
+        $baseClassName = (new ReflectionClass($className))->getShortName();
         $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
 
         return new $factoryClass;
