@@ -18,12 +18,15 @@ abstract class BaseFactory implements FactoryInterface
 
     private Generator $faker;
 
+    public function __construct(Generator $faker)
+    {
+        $this->faker = $faker;
+    }
+
     public static function new(): self
     {
-        $factory = new static;
-        $factory->faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
-
-        return $factory;
+        $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+        return new static($faker);
     }
 
     protected function build(array $extra = [], string $creationType = 'create')
@@ -66,6 +69,6 @@ abstract class BaseFactory implements FactoryInterface
         $baseClassName = (new ReflectionClass($className))->getShortName();
         $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
 
-        return new $factoryClass;
+        return new $factoryClass($this->faker);
     }
 }
