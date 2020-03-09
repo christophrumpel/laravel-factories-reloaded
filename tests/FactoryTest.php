@@ -11,6 +11,7 @@ use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 class FactoryTest extends TestCase
 {
@@ -130,6 +131,10 @@ class FactoryTest extends TestCase
     /** @test * */
     public function it_lets_you_use_faker_for_defining_data()
     {
+        // Set local to en_SG so that we can test that also local faker data is being used
+        // Faker unique mobile number exists for en_SG
+        Config::set('app.faker_locale', 'en_SG');
+
         $this->assertIsString(GroupFactoryUsingFaker::new()
             ->create()->name);
         $this->assertIsInt(GroupFactoryUsingFaker::new()
