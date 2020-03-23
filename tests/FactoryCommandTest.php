@@ -31,6 +31,19 @@ class FactoryCommandTest extends TestCase
         $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/GroupFactory.php'));
     }
 
+    /** @test */
+    public function it_asks_user_to_integrate_old_factory_states_if_given()
+    {
+        $this->artisan('make:factory-reloaded')
+            ->expectsQuestion('Please pick a model',
+                '<href=file://' . __DIR__ . '/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
+            ->expectsQuestion('You have defined states for Group in your old factory, do you want to import them to your new factory class?',
+                'Yes')
+            ->assertExitCode(0);
+
+        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/GroupFactory.php'));
+    }
+
     /** @test * */
     public function it_replaces_the_the_dummy_code_in_the_new_factory_class()
     {
