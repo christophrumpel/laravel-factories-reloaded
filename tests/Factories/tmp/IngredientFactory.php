@@ -22,7 +22,7 @@ class IngredientFactory extends BaseFactory
         return parent::build($extra, 'make');
     }
 
-    public function getData(Faker $faker): array
+    public function getDefaults(Faker $faker): array
     {
         return [];
     }

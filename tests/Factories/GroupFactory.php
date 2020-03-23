@@ -22,7 +22,7 @@ class GroupFactory extends BaseFactory
         return parent::build($extra, 'make');
     }
 
-    public function getData(Generator $faker): array
+    public function getDefaults(Generator $faker): array
     {
         return [
             'name' => 'Family Rumpel',

@@ -4,7 +4,6 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
-use Illuminate\Support\Collection;
 use ReflectionClass;
 
 abstract class BaseFactory implements FactoryInterface
@@ -18,7 +17,7 @@ abstract class BaseFactory implements FactoryInterface
 
     private Generator $faker;
 
-    private array $overwrites = [];
+    private array $overwriteDefaults = [];
 
     public function __construct(Generator $faker)
     {
@@ -33,7 +32,7 @@ abstract class BaseFactory implements FactoryInterface
 
     protected function build(array $extra = [], string $creationType = 'create')
     {
-        $model = $this->modelClass::$creationType(array_merge($this->getData($this->faker), $this->overwrites, $extra));
+        $model = $this->modelClass::$creationType(array_merge($this->getDefaults($this->faker), $this->overwriteDefaults, $extra));
 
         if ($this->relatedModel) {
             $model->{$this->relatedModelRelationshipName}()
@@ -48,7 +47,7 @@ abstract class BaseFactory implements FactoryInterface
         $collectionData = collect()
             ->times($times)
             ->map(function ($key) {
-                return array_merge($this->getData($this->faker), $this->overwrites);
+                return array_merge($this->getDefaults($this->faker), $this->overwriteDefaults);
             });
 
         return new CollectionFactory($this->modelClass, $times, $collectionData);
@@ -69,7 +68,7 @@ abstract class BaseFactory implements FactoryInterface
 
     public function overwrite(array $attributes): self
     {
-        $this->overwrites = $attributes;
+        $this->overwriteDefaults = $attributes;
 
         return $this;
     }
