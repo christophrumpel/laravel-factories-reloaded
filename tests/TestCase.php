@@ -5,6 +5,8 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -16,7 +18,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
         Config::set('factories-reloaded.models_path', __DIR__.'/Models');
         Config::set('factories-reloaded.vanilla_factories_path', __DIR__.'/database/factories');
         Config::set('factories-reloaded.factories_path', __DIR__.'/Factories/tmp');
-        Config::set('factories-reloaded.factories_namespace', 'Christophrumpel\LaravelFactoriesReloaded\Tests\Factories');
+        Config::set('factories-reloaded.factories_namespace',
+            'Christophrumpel\LaravelFactoriesReloaded\Tests\Factories');
 
         $this->loadLaravelMigrations();
         $this->loadMigrationsFrom(__DIR__.'/database/migrations');
@@ -24,11 +27,9 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     public function tearDown(): void
     {
-        parent::tearDown();
+        Storage::deleteDirectory(__DIR__.'/Factories/tmp/');
 
-        if (file_exists(__DIR__.'/Factories/tmp/GroupFactory.php')) {
-            unlink(__DIR__.'/Factories/tmp/GroupFactory.php');
-        }
+        parent::tearDown();
     }
 
     /**
