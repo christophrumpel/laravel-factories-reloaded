@@ -7,7 +7,7 @@ use Christophrumpel\LaravelFactoriesReloaded\FactoryInterface;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
 use Faker\Generator;
 
-class GroupFactoryUsingFaker extends BaseFactory implements FactoryInterface
+class GroupFactoryUsingFaker extends BaseFactory
 {
 
     protected string $modelClass = Group::class;
