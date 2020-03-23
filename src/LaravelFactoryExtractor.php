@@ -54,7 +54,15 @@ class LaravelFactoryExtractor
 
     public function getDefinitions(): string
     {
-        return ltrim(collect($this->getClosureContent(collect($this->factory->getProperty('definitions'))->get($this->className)['default']))->implode('    '));
+        $definition = collect(
+            $this->factory->getProperty('definitions')
+        )->get($this->className);
+
+        return ltrim(
+            collect(
+                $this->getClosureContent($definition instanceof \Closure ? $definition : $definition['default'])
+            )->implode('    ')
+        );
     }
 
     protected function getClosureContent(callable $closure): array
