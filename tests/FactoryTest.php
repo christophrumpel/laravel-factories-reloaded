@@ -9,6 +9,7 @@ use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 class FactoryTest extends TestCase
 {
@@ -128,6 +129,10 @@ class FactoryTest extends TestCase
     /** @test * */
     public function it_lets_you_use_faker_for_defining_data()
     {
+        // Set local to en_SG so that we can test that also local faker data is being used
+        // Faker unique mobile number exists for en_SG
+        Config::set('app.faker_locale', 'en_SG');
+
         $this->assertIsString(GroupFactoryUsingFaker::new()
             ->create()->name);
         $this->assertIsInt(GroupFactoryUsingFaker::new()
@@ -154,6 +159,19 @@ class FactoryTest extends TestCase
 
         $this->assertEquals(4, $group->recipes->count());
         $this->assertInstanceOf(Recipe::class, $group->recipes->first());
+    }
+
+    /** @test * */
+    public function the_factory_is_immutable_when_adding_related_models(): void
+    {
+        $group = GroupFactory::new()
+            ->with(Recipe::class, 'recipes', 4);
+
+        $firstGroup = $group->with(Recipe::class, 'recipes')->create();
+        $secondGroup = $group->create();
+
+        $this->assertEquals(1, $firstGroup->recipes()->count());
+        $this->assertEquals(4, $secondGroup->recipes()->count());
     }
 
 }

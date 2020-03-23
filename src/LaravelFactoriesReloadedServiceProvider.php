@@ -23,7 +23,7 @@ class LaravelFactoriesReloadedServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/factories-reloaded.php' => config_path('laravel-factories-reloaded.php'),
+                __DIR__.'/../config/factories-reloaded.php' => config_path('factories-reloaded.php'),
             ], 'config');
 
             // Publishing the views.

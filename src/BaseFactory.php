@@ -3,7 +3,9 @@
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
+use Faker\Generator;
 use Illuminate\Support\Collection;
+use ReflectionClass;
 
 abstract class BaseFactory implements FactoryInterface
 {
@@ -14,16 +16,24 @@ abstract class BaseFactory implements FactoryInterface
 
     private string $relatedModelRelationshipName;
 
+    private Generator $faker;
+
     private array $overwrites = [];
+
+    public function __construct(Generator $faker)
+    {
+        $this->faker = $faker;
+    }
 
     public static function new(): self
     {
-        return new static;
+        $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+        return new static($faker);
     }
 
     protected function build(array $extra = [], string $creationType = 'create')
     {
-        $model = $this->modelClass::$creationType(array_merge($this->getData(FakerFactory::create()), $this->overwrites, $extra));
+        $model = $this->modelClass::$creationType(array_merge($this->getData($this->faker), $this->overwrites, $extra));
 
         if ($this->relatedModel) {
             $model->{$this->relatedModelRelationshipName}()
@@ -38,7 +48,7 @@ abstract class BaseFactory implements FactoryInterface
         $collectionData = collect()
             ->times($times)
             ->map(function ($key) {
-                return array_merge($this->getData(FakerFactory::create()), $this->overwrites);
+                return array_merge($this->getData($this->faker), $this->overwrites);
             });
 
         return new CollectionFactory($this->modelClass, $times, $collectionData);
@@ -46,12 +56,14 @@ abstract class BaseFactory implements FactoryInterface
 
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
     {
-        $this->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
+        $clone = clone $this;
+
+        $clone->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
             ->times($times)
             ->make();
-        $this->relatedModelRelationshipName = $relationshipName;
+        $clone->relatedModelRelationshipName = $relationshipName;
 
-        return $this;
+        return $clone;
     }
 
 
@@ -64,9 +76,9 @@ abstract class BaseFactory implements FactoryInterface
 
     private function getFactoryFromClassName(string $className): FactoryInterface
     {
-        $baseClassName = (new \ReflectionClass($className))->getShortName();
+        $baseClassName = (new ReflectionClass($className))->getShortName();
         $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
 
-        return new $factoryClass;
+        return new $factoryClass($this->faker);
     }
 }

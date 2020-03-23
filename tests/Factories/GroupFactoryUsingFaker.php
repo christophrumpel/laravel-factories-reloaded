@@ -27,6 +27,7 @@ class GroupFactoryUsingFaker extends BaseFactory implements FactoryInterface
         return [
             'name' => $faker->name,
             'size' => $faker->randomNumber(),
+            'mobile' => $faker->unique()->mobileNumber,
         ];
     }
 
