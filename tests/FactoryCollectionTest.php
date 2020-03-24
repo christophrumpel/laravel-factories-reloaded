@@ -16,15 +16,15 @@ class FactoryCollectionTest extends TestCase
     /** @test **/
     public function it_can_be_created_from_static_method()
     {
-    	$factoryCollection = FactoryCollectionTest::new();
+    	$factoryCollection = FactoryCollection::new();
 
-    	$this->assertInstanceOf(FactoryCollectionTest::class, $factoryCollection);
+    	$this->assertInstanceOf(FactoryCollection::class, $factoryCollection);
     }
 
     /** @test **/
     public function it_tells_if_default_factories_exist()
     {
-        $factoryCollection = FactoryCollectionTest::new();
+        $factoryCollection = FactoryCollection::new();
 
         $this->assertTrue($factoryCollection->defaultFactoryExists(Group::class));
     }
@@ -32,7 +32,7 @@ class FactoryCollectionTest extends TestCase
     /** @test **/
     public function it_tells_if_new_factories_class_already_exists()
     {
-        $factoryCollection = FactoryCollectionTest::new();
+        $factoryCollection = FactoryCollection::new();
 
         $this->assertTrue($factoryCollection->factoryClassExists(Group::class));
     }
@@ -41,7 +41,7 @@ class FactoryCollectionTest extends TestCase
     /** @test **/
     public function it_writes_factory_classes_to_files()
     {
-        FactoryCollectionTest::new()
+        FactoryCollection::new()
             ->writeFactories();
 
         $this->assertFileExists(__DIR__.'/../Factoreis/tmp/RecipeFactory.php');
@@ -52,7 +52,7 @@ class FactoryCollectionTest extends TestCase
     /** @test **/
     public function it_writes_factory_class_to_file_with_states()
     {
-        FactoryCollectionTest::new()
+        FactoryCollection::new()
             ->withDefaultFactoryStates()
             ->writeFactoryForModel(Recipe::class);
 
