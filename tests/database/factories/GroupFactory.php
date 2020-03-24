@@ -12,6 +12,3 @@ $factory->define(Group::class, function (Faker $faker) {
     ];
 });
 
-$factory->state(Group::class, 'some-state', [
-    'name' => 'cool',
-]);

@@ -36,12 +36,18 @@ class FactoryCommandTest extends TestCase
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
-                '<href=file://' . __DIR__ . '/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
-            ->expectsQuestion('You have defined states for Group in your old factory, do you want to import them to your new factory class?',
+                '<href=file://' . __DIR__ . '/Models/Recipe.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe</>')
+            ->expectsQuestion('You have defined states for Recipe in your old factory, do you want to import them to your new factory class?',
                 'Yes')
             ->assertExitCode(0);
 
-        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/GroupFactory.php'));
+        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/RecipeFactory.php'));
+
+        $generatedFactoryContent = file_get_contents(__DIR__ . '/Factories/tmp/RecipeFactory.php');
+
+        $this->assertTrue(Str::containsAll($generatedFactoryContent, [
+           'protected function withGroup('
+        ]));
     }
 
     /** @test * */
