@@ -1,0 +1,145 @@
+<?php
+
+namespace Christophrumpel\LaravelFactoriesReloaded;
+
+use Illuminate\Support\Facades\File;
+
+class FactoryFile
+{
+    protected string $model;
+
+    protected bool $hasLaravelFactory;
+
+    protected string $defaults = 'return [];';
+
+    protected bool $withDefaults = true;
+
+    protected string $states;
+
+    protected bool $withStates = true;
+
+    protected string $uses;
+
+    public function __construct(string $model)
+    {
+        $this->model = $model;
+        $this->parse();
+    }
+
+    public static function forModel(string $model): FactoryFile
+    {
+        return new static($model);
+    }
+
+    public function hasLaravelFactory(): bool
+    {
+        return $this->hasLaravelFactory;
+    }
+
+    public function hasLaravelStates(): bool
+    {
+        return $this->states !== '';
+    }
+
+    protected function parse(): void
+    {
+        $extractor = LaravelFactoryExtractor::from($this->model);
+
+        if ($this->hasLaravelFactory = $extractor->exists()) {
+            $this->defaults = $extractor->getDefinitions();
+            $this->states = $extractor->getStates();
+            $this->uses = $extractor->getUses();
+        }
+    }
+
+    public function exists(): bool
+    {
+        // todo: maybe use laravel's filesystem
+        return file_exists($this->getTargetClassPath());
+    }
+
+    public function write($force = false): void
+    {
+        if ($this->exists() && ! $force) {
+            return;
+        }
+
+        File::put($this->getTargetClassPath(), 'all the magic code');
+    }
+
+    public function getTargetClassPath(): string
+    {
+        return config('factories-reloaded.factories_path').DIRECTORY_SEPARATOR.class_basename($this->model).'Factory.php';
+    }
+
+    public function withoutStates(): FactoryFile
+    {
+        $this->withStates = false;
+
+        return $this;
+    }
+
+    public function render(): string
+    {
+        return $this->sortImports(str_replace([
+            '{{ uses }}',
+            '{{ dummyData }}',
+            '{{ states }}',
+        ], [
+            $this->uses,
+            $this->defaults,
+            $this->withStates ? $this->states : '',
+        ], $this->buildClass($this->model)));
+    }
+
+    protected function sortImports($stub)
+    {
+        if (preg_match('/(?P<imports>(?:use [^;]+;$\n?)+)/m', $stub, $match)) {
+            $imports = explode("\n", trim($match['imports']));
+
+            sort($imports);
+
+            return str_replace(trim($match['imports']), implode("\n", $imports), $stub);
+        }
+
+        return $stub;
+    }
+
+    protected function buildClass($name)
+    {
+        $stub = File::get($this->getStub());
+
+        return $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
+    }
+
+    protected function replaceNamespace(&$stub, $name)
+    {
+        $stub = str_replace([
+            'DummyNamespace',
+        ], [
+            config('factories-reloaded.factories_namespace'),
+        ], $stub);
+
+        return $this;
+    }
+
+    protected function replaceClass($stub, $name)
+    {
+        //formally parent
+        $class = str_replace($this->getNamespace($name).'\\', '', $name);
+        $stub = str_replace(['DummyClass', '{{ class }}', '{{class}}'], $class, $stub);
+
+        return str_replace(['DummyFullModelClass', 'DummyModelClass', 'DummyFactory'],
+            [$this->model, class_basename($this->model), class_basename($this->model) . 'Factory'], $stub);
+    }
+
+    protected function getNamespace($name)
+    {
+        return trim(implode('\\', array_slice(explode('\\', $name), 0, -1)), '\\');
+    }
+
+    protected function getStub()
+    {
+        return __DIR__ . '/stubs/make-factory.stub';
+    }
+}
