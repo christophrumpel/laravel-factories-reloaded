@@ -53,6 +53,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      */
     public function handle()
     {
+        // todo: if options are filled we need to overwrite temporally its corresponding config value
         $this->modelsPath = $this->option('models_path') ?? config('factories-reloaded.models_path');
         $this->factoriesPath = $this->option('factories_path') ?? config('factories-reloaded.factories_path');
         $this->factoriesNamespace = $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace');
