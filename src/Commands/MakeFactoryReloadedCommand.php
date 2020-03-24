@@ -118,7 +118,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__ . '/make-factory.stub';
+        return __DIR__ . '../stubs/make-factory.stub';
     }
 
     protected function getArguments()
