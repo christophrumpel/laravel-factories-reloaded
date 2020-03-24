@@ -35,7 +35,7 @@ class LaravelFactoryExtractorTest extends TestCase
         $extractor = LaravelFactoryExtractor::from($className);
 
         // method to parse the given class so that we have the data prepared
-        $extractor->parse();
+        $extractor->parseGivenClass();
 
         // check if the given data is correct
         $this->assertEquals([''], $extractor->getUses());
@@ -49,16 +49,15 @@ class LaravelFactoryExtractorTest extends TestCase
         $groupClass = $this->classFinder->getFullyQualifiedClassNameFromFile(__DIR__.'/Models/Group.php');
         $groupExtractor = LaravelFactoryExtractor::from($groupClass);
 
-        $groupExtractor->parse();
+        $groupExtractor->parseGivenClass();
 
-        // Probably the getStates method is enough to check for in the command?
-        $this->assertFalse($groupExtractor->getStates());
+        $this->assertFalse($groupExtractor->hasStates());
 
         $recipeClass = $this->classFinder->getFullyQualifiedClassNameFromFile(__DIR__.'/Models/Recipe.php');
         $recipeExtractor = LaravelFactoryExtractor::from($recipeClass);
 
-        $recipeExtractor->parse();
+        $recipeExtractor->parseGivenClass();
 
-        $this->assertTrue($recipeExtractor->getStates());
+        $this->assertTrue($recipeExtractor->hasStates());
     }
 }
