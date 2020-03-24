@@ -2,14 +2,14 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
-
+use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
+use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Ingredient;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
 use Illuminate\Support\Str;
 
 class FactoryFileTest extends TestCase
 {
-
     /** @test * */
     public function it_can_be_created_from_static_method(): void
     {
@@ -30,8 +30,10 @@ class FactoryFileTest extends TestCase
     public function it_tells_if_a_laravel_factory_has_states_defined(): void
     {
         $groupFactoryFile = FactoryFile::forModel(Group::class);
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
-        $this->assertTrue($groupFactoryFile->hasLaravelStates());
+        $this->assertFalse($groupFactoryFile->hasLaravelStates());
+        $this->assertTrue($recipeFactoryFile->hasLaravelStates());
     }
 
     /** @test * */
@@ -45,11 +47,22 @@ class FactoryFileTest extends TestCase
     /** @test * */
     public function it_writes_factory(): void
     {
-        $groupFactoryFile = FactoryFile::forModel(Group::class);
+        $ingredientFactoryFile = FactoryFile::forModel(Ingredient::class);
 
-        $groupFactoryFile->write();
+        $ingredientFactoryFile->write();
 
-        $this->assertFileExists(__DIR__ . '/../Factories/tmp/GroupFactory.php');
+        $this->assertFileExists($ingredientFactoryFile->getTargetClassPath());
+    }
+
+    /** @test * */
+    public function it_can_overwrite_an_existing_factory(): void
+    {
+        $ingredientFactoryFile = FactoryFile::forModel(Group::class);
+        $originalContent = file_get_contents($ingredientFactoryFile->getTargetClassPath());
+
+        $ingredientFactoryFile->write(true);
+
+        $this->assertNotSame($originalContent, file_get_contents($ingredientFactoryFile->getTargetClassPath()));
     }
 
     /** @test * */
@@ -57,17 +70,11 @@ class FactoryFileTest extends TestCase
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
-        $recipeFactoryFile->withoutStates();
+        $content = $recipeFactoryFile->withoutStates()->render();
 
-        $recipeFactoryFile->write();
-
-        $this->assertFileExists(__DIR__ . '/../Factories/tmp/RecipeFactory.php');
-
-        $generatedRecipeFactoryContent = file_get_contents(__DIR__ . '/../Factories/tmp/RecipeFactory.php');
-
-        $this->assertFalse(Str::containsAll($generatedRecipeFactoryContent, [
+        $this->assertFalse(Str::containsAll($content, [
             'public function withGroup',
-            'public function withDifferentGroup'
+            'public function withDifferentGroup',
         ]));
     }
 }
