@@ -15,7 +15,7 @@ class FactoryCommandTest extends TestCase
         $this->expectException(\LogicException::class);
 
         // Set to a path with no models given
-        Config::set('factories-reloaded.models_path', __DIR__ . '/');
+        Config::set('factories-reloaded.models_path', __DIR__.'/');
 
         $this->artisan('make:factory-reloaded');
     }
@@ -25,49 +25,47 @@ class FactoryCommandTest extends TestCase
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
-                '<href=file://' . __DIR__ . '/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
+                '<href=file://'.__DIR__.'/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
             ->assertExitCode(0);
 
-        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/GroupFactory.php'));
+        $this->assertTrue(File::exists(__DIR__.'/tmp/GroupFactory.php'));
     }
 
     /** @test */
-    public function it_asks_user_to_integrate_old_factory_states_if_given()
+    public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_agrees_to()
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
-                '<href=file://' . __DIR__ . '/Models/Recipe.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe</>')
-            ->expectsQuestion('You have defined states for Recipe in your old factory, do you want to import them to your new factory class?',
+                '<href=file://'.__DIR__.'/Models/Recipe.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe</>')
+            ->expectsQuestion('You have defined states for Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe in your old factory, do you want to import them to your new factory class?',
                 'Yes')
             ->assertExitCode(0);
 
-        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/RecipeFactory.php'));
+        $this->assertTrue(File::exists(__DIR__.'/tmp/RecipeFactory.php'));
 
-        $generatedFactoryContent = file_get_contents(__DIR__ . '/Factories/tmp/RecipeFactory.php');
+        $generatedFactoryContent = file_get_contents(__DIR__.'/tmp/RecipeFactory.php');
 
         $this->assertTrue(Str::containsAll($generatedFactoryContent, [
-           'protected function withGroup('
+            'public function withGroup(',
         ]));
     }
 
-    /** @test * */
-    public function it_replaces_the_the_dummy_code_in_the_new_factory_class()
+    /** @test */
+    public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_denies()
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
-                '<href=file://' . __DIR__ . '/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
+                '<href=file://'.__DIR__.'/Models/Recipe.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe</>')
+            ->expectsQuestion('You have defined states for Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe in your old factory, do you want to import them to your new factory class?',
+                'No')
             ->assertExitCode(0);
 
-        $generatedFactoryContent = file_get_contents(__DIR__ . '/Factories/tmp/GroupFactory.php');
+        $this->assertTrue(File::exists(__DIR__.'/tmp/RecipeFactory.php'));
 
-        $this->assertTrue(Str::containsAll($generatedFactoryContent, [
-            'GroupFactory',
-            'Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group',
-            'Group',
-            'create(',
-            'make(',
-            'someState(',
-            'getDefaults'
+        $generatedFactoryContent = file_get_contents(__DIR__.'/tmp/RecipeFactory.php');
+
+        $this->assertFalse(Str::containsAll($generatedFactoryContent, [
+            'public function withGroup(',
         ]));
     }
 
@@ -77,17 +75,19 @@ class FactoryCommandTest extends TestCase
         if (file_exists(__DIR__.'/Factories/tmp/IngredientFactory.php')) {
             unlink(__DIR__.'/Factories/tmp/IngredientFactory.php');
         }
-        $this->assertFalse(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+        $this->assertFalse(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
 
         $this->artisan('make:factory-reloaded Ingredient')
             ->assertExitCode(0);
 
-        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+        $this->assertTrue(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
     }
 
     /** @test */
     public function it_fails_if_factory_already_exists_without_force()
     {
+        $this->artisan('make:factory-reloaded Ingredient');
+
         $this->artisan('make:factory-reloaded Ingredient')
             ->expectsOutput('Factory already exists!');
     }
@@ -95,11 +95,11 @@ class FactoryCommandTest extends TestCase
     /** @test */
     public function it_succeeds_if_factory_already_exists_with_force()
     {
+        $this->artisan('make:factory-reloaded Ingredient');
+
         $this->artisan('make:factory-reloaded Ingredient --force')
             ->expectsOutput('Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\IngredientFactory created successfully.');
     }
-
-
 
     /** @test */
     public function it_accepts_config_as_options()
@@ -112,39 +112,33 @@ class FactoryCommandTest extends TestCase
         Config::set('factories-reloaded.factories_path', '');
         Config::set('factories-reloaded.factories_namespace', '');
 
-
-        $this->assertFalse(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+        $this->assertFalse(File::exists(__DIR__.'/Factories/tmp/IngredientFactory.php'));
 
         $this->artisan('make:factory-reloaded Ingredient
                 --models_path='.__DIR__.'/Models
-                --factories_path='.__DIR__.'/Factories/tmp
-                --factories_namespace=Christophrumpel\LaravelFactoriesReloaded\Tests\Factories
-             ')
+                --factories_path='.__DIR__.'/tmp
+                --factories_namespace=Christophrumpel\LaravelFactoriesReloaded\Tests\Factories')
             ->assertExitCode(0);
 
-        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+        $this->assertTrue(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
     }
 
     /** @test */
     public function it_can_find_models_in_passed_models_path()
     {
-        if (file_exists(__DIR__.'/Factories/tmp/IngredientFactory.php')) {
-            unlink(__DIR__.'/Factories/tmp/IngredientFactory.php');
-        }
-
         Config::set('factories-reloaded.models_path', '');
         Config::set('factories-reloaded.factories_path', '');
         Config::set('factories-reloaded.factories_namespace', '');
 
-        $this->assertFalse(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+        $this->assertFalse(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
 
         $this->artisan('make:factory-reloaded Ingredient
-                --models_path='.__DIR__.'/Models/Models
-                --factories_path='.__DIR__.'/Factories/tmp
+                --models_path='.__DIR__.'/Models
+                --factories_path='.__DIR__.'/tmp
                 --factories_namespace=Christophrumpel\LaravelFactoriesReloaded\Tests\Factories
              ')
             ->assertExitCode(0);
 
-        $this->assertTrue(File::exists(__DIR__ . '/Factories/tmp/IngredientFactory.php'));
+        $this->assertTrue(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
     }
 }

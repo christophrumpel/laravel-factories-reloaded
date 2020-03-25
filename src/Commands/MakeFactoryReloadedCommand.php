@@ -4,9 +4,11 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Commands;
 
 use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
+use Christophrumpel\LaravelFactoriesReloaded\FactoryCollection;
 use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoryExtractor;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
 
 class MakeFactoryReloadedCommand extends GeneratorCommand
 {
@@ -54,37 +56,55 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     public function handle()
     {
         // todo: if options are filled we need to overwrite temporally its corresponding config value
-        $this->modelsPath = $this->option('models_path') ?? config('factories-reloaded.models_path');
-        $this->factoriesPath = $this->option('factories_path') ?? config('factories-reloaded.factories_path');
-        $this->factoriesNamespace = $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace');
+        Config::set('factories-reloaded.models_path', $this->option('models_path') ?? config('factories-reloaded.models_path'));
+        Config::set('factories-reloaded.factories_path', $this->option('factories_path') ?? config('factories-reloaded.factories_path'));
+        Config::set('factories-reloaded.factories_namespace',  $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace'));
+
         if ($this->argument('model')) {
-            $class_finder = new ClassFinder(new Filesystem());
-            $this->fullClassName = $class_finder->getFullyQualifiedClassNameFromFile($this->modelsPath.'/'.$this->argument('model') . '.php');
+            $classFinder = new ClassFinder(new Filesystem());
+            $this->fullClassName = $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_path').'/'.$this->argument('model').'.php');
+        } else {
+            $this->fullClassName = $this->askToPickModels(config('factories-reloaded.models_path'));
         }
-        else {
-            $this->fullClassName = $this->askToPickModels($this->modelsPath);
+
+        $factoryCollection = FactoryCollection::fromModels();
+        $factoryFile = $factoryCollection->get($this->fullClassName);
+
+        if ($factoryFile->hasLaravelStates()) {
+            $withStates = $this->choice("You have defined states for $factoryFile->modelClass in your old factory, do you want to import them to your new factory class?",
+                [
+                    'Yes',
+                    'No',
+                ]);
+
+            if ($withStates === 'No') {
+                $factoryFile->withoutStates();
+            }
         }
 
         $this->className = class_basename($this->fullClassName);
 
         $this->info("Thank you! $this->className it is.");
-        $classPath = $this->factoriesPath . '/' . $this->className . 'Factory.php';
+        $classPath = config('factories-reloaded.factories_path').'/'.$this->className.'Factory.php';
 
         // First we will check to see if the class already exists. If it does, we don't want
         // to create the class and overwrite the user's code. So, we will bail out so the
         // code is untouched. Otherwise, we will continue generating this class' files.
-        if ((!$this->hasOption('force') || !$this->option('force')) && $this->files->exists($classPath)) {
-            $this->error($this->type . ' already exists!');
+        if (( ! $this->hasOption('force') || ! $this->option('force')) && $this->files->exists($classPath)) {
+            $this->error($this->type.' already exists!');
+
             return false;
         }
 
         // Next, we will generate the path to the location where this class' file should get
         // written. Then, we will build the class and make the proper replacements on the
         // stub files so that it gets the correctly formatted namespace and class name.
-        $this->makeDirectory($classPath);
+        //$this->makeDirectory($classPath);
 
-        $this->files->put($classPath, $this->replaceStub());
-        $this->info($this->factoriesNamespace . '\\' . $this->className . $this->type . ' created successfully.');
+        //$this->files->put($classPath, $this->replaceStub());
+        $factoryFile->write();
+
+        $this->info(config('factories-reloaded.factories_namespace').'\\'.$this->className.$this->type.' created successfully.');
     }
 
     protected function replaceStub(): string
@@ -119,7 +139,7 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__ . '../stubs/make-factory.stub';
+        return __DIR__.'/../stubs/make-factory.stub';
     }
 
     protected function getArguments()
@@ -130,8 +150,8 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     /**
      * Replace the class name for the given stub.
      *
-     * @param string $stub
-     * @param string $name
+     * @param  string  $stub
+     * @param  string  $name
      *
      * @return string
      */
@@ -139,15 +159,22 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
     {
         $stub = parent::replaceClass($stub, $name);
 
-        return str_replace(['DummyFullModelClass', 'DummyModelClass', 'DummyFactory'],
-            [$this->fullClassName, $this->className, $this->className . 'Factory'], $stub);
+        return str_replace([
+            'DummyFullModelClass',
+            'DummyModelClass',
+            'DummyFactory',
+        ], [
+                $this->fullClassName,
+                $this->className,
+                $this->className.'Factory',
+            ], $stub);
     }
 
     /**
      * Replace the namespace for the given stub.
      *
-     * @param string $stub
-     * @param string $name
+     * @param  string  $stub
+     * @param  string  $name
      *
      * @return $this
      */

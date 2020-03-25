@@ -40,6 +40,7 @@ class FactoryFileTest extends TestCase
     public function it_tells_if_a_reloaded_factory_class_already_exists(): void
     {
         $groupFactoryFile = FactoryFile::forModel(Group::class);
+        $groupFactoryFile->write();
 
         $this->assertTrue($groupFactoryFile->factoryReloadedExists());
     }
@@ -57,10 +58,11 @@ class FactoryFileTest extends TestCase
     /** @test * */
     public function it_can_overwrite_an_existing_factory(): void
     {
-        $ingredientFactoryFile = FactoryFile::forModel(Group::class);
+        $ingredientFactoryFile = FactoryFile::forModel(Recipe::class);
+        $ingredientFactoryFile->write();
         $originalContent = file_get_contents($ingredientFactoryFile->getTargetClassPath());
 
-        $ingredientFactoryFile->write(true);
+        $ingredientFactoryFile->withoutStates()->write(true);
 
         $this->assertNotSame($originalContent, file_get_contents($ingredientFactoryFile->getTargetClassPath()));
     }

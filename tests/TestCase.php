@@ -6,6 +6,7 @@ use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProv
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -21,6 +22,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
             'Christophrumpel\LaravelFactoriesReloaded\Tests\Factories');
 
         File::copyDirectory(__DIR__.'/Factories', Config::get('factories-reloaded.factories_path'));
+
+        File::cleanDirectory(__DIR__.'/tmp');
 
         $this->loadLaravelMigrations();
         $this->loadMigrationsFrom(__DIR__.'/database/migrations');

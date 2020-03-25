@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 
 class FactoryFile
 {
-    protected string $model;
+    public string $modelClass;
 
     protected bool $hasLaravelFactory;
 
@@ -14,21 +14,21 @@ class FactoryFile
 
     protected bool $withDefaults = true;
 
-    protected string $states;
+    protected string $states = '';
 
     protected bool $withStates = true;
 
-    protected string $uses;
+    protected string $uses = '';
 
-    public function __construct(string $model)
+    public function __construct(string $modelClass)
     {
-        $this->model = $model;
+        $this->modelClass = $modelClass;
         $this->parse();
     }
 
-    public static function forModel(string $model): FactoryFile
+    public static function forModel(string $modelClass): FactoryFile
     {
-        return new static($model);
+        return new static($modelClass);
     }
 
     public function defaultFactoryExists(): bool
@@ -43,7 +43,7 @@ class FactoryFile
 
     protected function parse(): void
     {
-        $extractor = LaravelFactoryExtractor::from($this->model);
+        $extractor = LaravelFactoryExtractor::from($this->modelClass);
 
         if ($this->hasLaravelFactory = $extractor->exists()) {
             $this->defaults = $extractor->getDefinitions();
@@ -64,12 +64,12 @@ class FactoryFile
             return;
         }
 
-        File::put($this->getTargetClassPath(), 'all the magic code');
+        File::put($this->getTargetClassPath(), $this->render());
     }
 
     public function getTargetClassPath(): string
     {
-        return config('factories-reloaded.factories_path').DIRECTORY_SEPARATOR.class_basename($this->model).'Factory.php';
+        return config('factories-reloaded.factories_path').DIRECTORY_SEPARATOR.class_basename($this->modelClass).'Factory.php';
     }
 
     public function withoutStates(): FactoryFile
@@ -89,7 +89,7 @@ class FactoryFile
             $this->uses,
             $this->defaults,
             $this->withStates ? $this->states : '',
-        ], $this->buildClass($this->model)));
+        ], $this->buildClass($this->modelClass)));
     }
 
     protected function sortImports($stub)
@@ -130,7 +130,7 @@ class FactoryFile
         $stub = str_replace(['DummyClass', '{{ class }}', '{{class}}'], $class, $stub);
 
         return str_replace(['DummyFullModelClass', 'DummyModelClass', 'DummyFactory'],
-            [$this->model, class_basename($this->model), class_basename($this->model) . 'Factory'], $stub);
+            [$this->modelClass, class_basename($this->modelClass), class_basename($this->modelClass) . 'Factory'], $stub);
     }
 
     protected function getNamespace($name)
