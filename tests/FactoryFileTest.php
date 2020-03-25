@@ -23,7 +23,7 @@ class FactoryFileTest extends TestCase
     {
         $groupFactoryFile = FactoryFile::forModel(Group::class);
 
-        $this->assertTrue($groupFactoryFile->hasLaravelFactory());
+        $this->assertTrue($groupFactoryFile->defaultFactoryExists());
     }
 
     /** @test * */
@@ -41,7 +41,7 @@ class FactoryFileTest extends TestCase
     {
         $groupFactoryFile = FactoryFile::forModel(Group::class);
 
-        $this->assertTrue($groupFactoryFile->exists());
+        $this->assertTrue($groupFactoryFile->factoryReloadedExists());
     }
 
     /** @test * */
@@ -63,6 +63,19 @@ class FactoryFileTest extends TestCase
         $ingredientFactoryFile->write(true);
 
         $this->assertNotSame($originalContent, file_get_contents($ingredientFactoryFile->getTargetClassPath()));
+    }
+
+    /** @test * */
+    public function it_can_add_default_states(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
+
+        $this->assertTrue(Str::containsAll($content, [
+            'public function withGroup',
+            'public function withDifferentGroup',
+        ]));
     }
 
     /** @test * */

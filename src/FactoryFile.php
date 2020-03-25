@@ -31,7 +31,7 @@ class FactoryFile
         return new static($model);
     }
 
-    public function hasLaravelFactory(): bool
+    public function defaultFactoryExists(): bool
     {
         return $this->hasLaravelFactory;
     }
@@ -52,7 +52,7 @@ class FactoryFile
         }
     }
 
-    public function exists(): bool
+    public function factoryReloadedExists(): bool
     {
         // todo: maybe use laravel's filesystem
         return file_exists($this->getTargetClassPath());
@@ -60,7 +60,7 @@ class FactoryFile
 
     public function write($force = false): void
     {
-        if ($this->exists() && ! $force) {
+        if ($this->factoryReloadedExists() && ! $force) {
             return;
         }
 
