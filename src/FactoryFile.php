@@ -21,7 +21,13 @@ class FactoryFile
     public function __construct(string $modelClass)
     {
         $this->modelClass = $modelClass;
-        $this->parse();
+        $extractor = LaravelFactoryExtractor::from($this->modelClass);
+
+        if ($this->hasLaravelFactory = $extractor->exists()) {
+            $this->defaults = $extractor->getDefinitions();
+            $this->states = $extractor->getStates();
+            $this->uses = $extractor->getUses();
+        };
     }
 
     public static function forModel(string $modelClass): FactoryFile
@@ -37,17 +43,6 @@ class FactoryFile
     public function hasLaravelStates(): bool
     {
         return $this->states !== '';
-    }
-
-    protected function parse(): void
-    {
-        $extractor = LaravelFactoryExtractor::from($this->modelClass);
-
-        if ($this->hasLaravelFactory = $extractor->exists()) {
-            $this->defaults = $extractor->getDefinitions();
-            $this->states = $extractor->getStates();
-            $this->uses = $extractor->getUses();
-        }
     }
 
     public function factoryReloadedExists(): bool
