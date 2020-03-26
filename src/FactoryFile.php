@@ -72,6 +72,16 @@ class FactoryFile
         return config('factories-reloaded.factories_path').DIRECTORY_SEPARATOR.class_basename($this->modelClass).'Factory.php';
     }
 
+    public function getTargetClassName(): string
+    {
+        return class_basename($this->modelClass).'Factory';
+    }
+
+    public function getTargetClassFullName(): string
+    {
+        return config('factories-reloaded.factories_namespace').'\\'.class_basename($this->modelClass).'Factory.php';
+    }
+
     public function withoutStates(): FactoryFile
     {
         $this->withStates = false;

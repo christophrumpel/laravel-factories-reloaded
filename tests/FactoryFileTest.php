@@ -92,4 +92,25 @@ class FactoryFileTest extends TestCase
             'public function withDifferentGroup',
         ]));
     }
+
+    /** @test **/
+    public function it_gives_factory_path()
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+        $this->assertEquals('/Users/christophrumpel/Sites/Packages/laravel-factories-reloaded/tests/tmp/RecipeFactory.php', $recipeFactoryFile->getTargetClassPath());
+    }
+
+    /** @test **/
+    public function it_gives_factory_class_full_name()
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+        $this->assertEquals('Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\RecipeFactory.php', $recipeFactoryFile->getTargetClassFullName());
+    }
+
+    /** @test **/
+    public function it_gives_factory_class_name()
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+        $this->assertEquals('RecipeFactory', $recipeFactoryFile->getTargetClassName());
+    }
 }

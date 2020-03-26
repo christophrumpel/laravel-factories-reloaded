@@ -20,18 +20,22 @@ class FactoryCollection
         $this->factoryFiles = collect();
     }
 
-    public static function fromModels(): self
+    public static function fromModels(array $specificModels = []): self
     {
         $factoryCollection = new static();
-        $factoryCollection->buildFromModels();
+        $factoryCollection->buildFromModels($specificModels);
 
         return $factoryCollection;
     }
 
-    private function buildFromModels(): void
+    private function buildFromModels(array $specificModels = []): void
     {
         $classFinder = new ClassFinder(new Filesystem());
-        $models = $classFinder->getModelsInDirectory(config('factories-reloaded.models_path'));
+        $models = empty($specificModels) ? $classFinder->getModelsInDirectory(config('factories-reloaded.models_path')) : collect($specificModels)->transform(function (
+            $modelClass
+        ) {
+            return ['name' => $modelClass];
+        });
 
         $this->factoryFiles = collect($models)->transform(function (array $modelData) {
             return FactoryFile::forModel($modelData['name']);
@@ -72,8 +76,16 @@ class FactoryCollection
 
     public function get(string $modelClass): FactoryFile
     {
-        return $this->factoryFiles->filter(function(FactoryFile $factoryFile) use ($modelClass) {
+        return $this->factoryFiles->filter(function (FactoryFile $factoryFile) use ($modelClass) {
             return $modelClass === $factoryFile->modelClass;
-        })->first();
+        })
+            ->first();
+    }
+
+    public function atLeastOneFactoryReloadedExists(): bool
+    {
+        return (bool) $this->factoryFiles->filter(function (FactoryFile $factoryFile) {
+            return $factoryFile->factoryReloadedExists();
+        })->count();
     }
 }

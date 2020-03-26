@@ -33,6 +33,17 @@ class FactoryCollectionTest extends TestCase
     }
 
     /** @test * */
+    public function it_returns_collection_of_factory_files_for_chosen_models()
+    {
+        $factoryCollection = FactoryCollection::fromModels([Group::class, Ingredient::class]);
+
+        $this->assertEqualsCanonicalizing($factoryCollection->all()->map->modelClass->toArray(), [
+            Group::class,
+            Ingredient::class,
+        ]);
+    }
+
+    /** @test * */
     public function it_writes_factory_classes_to_files()
     {
         FactoryCollection::fromModels()
