@@ -12,8 +12,6 @@ class FactoryFile
 
     protected string $defaults = 'return [];';
 
-    protected bool $withDefaults = true;
-
     protected string $states = '';
 
     protected bool $withStates = true;
