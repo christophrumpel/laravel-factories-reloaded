@@ -9,11 +9,9 @@ use Illuminate\Support\Collection;
 class FactoryCollection
 {
 
-    private Collection $factoryFiles;
+    protected Collection $factoryFiles;
 
-    private bool $withoutStates = false;
-
-    private bool $overwrite = false;
+    protected bool $overwrite = false;
 
     public function __construct()
     {
@@ -28,18 +26,11 @@ class FactoryCollection
         return $factoryCollection;
     }
 
-    private function buildFromModels(array $specificModels = []): void
+    public static function fromCollection(Collection $collection): self
     {
-        $classFinder = new ClassFinder(new Filesystem());
-        $models = empty($specificModels) ? $classFinder->getModelsInDirectory(config('factories-reloaded.models_path')) : collect($specificModels)->transform(function (
-            $modelClass
-        ) {
-            return ['name' => $modelClass];
-        });
-
-        $this->factoryFiles = collect($models)->transform(function (array $modelData) {
-            return FactoryFile::forModel($modelData['name']);
-        });
+        return static::fromModels($collection->transform(function ($item) {
+            return $item['name'];
+        })->toArray());
     }
 
     public function all(): Collection
@@ -49,25 +40,19 @@ class FactoryCollection
 
     public function write(): self
     {
-        $this->factoryFiles->each(function (FactoryFile $factoryFile) {
-            if ($this->withoutStates) {
-                $factoryFile->withoutStates();
-            }
-
-            $factoryFile->write($this->overwrite);
-        });
+        $this->factoryFiles->each->write($this->overwrite);
 
         return $this;
     }
 
     public function withoutStates(): self
     {
-        $this->withoutStates = true;
+        $this->factoryFiles->each->withoutStates();
 
         return $this;
     }
 
-    public function overwrite()
+    public function overwrite(): self
     {
         $this->overwrite = true;
 
@@ -76,16 +61,29 @@ class FactoryCollection
 
     public function get(string $modelClass): FactoryFile
     {
-        return $this->factoryFiles->filter(function (FactoryFile $factoryFile) use ($modelClass) {
-            return $modelClass === $factoryFile->modelClass;
-        })
-            ->first();
+        return $this->factoryFiles->firstWhere('modelClass',$modelClass);
     }
 
     public function atLeastOneFactoryReloadedExists(): bool
     {
-        return (bool) $this->factoryFiles->filter(function (FactoryFile $factoryFile) {
-            return $factoryFile->factoryReloadedExists();
-        })->count();
+        return $this->factoryFiles->filter->factoryReloadedExists()->isNotEmpty();
+    }
+
+    public function hasLaravelStates(): bool
+    {
+        return $this->factoryFiles->filter->hasLaravelStates()->isNotEmpty();
+    }
+
+    protected function buildFromModels(array $models = []): void
+    {
+        $this->factoryFiles = collect($models)->whenEmpty(function () {
+            $classFinder = new ClassFinder(new Filesystem());
+
+            return $classFinder->getModelsInDirectory(config('factories-reloaded.models_path'))->transform(function ($item) {
+                return $item['name'];
+            });
+        })->transform(function (string $model) {
+            return FactoryFile::forModel($model);
+        });
     }
 }
