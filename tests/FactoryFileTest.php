@@ -94,21 +94,21 @@ class FactoryFileTest extends TestCase
     }
 
     /** @test **/
-    public function it_gives_factory_path()
+    public function it_gives_factory_path(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
         $this->assertEquals(__DIR__.'/tmp/RecipeFactory.php', $recipeFactoryFile->getTargetClassPath());
     }
 
     /** @test **/
-    public function it_gives_factory_class_full_name()
+    public function it_gives_factory_class_full_name(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
         $this->assertEquals('Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\RecipeFactory.php', $recipeFactoryFile->getTargetClassFullName());
     }
 
     /** @test **/
-    public function it_gives_factory_class_name()
+    public function it_gives_factory_class_name(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
         $this->assertEquals('RecipeFactory', $recipeFactoryFile->getTargetClassName());
