@@ -7,6 +7,7 @@ use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Ingredient;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
 use Illuminate\Support\Str;
+use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\RecipeFactory;
 
 class FactoryFileTest extends TestCase
 {
@@ -104,7 +105,7 @@ class FactoryFileTest extends TestCase
     public function it_gives_factory_class_full_name(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
-        $this->assertEquals('Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\RecipeFactory.php', $recipeFactoryFile->getTargetClassFullName());
+        $this->assertEquals(RecipeFactory::class, $recipeFactoryFile->getTargetClassFullName());
     }
 
     /** @test **/
