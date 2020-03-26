@@ -24,6 +24,7 @@ abstract class BaseFactory implements FactoryInterface
         $this->faker = $faker;
     }
 
+    /** @return static */
     public static function new(): self
     {
         $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
