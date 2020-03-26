@@ -2,9 +2,9 @@
 
 namespace DummyNamespace;
 
+use Faker\Generator as Faker;
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
 use DummyFullModelClass;
-use Faker\Generator as Faker;
 {{ uses }}
 
 class DummyFactory extends BaseFactory
