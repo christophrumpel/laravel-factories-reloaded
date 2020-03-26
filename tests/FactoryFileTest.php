@@ -97,7 +97,7 @@ class FactoryFileTest extends TestCase
     public function it_gives_factory_path()
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
-        $this->assertEquals('/Users/christophrumpel/Sites/Packages/laravel-factories-reloaded/tests/tmp/RecipeFactory.php', $recipeFactoryFile->getTargetClassPath());
+        $this->assertEquals(__DIR__.'/tmp/RecipeFactory.php', $recipeFactoryFile->getTargetClassPath());
     }
 
     /** @test **/
