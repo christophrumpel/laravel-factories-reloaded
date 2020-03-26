@@ -7,7 +7,6 @@ use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryCollection;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use Illuminate\Console\Command;
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 
@@ -35,8 +34,7 @@ class MakeFactoryReloadedCommand extends Command
      */
     protected $description = 'Create new factory reloaded class.';
 
-    /** @var string */
-    protected $type = 'Factory';
+    protected string $type = 'Factory';
 
     private string $fullClassName;
 
@@ -92,7 +90,7 @@ class MakeFactoryReloadedCommand extends Command
         // to create the class and overwrite the user's code. So, we will bail out so the
         // code is untouched. Otherwise, we will continue generating this class' files.
         if (( ! $this->hasOption('force') || ! $this->option('force')) && $factoryCollection->atLeastOneFactoryReloadedExists()) {
-            $shouldOverwrite = $this->choice("One of the factories already exists. Do you want to overwrite them?", [
+            $shouldOverwrite = $this->choice('One of the factories already exists. Do you want to overwrite them?', [
                 'Yes',
                 'No',
             ]);

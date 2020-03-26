@@ -61,7 +61,7 @@ class FactoryCollection
 
     public function get(string $modelClass): FactoryFile
     {
-        return $this->factoryFiles->firstWhere('modelClass',$modelClass);
+         return $this->factoryFiles->firstWhere('modelClass', $modelClass);
     }
 
     public function atLeastOneFactoryReloadedExists(): bool
