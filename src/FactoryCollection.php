@@ -38,11 +38,11 @@ class FactoryCollection
         return $this->factoryFiles;
     }
 
-    public function write(): self
+    public function write(): Collection
     {
-        $this->factoryFiles->each->write($this->overwrite);
-
-        return $this;
+        return $this->factoryFiles->filter(function(FactoryFile $factoryFile){
+            return $factoryFile->write($this->overwrite);
+        });
     }
 
     public function withoutStates(): self

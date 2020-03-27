@@ -46,13 +46,15 @@ class FactoryFile
         return $this->states !== '';
     }
 
-    public function write($force = false): void
+    public function write($force = false): bool
     {
         if (! $force && $this->factoryReloadedExists()) {
-            return;
+            return false;
         }
 
         File::put($this->getTargetClassPath(), $this->render());
+
+        return true;
     }
 
     public function factoryReloadedExists(): bool

@@ -100,7 +100,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_asks_if_factory_already_exists_without_force()
+    public function it_asks_user_to_overwrite_which_he_agrees_to()
     {
         $factoryPath = __DIR__.'/tmp/GroupFactory.php';
 
@@ -117,6 +117,27 @@ class FactoryCommandTest extends TestCase
         $this->assertFalse(Str::containsAll($generatedFactoryContent, [
             'test',
         ]));
+    }
+
+    /** @test */
+    public function it_asks_user_to_overwrite_which_she_denies()
+    {
+        $factoryPath = __DIR__.'/tmp/GroupFactory.php';
+
+        File::put($factoryPath,'test');
+        $this->assertTrue(File::exists($factoryPath));
+        $generatedFactoryContentBefore = file_get_contents($factoryPath);
+
+
+        $this->artisan('make:factory-reloaded Group')
+            ->expectsQuestion('This factory class already exists. Do you want to overwrite it?',
+                'No')
+            ->expectsOutput('No Files created.')
+            ->assertExitCode(0);
+
+        $generatedFactoryContentAfter = file_get_contents($factoryPath);
+
+        $this->assertEquals($generatedFactoryContentBefore, $generatedFactoryContentAfter);
     }
 
     /** @test */

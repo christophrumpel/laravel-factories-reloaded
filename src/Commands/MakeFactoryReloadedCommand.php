@@ -72,9 +72,12 @@ class MakeFactoryReloadedCommand extends Command
             File::makeDirectory(Config::get('factories-reloaded.factories_path'));
         }
 
-        $factoryCollection->write();
+        $writtenFiles = $factoryCollection->write();
+        if($writtenFiles->isNotEmpty()) {
+            return $this->showSuccessMessage($factoryCollection);
+        }
 
-        $this->showSuccessMessage($factoryCollection);
+        return $this->info('No Files created.');
     }
 
     protected function getModelsToCreate(): Collection
@@ -105,8 +108,8 @@ class MakeFactoryReloadedCommand extends Command
             $message = $factoryCollection->all()->count() > 1 ? 'You have defined states in your old factories, do you want to import them to your new factory classes?': 'You have defined states in your old factory, do you want to import them to your new factory class?';
             $withStates = $this->choice($message,
                 [
-                    'Yes',
                     'No',
+                    'Yes',
                 ]);
 
             if ($withStates === 'No') {
@@ -121,8 +124,8 @@ class MakeFactoryReloadedCommand extends Command
             $message = $factoryCollection->all()->count() > 1 ? 'One of the factories already exists. Do you want to overwrite them?': 'This factory class already exists. Do you want to overwrite it?';
 
             $shouldOverwrite = $this->choice($message, [
-                'Yes',
                 'No',
+                'Yes',
             ]);
 
             if ($shouldOverwrite === 'Yes') {
