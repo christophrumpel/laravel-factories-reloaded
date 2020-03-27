@@ -8,6 +8,7 @@ use Christophrumpel\LaravelFactoriesReloaded\FactoryCollection;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 
@@ -54,28 +55,15 @@ class MakeFactoryReloadedCommand extends Command
      */
     public function handle()
     {
-        Config::set('factories-reloaded.models_path',
-            $this->option('models_path') ?? config('factories-reloaded.models_path'));
-        Config::set('factories-reloaded.factories_path',
-            $this->option('factories_path') ?? config('factories-reloaded.factories_path'));
-        Config::set('factories-reloaded.factories_namespace',
-            $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace'));
+        $this->overWriteConfigDependingOnGivenOptions();
 
-        if ($this->argument('model')) {
-            $classFinder = new ClassFinder(new Filesystem());
-            $modelsToCreate = collect([['name' => $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_path').'/'.$this->argument('model').'.php')]]);
-        } else {
-            $modelsToCreate = $this->askToPickModels(config('factories-reloaded.models_path'));
-        }
-
-        $factoryCollection = FactoryCollection::fromCollection($modelsToCreate);
+        $factoryCollection = FactoryCollection::fromCollection($this->getModelsToCreate());
 
         if ($this->option('force')) {
             $factoryCollection->overwrite();
         }
 
-        $laravelStatesGiven = $factoryCollection->hasLaravelStates();
-        if ($laravelStatesGiven) {
+        if ($factoryCollection->hasLaravelStates()) {
             $withStates = $this->choice('You have defined states in your old factory, do you want to import them to your new factory class?',
                 [
                     'Yes',
@@ -87,24 +75,21 @@ class MakeFactoryReloadedCommand extends Command
             }
         }
 
-        // First we will check to see if the class already exists. If it does, we don't want
-        // to create the class and overwrite the user's code. So, we will bail out so the
-        // code is untouched. Otherwise, we will continue generating this class' files.
         if (( ! $this->hasOption('force') || ! $this->option('force')) && $factoryCollection->atLeastOneFactoryReloadedExists()) {
             $shouldOverwrite = $this->choice('One of the factories already exists. Do you want to overwrite them?', [
                 'Yes',
                 'No',
             ]);
+
             if ($shouldOverwrite === 'Yes') {
                 $factoryCollection->overwrite();
             }
         }
-        // Next, we will generate the path to the location where this class' file should get
-        // written. Then, we will build the class and make the proper replacements on the
-        // stub files so that it gets the correctly formatted namespace and class name.
-        if(!File::exists(Config::get('factories-reloaded.factories_path'))){
+
+        if ( ! File::exists(Config::get('factories-reloaded.factories_path'))) {
             File::makeDirectory(Config::get('factories-reloaded.factories_path'));
         }
+
         $factoryCollection->write();
 
         if ($factoryCollection->all()
@@ -120,5 +105,27 @@ class MakeFactoryReloadedCommand extends Command
                 ->implode(', ');
             $this->info($factoryNames.' were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.');
         }
+    }
+
+    protected function getModelsToCreate(): Collection
+    {
+        if ($this->argument('model')) {
+            $classFinder = new ClassFinder(new Filesystem());
+
+            return $modelsToCreate = collect([['name' => $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_path').'/'.$this->argument('model').'.php')]]);
+        }
+
+        return $modelsToCreate = $this->askToPickModels(config('factories-reloaded.models_path'));
+
+    }
+
+    protected function overWriteConfigDependingOnGivenOptions(): void
+    {
+        Config::set('factories-reloaded.models_path',
+            $this->option('models_path') ?? config('factories-reloaded.models_path'));
+        Config::set('factories-reloaded.factories_path',
+            $this->option('factories_path') ?? config('factories-reloaded.factories_path'));
+        Config::set('factories-reloaded.factories_namespace',
+            $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace'));
     }
 }
