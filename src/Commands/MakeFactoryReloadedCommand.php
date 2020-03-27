@@ -11,6 +11,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MakeFactoryReloadedCommand extends Command
 {
@@ -63,28 +64,9 @@ class MakeFactoryReloadedCommand extends Command
             $factoryCollection->overwrite();
         }
 
-        if ($factoryCollection->hasLaravelStates()) {
-            $withStates = $this->choice('You have defined states in your old factory, do you want to import them to your new factory class?',
-                [
-                    'Yes',
-                    'No',
-                ]);
+        $this->askAboutLaravelStatesIfGiven($factoryCollection);
 
-            if ($withStates === 'No') {
-                $factoryCollection->withoutStates();
-            }
-        }
-
-        if (( ! $this->hasOption('force') || ! $this->option('force')) && $factoryCollection->atLeastOneFactoryReloadedExists()) {
-            $shouldOverwrite = $this->choice('One of the factories already exists. Do you want to overwrite them?', [
-                'Yes',
-                'No',
-            ]);
-
-            if ($shouldOverwrite === 'Yes') {
-                $factoryCollection->overwrite();
-            }
-        }
+        $this->aksAboutOverwritingFactoriesIfNeeded($factoryCollection);
 
         if ( ! File::exists(Config::get('factories-reloaded.factories_path'))) {
             File::makeDirectory(Config::get('factories-reloaded.factories_path'));
@@ -92,19 +74,7 @@ class MakeFactoryReloadedCommand extends Command
 
         $factoryCollection->write();
 
-        if ($factoryCollection->all()
-                ->count() === 1) {
-            $this->info($factoryCollection->all()
-                    ->first()
-                    ->getTargetClassFullName().' created successfully.');
-        } else {
-            $factoryNames = $factoryCollection->all()
-                ->map(function (FactoryFile $factoryFile) {
-                    return $factoryFile->getTargetClassName();
-                })
-                ->implode(', ');
-            $this->info($factoryNames.' were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.');
-        }
+        $this->showSuccessMessage($factoryCollection);
     }
 
     protected function getModelsToCreate(): Collection
@@ -127,5 +97,55 @@ class MakeFactoryReloadedCommand extends Command
             $this->option('factories_path') ?? config('factories-reloaded.factories_path'));
         Config::set('factories-reloaded.factories_namespace',
             $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace'));
+    }
+
+    protected function askAboutLaravelStatesIfGiven(FactoryCollection $factoryCollection)
+    {
+        if ($factoryCollection->hasLaravelStates()) {
+            $message = $factoryCollection->all()->count() > 1 ? 'You have defined states in your old factories, do you want to import them to your new factory classes?': 'You have defined states in your old factory, do you want to import them to your new factory class?';
+            $withStates = $this->choice($message,
+                [
+                    'Yes',
+                    'No',
+                ]);
+
+            if ($withStates === 'No') {
+                $factoryCollection->withoutStates();
+            }
+        }
+    }
+
+    protected function aksAboutOverwritingFactoriesIfNeeded(FactoryCollection $factoryCollection)
+    {
+        if (( ! $this->hasOption('force') || ! $this->option('force')) && $factoryCollection->atLeastOneFactoryReloadedExists()) {
+            $message = $factoryCollection->all()->count() > 1 ? 'One of the factories already exists. Do you want to overwrite them?': 'This factory class already exists. Do you want to overwrite it?';
+
+            $shouldOverwrite = $this->choice($message, [
+                'Yes',
+                'No',
+            ]);
+
+            if ($shouldOverwrite === 'Yes') {
+                $factoryCollection->overwrite();
+            }
+        }
+
+    }
+
+    protected function showSuccessMessage(FactoryCollection $factoryCollection): void
+    {
+        if ($factoryCollection->all()
+                ->count() === 1) {
+            $this->info($factoryCollection->all()
+                    ->first()
+                    ->getTargetClassFullName().' created successfully.');
+        } else {
+            $factoryNames = $factoryCollection->all()
+                ->map(function (FactoryFile $factoryFile) {
+                    return $factoryFile->getTargetClassName();
+                })
+                ->implode(', ');
+            $this->info($factoryNames.' were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.');
+        }
     }
 }

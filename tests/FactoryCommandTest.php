@@ -41,7 +41,7 @@ class FactoryCommandTest extends TestCase
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
                 'All')
-            ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?', 'No')
+            ->expectsQuestion('You have defined states in your old factories, do you want to import them to your new factory classes?', 'No')
             ->expectsOutput('GroupFactory, IngredientFactory, RecipeFactory were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.')
             ->assertExitCode(0);
 
@@ -108,7 +108,7 @@ class FactoryCommandTest extends TestCase
         $this->assertTrue(File::exists($factoryPath));
 
         $this->artisan('make:factory-reloaded Group')
-            ->expectsQuestion('One of the factories already exists. Do you want to overwrite them?',
+            ->expectsQuestion('This factory class already exists. Do you want to overwrite it?',
                 'Yes')
             ->assertExitCode(0);
 
