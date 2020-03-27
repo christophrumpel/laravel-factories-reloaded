@@ -7,7 +7,7 @@ use Christophrumpel\LaravelFactoriesReloaded\FactoryInterface;
 use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
 use Faker\Generator;
 
-class GroupFactoryUsingFaker extends BaseFactory implements FactoryInterface
+class GroupFactoryUsingFaker extends BaseFactory
 {
 
     protected string $modelClass = Group::class;
@@ -22,7 +22,7 @@ class GroupFactoryUsingFaker extends BaseFactory implements FactoryInterface
         return parent::build($extra, 'make');
     }
 
-    public function getData(Generator $faker): array
+    public function getDefaults(Generator $faker): array
     {
         return [
             'name' => $faker->name,

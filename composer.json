@@ -1,6 +1,6 @@
 {
     "name": "christophrumpel/laravel-factories-reloaded",
-    "description": "This package sits on top of Laravel factories and provides you wtih dedicated factory classes for every model.",
+    "description": "This package sits on top of Laravel factories and provides you with dedicated factory classes for every model.",
     "keywords": [
         "christophrumpel",
         "laravel-factories-reloaded"
@@ -19,7 +19,7 @@
         "php": "^7.4",
         "illuminate/support": "^6.0|^7.0",
         "laravel/framework": "^6.0|^7.0",
-        "christophrumpel/laravel-command-file-picker": "^0.0.8",
+        "christophrumpel/laravel-command-file-picker": "^0.0.10",
         "nikic/php-parser": "^4.3"
     },
     "require-dev": {
@@ -40,7 +40,6 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
-
     },
     "config": {
         "sort-packages": true

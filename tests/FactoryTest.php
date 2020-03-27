@@ -17,14 +17,14 @@ class FactoryTest extends TestCase
     use RefreshDatabase;
 
     /** @test * */
-    public function it_gives_you_a_new_factory_instance()
+    public function it_gives_you_a_new_factory_instance(): void
     {
         $this->assertInstanceOf(RecipeFactory::class, RecipeFactory::new());
         $this->assertInstanceOf(GroupFactory::class, GroupFactory::new());
     }
 
     /** @test * */
-    public function it_creates_you_a_new_factory_model_instance()
+    public function it_creates_you_a_new_factory_model_instance(): void
     {
         $this->assertInstanceOf(Recipe::class, RecipeFactory::new()
             ->create());
@@ -39,7 +39,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_makes_you_a_new_factory_model_instance_without_storing_it()
+    public function it_makes_you_a_new_factory_model_instance_without_storing_it(): void
     {
         $this->assertInstanceOf(Recipe::class, RecipeFactory::new()
             ->make());
@@ -54,7 +54,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_gives_you_a_collection_of_created_factory_model_instances()
+    public function it_gives_you_a_collection_of_created_factory_model_instances(): void
     {
         $this->assertInstanceOf(Collection::class, RecipeFactory::new()
             ->times(3)
@@ -74,7 +74,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function collection_of_factory_models_has_unique_values()
+    public function collection_of_factory_models_has_unique_values(): void
     {
         $recipes = RecipeFactory::new()
             ->times(3)
@@ -85,7 +85,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_gives_you_a_collection_of_made_factory_model_instances()
+    public function it_gives_you_a_collection_of_made_factory_model_instances(): void
     {
         $this->assertInstanceOf(Collection::class, RecipeFactory::new()
             ->times(3)
@@ -105,7 +105,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_uses_default_model_data()
+    public function it_uses_default_model_data(): void
     {
         $this->assertEquals('Our family lasagne recipe.', RecipeFactory::new()
             ->create()->description);
@@ -117,7 +117,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_lets_you_overwrite_default_data()
+    public function it_lets_you_overwrite_default_data(): void
     {
         $this->assertEquals('Pizza', RecipeFactory::new()
             ->create(['name' => 'Pizza'])->name);
@@ -127,7 +127,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_lets_you_use_faker_for_defining_data()
+    public function it_lets_you_use_faker_for_defining_data(): void
     {
         // Set local to en_SG so that we can test that also local faker data is being used
         // Faker unique mobile number exists for en_SG
@@ -140,7 +140,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_lets_you_add_a_related_model()
+    public function it_lets_you_add_a_related_model(): void
     {
         $group = GroupFactory::new()
             ->with(Recipe::class, 'recipes')
@@ -151,7 +151,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_lets_you_add_multiple_related_models()
+    public function it_lets_you_add_multiple_related_models(): void
     {
         $group = GroupFactory::new()
             ->with(Recipe::class, 'recipes', 4)

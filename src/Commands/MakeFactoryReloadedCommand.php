@@ -4,10 +4,14 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Commands;
 
 use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Christophrumpel\LaravelCommandFilePicker\Traits\PicksClasses;
-use Illuminate\Console\GeneratorCommand;
+use Christophrumpel\LaravelFactoriesReloaded\FactoryCollection;
+use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
+use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
-class MakeFactoryReloadedCommand extends GeneratorCommand
+class MakeFactoryReloadedCommand extends Command
 {
 
     use PicksClasses;
@@ -31,107 +35,110 @@ class MakeFactoryReloadedCommand extends GeneratorCommand
      */
     protected $description = 'Create new factory reloaded class.';
 
-    /** @var string */
-    protected $type = 'Factory';
+    protected string $type = 'Factory';
 
-    private string $fullClassName;
+    protected FactoryCollection $factoryCollection;
 
-    private string $className;
-
-    private string $modelsPath;
-
-    private string $modelFile;
-
-    private string $factoriesPath;
-
-    private string $factoriesNamespace;
+    protected string $className;
 
     /**
      * Execute the console command.
-     *
      */
-    public function handle()
+    public function handle(): void
     {
-        $this->modelsPath = $this->option('models_path') ?? config('factories-reloaded.models_path');
-        $this->factoriesPath = $this->option('factories_path') ?? config('factories-reloaded.factories_path');
-        $this->factoriesNamespace = $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace');
+        $this->overWriteConfigDependingOnGivenOptions();
+
+        $this->factoryCollection = FactoryCollection::fromCollection($this->getModelsToCreate());
+
+        if ($this->option('force')) {
+            $this->factoryCollection->overwrite();
+        }
+
+        $this->askAboutLaravelStatesIfGiven();
+
+        $this->aksAboutOverwritingFactoriesIfNeeded();
+
+        if ($this->factoryCollection->write()->isEmpty()) {
+            $this->info('No Files created.');
+            return;
+        }
+
+        $this->showSuccessMessage();
+    }
+
+    protected function getModelsToCreate(): Collection
+    {
         if ($this->argument('model')) {
-            $class_finder = new ClassFinder(new Filesystem());
-            $this->fullClassName = $class_finder->getFullyQualifiedClassNameFromFile($this->modelsPath.'/'.$this->argument('model') . '.php');
-        }
-        else {
-            $this->fullClassName = $this->askToPickModels($this->modelsPath);
+            $classFinder = new ClassFinder(new Filesystem());
+
+            return collect([['name' => $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_paths')[0].'/'.$this->argument('model').'.php')]]);
         }
 
-        $this->className = class_basename($this->fullClassName);
+        return $this->askToPickModelsFromMultipleDirectories(config('factories-reloaded.models_paths'));
+    }
 
-        $this->info("Thank you! $this->className it is.");
-        $classPath = $this->factoriesPath . '/' . $this->className . 'Factory.php';
+    protected function overWriteConfigDependingOnGivenOptions(): void
+    {
+        Config::set('factories-reloaded.models_paths',
+            $this->option('models_path') ?  [$this->option('models_path')] : config('factories-reloaded.models_paths'));
+        Config::set('factories-reloaded.factories_path',
+            $this->option('factories_path') ?? config('factories-reloaded.factories_path'));
+        Config::set('factories-reloaded.factories_namespace',
+            $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace'));
+    }
 
-        // First we will check to see if the class already exists. If it does, we don't want
-        // to create the class and overwrite the user's code. So, we will bail out so the
-        // code is untouched. Otherwise, we will continue generating this class' files.
-        if ((!$this->hasOption('force') || !$this->option('force')) && $this->files->exists($classPath)) {
-            $this->error($this->type . ' already exists!');
-            return false;
+    protected function askAboutLaravelStatesIfGiven(): void
+    {
+        if (! $this->factoryCollection->hasLaravelStates()) {
+            return;
+        }
+        $message = $this->factoryCollection->all()->count() > 1 ? 'You have defined states in your old factories, do you want to import them to your new factory classes?': 'You have defined states in your old factory, do you want to import them to your new factory class?';
+        $withStates = $this->choice($message, [
+            'No',
+            'Yes',
+        ]);
+
+        if ($withStates === 'No') {
+            $this->factoryCollection->withoutStates();
+        }
+    }
+
+    protected function aksAboutOverwritingFactoriesIfNeeded(): void
+    {
+        if (! $this->factoryCollection->atLeastOneFactoryReloadedExists()) {
+            return;
         }
 
-        // Next, we will generate the path to the location where this class' file should get
-        // written. Then, we will build the class and make the proper replacements on the
-        // stub files so that it gets the correctly formatted namespace and class name.
-        $this->makeDirectory($classPath);
+        if ($this->hasOption('force') && $this->option('force')) {
+            return;
+        }
 
-        $this->files->put($classPath, $this->sortImports($this->buildClass($this->fullClassName)));
-        $this->info($this->factoriesNamespace . '\\' . $this->className . $this->type . ' created successfully.');
+        $message = $this->factoryCollection->all()->count() > 1 ? 'One of the factories already exists. Do you want to overwrite them?' : 'This factory class already exists. Do you want to overwrite it?';
+
+        $shouldOverwrite = $this->choice($message, [
+            'No',
+            'Yes',
+        ]);
+
+        if ($shouldOverwrite === 'Yes') {
+            $this->factoryCollection->overwrite();
+        }
     }
 
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
+    protected function showSuccessMessage(): void
     {
-        return __DIR__ . '/make-factory.stub';
-    }
-
-    protected function getArguments()
-    {
-        return [];
-    }
-
-    /**
-     * Replace the class name for the given stub.
-     *
-     * @param string $stub
-     * @param string $name
-     *
-     * @return string
-     */
-    protected function replaceClass($stub, $name)
-    {
-        $stub = parent::replaceClass($stub, $name);
-
-        return str_replace(['DummyFullModelClass', 'DummyModelClass', 'DummyFactory'],
-            [$this->fullClassName, $this->className, $this->className . 'Factory'], $stub);
-    }
-
-    /**
-     * Replace the namespace for the given stub.
-     *
-     * @param string $stub
-     * @param string $name
-     *
-     * @return $this
-     */
-    protected function replaceNamespace(&$stub, $name)
-    {
-        $stub = str_replace([
-            'DummyNamespace',
-        ], [
-            $this->factoriesNamespace,
-        ], $stub);
-
-        return $this;
+        if ($this->factoryCollection->all()
+                ->count() === 1) {
+            $this->info($this->factoryCollection->all()
+                    ->first()
+                    ->getTargetClassFullName().' created successfully.');
+        } else {
+            $factoryNames = $this->factoryCollection->all()
+                ->map(function (FactoryFile $factoryFile) {
+                    return $factoryFile->getTargetClassName();
+                })
+                ->implode(', ');
+            $this->info($factoryNames.' were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.');
+        }
     }
 }

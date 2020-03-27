@@ -9,6 +9,6 @@ interface FactoryInterface
 
     public function create(array $extra = []);
 
-    function getData(Generator $faker): array;
+    function getDefaults(Generator $faker): array;
 
 }

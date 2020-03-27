@@ -2,9 +2,10 @@
 
 namespace DummyNamespace;
 
+use Faker\Generator as Faker;
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
 use DummyFullModelClass;
-use Faker\Generator;
+{{ uses }}
 
 class DummyFactory extends BaseFactory
 {
@@ -21,10 +22,10 @@ class DummyFactory extends BaseFactory
         return parent::build($extra, 'make');
     }
 
-    public function getData(Generator $faker): array
+    public function getDefaults(Faker $faker): array
     {
-        return [];
+        {{ dummyData }}
     }
-
+{{ states }}
 }
 
