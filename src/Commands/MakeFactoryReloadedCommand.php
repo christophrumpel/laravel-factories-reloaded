@@ -38,7 +38,7 @@ class MakeFactoryReloadedCommand extends Command
     protected string $type = 'Factory';
 
 
-    private string $className;
+    protected string $className;
 
     /**
      * Execute the console command.
