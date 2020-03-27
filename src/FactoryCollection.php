@@ -32,7 +32,8 @@ class FactoryCollection
     {
         return static::fromModels($collection->transform(function ($item) {
             return $item['name'];
-        })->toArray());
+        })
+            ->toArray());
     }
 
     public function all(): Collection
@@ -46,7 +47,7 @@ class FactoryCollection
             File::makeDirectory(Config::get('factories-reloaded.factories_path'));
         }
 
-        return $this->factoryFiles->filter(function(FactoryFile $factoryFile){
+        return $this->factoryFiles->filter(function (FactoryFile $factoryFile) {
             return $factoryFile->write($this->overwrite);
         });
     }
@@ -67,29 +68,38 @@ class FactoryCollection
 
     public function get(string $modelClass): FactoryFile
     {
-         return $this->factoryFiles->firstWhere('modelClass', $modelClass);
+        return $this->factoryFiles->firstWhere('modelClass', $modelClass);
     }
 
     public function atLeastOneFactoryReloadedExists(): bool
     {
-        return $this->factoryFiles->filter->factoryReloadedExists()->isNotEmpty();
+        return $this->factoryFiles->filter->factoryReloadedExists()
+            ->isNotEmpty();
     }
 
     public function hasLaravelStates(): bool
     {
-        return $this->factoryFiles->filter->hasLaravelStates()->isNotEmpty();
+        return $this->factoryFiles->filter->hasLaravelStates()
+            ->isNotEmpty();
     }
 
     protected function buildFromModels(array $models = []): void
     {
-        $this->factoryFiles = collect($models)->whenEmpty(function () {
-            $classFinder = new ClassFinder(new Filesystem());
+        $this->factoryFiles = collect($models)
+            ->whenEmpty(function () {
+                $classFinder = new ClassFinder(new Filesystem());
 
-            return $classFinder->getModelsInDirectory(Config::get('factories-reloaded.models_path'))->transform(function ($item) {
-                return $item['name'];
+                return collect(Config::get('factories-reloaded.models_paths'))->transform(function (string $path) use (
+                    $classFinder
+                ) {
+                    return $classFinder->getModelsInDirectory($path)
+                        ->transform(function ($item) {
+                            return $item['name'];
+                        });
+                });
+            })->flatten()
+            ->transform(function (string $model) {
+                return FactoryFile::forModel($model);
             });
-        })->transform(function (string $model) {
-            return FactoryFile::forModel($model);
-        });
     }
 }

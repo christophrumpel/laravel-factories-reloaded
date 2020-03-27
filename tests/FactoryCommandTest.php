@@ -10,18 +10,18 @@ class FactoryCommandTest extends TestCase
 {
 
     /** @test */
-    public function it_fails_if_no_models_found()
+    public function it_fails_if_no_models_found(): void
     {
         $this->expectException(\LogicException::class);
 
         // Set to a path with no models given
-        Config::set('factories-reloaded.models_path', __DIR__.'/');
+        Config::set('factories-reloaded.models_paths', [__DIR__.'/']);
 
         $this->artisan('make:factory-reloaded');
     }
 
     /** @test */
-    public function it_creates_factory_for_chosen_model()
+    public function it_creates_factory_for_chosen_model(): void
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
@@ -32,7 +32,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_creates_factories_for_all_models()
+    public function it_creates_factories_for_all_models(): void
     {
         $this->assertFalse(File::exists(__DIR__.'/tmp/GroupFactory.php'));
         $this->assertFalse(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
@@ -51,7 +51,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_agrees_to()
+    public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_agrees_to(): void
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
@@ -70,7 +70,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_denies()
+    public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_denies(): void
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model',
@@ -89,7 +89,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_accepts_a_model_name_as_an_argument()
+    public function it_accepts_a_model_name_as_an_argument(): void
     {
         $this->assertFalse(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
 
@@ -100,7 +100,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_asks_user_to_overwrite_which_he_agrees_to()
+    public function it_asks_user_to_overwrite_which_he_agrees_to(): void
     {
         $factoryPath = __DIR__.'/tmp/GroupFactory.php';
 
@@ -120,7 +120,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_asks_user_to_overwrite_which_she_denies()
+    public function it_asks_user_to_overwrite_which_she_denies(): void
     {
         $factoryPath = __DIR__.'/tmp/GroupFactory.php';
 
@@ -141,7 +141,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_ask_if_factory_already_exists_wit_force()
+    public function it_does_not_ask_if_factory_already_exists_wit_force(): void
     {
         $factoryPath = __DIR__.'/tmp/GroupFactory.php';
 
@@ -161,7 +161,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_succeeds_if_factory_already_exists_with_force()
+    public function it_succeeds_if_factory_already_exists_with_force(): void
     {
         $this->artisan('make:factory-reloaded Ingredient');
 
@@ -170,13 +170,13 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_accepts_config_as_options()
+    public function it_accepts_config_as_options(): void
     {
         if (file_exists(__DIR__.'/Factories/tmp/IngredientFactory.php')) {
             unlink(__DIR__.'/Factories/tmp/IngredientFactory.php');
         }
 
-        Config::set('factories-reloaded.models_path', '');
+        Config::set('factories-reloaded.models_paths', '');
         Config::set('factories-reloaded.factories_path', '');
         Config::set('factories-reloaded.factories_namespace', '');
 
@@ -192,9 +192,9 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test */
-    public function it_can_find_models_in_passed_models_path()
+    public function it_can_find_models_in_option_passed_models_path(): void
     {
-        Config::set('factories-reloaded.models_path', '');
+        Config::set('factories-reloaded.models_paths', '');
         Config::set('factories-reloaded.factories_path', '');
         Config::set('factories-reloaded.factories_namespace', '');
 
@@ -211,7 +211,7 @@ class FactoryCommandTest extends TestCase
     }
 
     /** @test **/
-    public function it_creates_folder_for_new_factories_if_not_given()
+    public function it_creates_folder_for_new_factories_if_not_given(): void
     {
         // Set factories path that does not exist yet
         Config::set('factories-reloaded.factories_path', __DIR__.'/tmp-factories');

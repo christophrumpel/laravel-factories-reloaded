@@ -71,17 +71,16 @@ class MakeFactoryReloadedCommand extends Command
         if ($this->argument('model')) {
             $classFinder = new ClassFinder(new Filesystem());
 
-            return collect([['name' => $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_path').'/'.$this->argument('model').'.php')]]);
+            return collect([['name' => $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_paths')[0].'/'.$this->argument('model').'.php')]]);
         }
 
-        return $this->askToPickModels(config('factories-reloaded.models_path'));
-
+        return $this->askToPickModelsFromMultipleDirectories(config('factories-reloaded.models_paths'));
     }
 
     protected function overWriteConfigDependingOnGivenOptions(): void
     {
-        Config::set('factories-reloaded.models_path',
-            $this->option('models_path') ?? config('factories-reloaded.models_path'));
+        Config::set('factories-reloaded.models_paths',
+            $this->option('models_path') ?  [$this->option('models_path')] : config('factories-reloaded.models_paths'));
         Config::set('factories-reloaded.factories_path',
             $this->option('factories_path') ?? config('factories-reloaded.factories_path'));
         Config::set('factories-reloaded.factories_namespace',

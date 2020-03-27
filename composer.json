@@ -19,7 +19,7 @@
         "php": "^7.4",
         "illuminate/support": "^6.0|^7.0",
         "laravel/framework": "^6.0|^7.0",
-        "christophrumpel/laravel-command-file-picker": "^0.0.9",
+        "christophrumpel/laravel-command-file-picker": "^0.0.10",
         "nikic/php-parser": "^4.3"
     },
     "require-dev": {
