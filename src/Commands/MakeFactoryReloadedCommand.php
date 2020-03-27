@@ -117,8 +117,8 @@ class MakeFactoryReloadedCommand extends Command
                 ->map(function (FactoryFile $factoryFile) {
                     return $factoryFile->getTargetClassName();
                 })
-                ->implode(',');
-            $this->info($factoryNames.'  created successfully.');
+                ->implode(', ');
+            $this->info($factoryNames.' were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.');
         }
     }
 }

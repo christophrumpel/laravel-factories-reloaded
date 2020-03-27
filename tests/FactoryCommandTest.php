@@ -42,6 +42,7 @@ class FactoryCommandTest extends TestCase
             ->expectsQuestion('Please pick a model',
                 'All')
             ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?', 'No')
+            ->expectsOutput('GroupFactory, IngredientFactory, RecipeFactory were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.')
             ->assertExitCode(0);
 
         $this->assertTrue(File::exists(__DIR__.'/tmp/GroupFactory.php'));
