@@ -37,33 +37,33 @@ class MakeFactoryReloadedCommand extends Command
 
     protected string $type = 'Factory';
 
+    protected FactoryCollection $factoryCollection;
 
     protected string $className;
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->overWriteConfigDependingOnGivenOptions();
 
-        $factoryCollection = FactoryCollection::fromCollection($this->getModelsToCreate());
+        $this->factoryCollection = FactoryCollection::fromCollection($this->getModelsToCreate());
 
         if ($this->option('force')) {
-            $factoryCollection->overwrite();
+            $this->factoryCollection->overwrite();
         }
 
-        $this->askAboutLaravelStatesIfGiven($factoryCollection);
+        $this->askAboutLaravelStatesIfGiven();
 
-        $this->aksAboutOverwritingFactoriesIfNeeded($factoryCollection);
+        $this->aksAboutOverwritingFactoriesIfNeeded();
 
-
-        $writtenFiles = $factoryCollection->write();
-        if($writtenFiles->isNotEmpty()) {
-            return $this->showSuccessMessage($factoryCollection);
+        if ($this->factoryCollection->write()->isEmpty()) {
+            $this->info('No Files created.');
+            return;
         }
 
-        return $this->info('No Files created.');
+        $this->showSuccessMessage();
     }
 
     protected function getModelsToCreate(): Collection
@@ -71,10 +71,10 @@ class MakeFactoryReloadedCommand extends Command
         if ($this->argument('model')) {
             $classFinder = new ClassFinder(new Filesystem());
 
-            return $modelsToCreate = collect([['name' => $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_path').'/'.$this->argument('model').'.php')]]);
+            return collect([['name' => $classFinder->getFullyQualifiedClassNameFromFile(config('factories-reloaded.models_path').'/'.$this->argument('model').'.php')]]);
         }
 
-        return $modelsToCreate = $this->askToPickModels(config('factories-reloaded.models_path'));
+        return $this->askToPickModels(config('factories-reloaded.models_path'));
 
     }
 
@@ -88,48 +88,53 @@ class MakeFactoryReloadedCommand extends Command
             $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace'));
     }
 
-    protected function askAboutLaravelStatesIfGiven(FactoryCollection $factoryCollection)
+    protected function askAboutLaravelStatesIfGiven(): void
     {
-        if ($factoryCollection->hasLaravelStates()) {
-            $message = $factoryCollection->all()->count() > 1 ? 'You have defined states in your old factories, do you want to import them to your new factory classes?': 'You have defined states in your old factory, do you want to import them to your new factory class?';
-            $withStates = $this->choice($message,
-                [
-                    'No',
-                    'Yes',
-                ]);
+        if (! $this->factoryCollection->hasLaravelStates()) {
+            return;
+        }
+        $message = $this->factoryCollection->all()->count() > 1 ? 'You have defined states in your old factories, do you want to import them to your new factory classes?': 'You have defined states in your old factory, do you want to import them to your new factory class?';
+        $withStates = $this->choice($message, [
+            'No',
+            'Yes',
+        ]);
 
-            if ($withStates === 'No') {
-                $factoryCollection->withoutStates();
-            }
+        if ($withStates === 'No') {
+            $this->factoryCollection->withoutStates();
         }
     }
 
-    protected function aksAboutOverwritingFactoriesIfNeeded(FactoryCollection $factoryCollection)
+    protected function aksAboutOverwritingFactoriesIfNeeded(): void
     {
-        if (( ! $this->hasOption('force') || ! $this->option('force')) && $factoryCollection->atLeastOneFactoryReloadedExists()) {
-            $message = $factoryCollection->all()->count() > 1 ? 'One of the factories already exists. Do you want to overwrite them?': 'This factory class already exists. Do you want to overwrite it?';
-
-            $shouldOverwrite = $this->choice($message, [
-                'No',
-                'Yes',
-            ]);
-
-            if ($shouldOverwrite === 'Yes') {
-                $factoryCollection->overwrite();
-            }
+        if (! $this->factoryCollection->atLeastOneFactoryReloadedExists()) {
+            return;
         }
 
+        if ($this->hasOption('force') && $this->option('force')) {
+            return;
+        }
+
+        $message = $this->factoryCollection->all()->count() > 1 ? 'One of the factories already exists. Do you want to overwrite them?' : 'This factory class already exists. Do you want to overwrite it?';
+
+        $shouldOverwrite = $this->choice($message, [
+            'No',
+            'Yes',
+        ]);
+
+        if ($shouldOverwrite === 'Yes') {
+            $this->factoryCollection->overwrite();
+        }
     }
 
-    protected function showSuccessMessage(FactoryCollection $factoryCollection): void
+    protected function showSuccessMessage(): void
     {
-        if ($factoryCollection->all()
+        if ($this->factoryCollection->all()
                 ->count() === 1) {
-            $this->info($factoryCollection->all()
+            $this->info($this->factoryCollection->all()
                     ->first()
                     ->getTargetClassFullName().' created successfully.');
         } else {
-            $factoryNames = $factoryCollection->all()
+            $factoryNames = $this->factoryCollection->all()
                 ->map(function (FactoryFile $factoryFile) {
                     return $factoryFile->getTargetClassName();
                 })
