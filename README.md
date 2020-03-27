@@ -33,7 +33,7 @@ To publish the config file run:
 php artisan vendor:publish --provider="Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProvider"
 ```
 
-It will provide the package's config file where you can define the `path of your models`, the `path of the generated factories`, as well as the `generated factories namespace`.
+It will provide the package's config file where you can define the `paths of your models`, the `path of the generated factories`, as well as the `generated factories namespace`.
 
 ```php
 <?php
@@ -42,7 +42,9 @@ It will provide the package's config file where you can define the `path of your
  * You can place your custom package configuration in here.
  */
 return [
-    'models_path' => base_path('app'),
+    'models_path' => [
+        base_path('app')
+    ],
 
     'factories_path' => base_path('tests/Factories'),
 
@@ -54,7 +56,7 @@ return [
 
 First, you need to create a new factory class. This is done via a new command this package comes with. In this example, we want to create a new user factory.
 
-```php
+```shell script
 php artisan make:factory-reloaded
 ```
 
@@ -81,15 +83,23 @@ class UserFactory extends BaseFactory
         return parent::build($extra, 'make');
     }
 
-    public function getData(Generator $faker): array
+    public function getDefaults(Generator $faker): array
     {
-        return [];
+        return [
+            'name' => $faker->name,
+            'email' => $faker->unique()->safeEmail,
+            'email_verified_at' => now(),
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'remember_token' => Str::random(10),
+        ];
     }
 
 }
 ```
 
-Inside this class, you can define the properties of the model with the `getData` method. It is very similar to what you would do with a Laravel default factory, and you can make use of Faker as well. The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
+Inside this class, you can define the properties of the model with the `getDefaults` method. It is very similar to what you would do with a Laravel default factory, and you can make use of Faker as well. Actually, if you have already a Laravel factory for a specific model, this package will copy the default data to the new class factory while generating.
+
+The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
 
 ### Additional Arguments And Options
 
@@ -97,7 +107,7 @@ If you don't want to select your model from a list, you can pass the class name 
 ```php
 php artisan make:factory-reloaded Ingredient
 ```
-By default, this command will stop and give you an error if a factory you're trying to create already exists. You can overwrite an existing factory using the force option:
+By default, this command will ask you if you want to overwrite the class factory, if it already exists. You can pass the `--force` option in order to skip this question.
 ```php
 php artisan make:factory-reloaded Ingredient --force
 ```
@@ -141,7 +151,9 @@ $user = UserFactory::new()->make();
 ```
 ### States
 
-You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there are different ways to implement state-like functionality. The easiest approach is by calling a method which sets a property in the class.
+You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there are different ways to implement state-like functionality. If you have already defined states in your Laravel factory file, this package can convert them into `state methods` in the new factory class. When you run the command to create a new class factory, you will be asked about that.
+
+Besides, the easiest approach to create a new state is by calling a method which sets a property in the class.
 
 ```php
 $recipe = RecipeFactory::new()
@@ -149,7 +161,7 @@ $recipe = RecipeFactory::new()
     ->create();
 ```
 
-And to make this work, we need to add the method to the factory class, as well as the property. In the `getData`method we then use the property to fill the model.
+And to make this work, we need to add the method to the factory class, as well as the property. In the `getDefaults` method we then use the property to fill the model.
 
 ```php
 <?php
