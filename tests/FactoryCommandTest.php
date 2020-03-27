@@ -144,7 +144,7 @@ class FactoryCommandTest extends TestCase
         $this->artisan('make:factory-reloaded Ingredient');
 
         $this->artisan('make:factory-reloaded Ingredient --force')
-            ->expectsOutput('IngredientFactory created successfully.');
+            ->expectsOutput(Config::get('factories-reloaded.factories_namespace').'\IngredientFactory created successfully.');
     }
 
     /** @test */

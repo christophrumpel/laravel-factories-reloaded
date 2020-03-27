@@ -111,7 +111,7 @@ class MakeFactoryReloadedCommand extends Command
                 ->count() === 1) {
             $this->info($factoryCollection->all()
                     ->first()
-                    ->getTargetClassName().' created successfully.');
+                    ->getTargetClassFullName().' created successfully.');
         } else {
             $factoryNames = $factoryCollection->all()
                 ->map(function (FactoryFile $factoryFile) {
