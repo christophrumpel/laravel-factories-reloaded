@@ -37,17 +37,8 @@ class MakeFactoryReloadedCommand extends Command
 
     protected string $type = 'Factory';
 
-    private string $fullClassName;
 
     private string $className;
-
-    private string $modelsPath;
-
-    private string $modelFile;
-
-    private string $factoriesPath;
-
-    private string $factoriesNamespace;
 
     /**
      * Execute the console command.
