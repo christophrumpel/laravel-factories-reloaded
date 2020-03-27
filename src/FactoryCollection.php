@@ -5,6 +5,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 class FactoryCollection
 {
@@ -79,7 +80,7 @@ class FactoryCollection
         $this->factoryFiles = collect($models)->whenEmpty(function () {
             $classFinder = new ClassFinder(new Filesystem());
 
-            return $classFinder->getModelsInDirectory(config('factories-reloaded.models_path'))->transform(function ($item) {
+            return $classFinder->getModelsInDirectory(Config::get('factories-reloaded.models_path'))->transform(function ($item) {
                 return $item['name'];
             });
         })->transform(function (string $model) {
