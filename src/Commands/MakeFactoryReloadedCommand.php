@@ -10,8 +10,6 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 
 class MakeFactoryReloadedCommand extends Command
 {
@@ -68,9 +66,6 @@ class MakeFactoryReloadedCommand extends Command
 
         $this->aksAboutOverwritingFactoriesIfNeeded($factoryCollection);
 
-        if ( ! File::exists(Config::get('factories-reloaded.factories_path'))) {
-            File::makeDirectory(Config::get('factories-reloaded.factories_path'));
-        }
 
         $writtenFiles = $factoryCollection->write();
         if($writtenFiles->isNotEmpty()) {

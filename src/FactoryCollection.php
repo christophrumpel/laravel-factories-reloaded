@@ -6,6 +6,7 @@ use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 
 class FactoryCollection
 {
@@ -41,6 +42,10 @@ class FactoryCollection
 
     public function write(): Collection
     {
+        if ( ! File::exists(Config::get('factories-reloaded.factories_path'))) {
+            File::makeDirectory(Config::get('factories-reloaded.factories_path'));
+        }
+
         return $this->factoryFiles->filter(function(FactoryFile $factoryFile){
             return $factoryFile->write($this->overwrite);
         });
