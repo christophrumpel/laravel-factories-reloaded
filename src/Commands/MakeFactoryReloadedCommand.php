@@ -9,6 +9,7 @@ use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 
 class MakeFactoryReloadedCommand extends Command
 {
@@ -101,7 +102,9 @@ class MakeFactoryReloadedCommand extends Command
         // Next, we will generate the path to the location where this class' file should get
         // written. Then, we will build the class and make the proper replacements on the
         // stub files so that it gets the correctly formatted namespace and class name.
-
+        if(!File::exists(Config::get('factories-reloaded.factories_path'))){
+            File::makeDirectory(Config::get('factories-reloaded.factories_path'));
+        }
         $factoryCollection->write();
 
         if ($factoryCollection->all()

@@ -187,4 +187,18 @@ class FactoryCommandTest extends TestCase
 
         $this->assertTrue(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
     }
+
+    /** @test **/
+    public function it_creates_folder_for_new_factories_if_not_given()
+    {
+        // Set factories path that does not exist yet
+        Config::set('factories-reloaded.factories_path', __DIR__.'/tmp-factories');
+
+        $this->artisan('make:factory-reloaded')
+            ->expectsQuestion('Please pick a model',
+                '<href=file://'.__DIR__.'/Models/Group.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group</>')
+            ->assertExitCode(0);
+
+        $this->assertTrue(File::exists(__DIR__.'/tmp-factories/GroupFactory.php'));
+    }
 }
