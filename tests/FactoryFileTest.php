@@ -3,11 +3,11 @@
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Ingredient;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
+use ExampleApp\Models\Group;
+use ExampleApp\Models\Ingredient;
+use ExampleApp\Models\Recipe;
+use ExampleAppTests\Factories\RecipeFactory;
 use Illuminate\Support\Str;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Factories\RecipeFactory;
 
 class FactoryFileTest extends TestCase
 {
@@ -98,7 +98,7 @@ class FactoryFileTest extends TestCase
     public function it_gives_factory_path(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
-        $this->assertEquals(__DIR__.'/tmp/RecipeFactory.php', $recipeFactoryFile->getTargetClassPath());
+        $this->assertEquals($this->exampleFactoriesPath('RecipeFactory.php'), $recipeFactoryFile->getTargetClassPath());
     }
 
     /** @test **/

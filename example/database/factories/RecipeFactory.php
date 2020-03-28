@@ -2,8 +2,8 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
+use ExampleApp\Models\Group;
+use ExampleApp\Models\Recipe;
 use Faker\Generator as Faker;
 
 $factory->define(Recipe::class, function (Faker $faker) {

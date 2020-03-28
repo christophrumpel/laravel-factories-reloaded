@@ -1,13 +1,12 @@
 <?php
 
-namespace Christophrumpel\LaravelFactoriesReloaded\Tests\Factories;
+namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use Christophrumpel\LaravelFactoriesReloaded\FactoryInterface;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
+use ExampleApp\Models\Group;
 use Faker\Generator;
 
-class GroupFactory extends BaseFactory
+class GroupFactoryUsingFaker extends BaseFactory
 {
 
     protected string $modelClass = Group::class;
@@ -25,8 +24,9 @@ class GroupFactory extends BaseFactory
     public function getDefaults(Generator $faker): array
     {
         return [
-            'name' => 'Family Rumpel',
-            'size' => 2,
+            'name' => $faker->name,
+            'size' => $faker->randomNumber(),
+            'mobile' => $faker->unique()->mobileNumber,
         ];
     }
 

@@ -6,7 +6,6 @@ use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProv
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use ReflectionClass;
 
 class TestCase extends \Orchestra\Testbench\TestCase
@@ -24,23 +23,19 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
-        Config::set('factories-reloaded.models_paths', [__DIR__.'/Models']);
-        Config::set('factories-reloaded.vanilla_factories_path', __DIR__.'/database/factories');
-        Config::set('factories-reloaded.factories_path', __DIR__.'/tmp');
-        Config::set('factories-reloaded.factories_namespace',
-            'Christophrumpel\LaravelFactoriesReloaded\Tests\Factories');
+        Config::set('factories-reloaded.models_paths', [$this->exampleAppPath('Models')]);
+        Config::set('factories-reloaded.vanilla_factories_path', $this->basePath . '/database/factories');
+        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories');
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
 
-        File::copyDirectory(__DIR__.'/Factories', Config::get('factories-reloaded.factories_path'));
+        $this->backupExampleAppFolder();
 
-        File::cleanDirectory(__DIR__.'/tmp');
-
-        $this->loadLaravelMigrations();
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->loadMigrationsFrom($this->basePath . '/database/migrations');
     }
 
     public function tearDown(): void
     {
-        File::deleteDirectory(Config::get('factories-reloaded.factories_path'));
+        $this->restoreExampleAppFolder();
 
         parent::tearDown();
     }
@@ -65,6 +60,17 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function exampleFactoriesPath($path = ''): string
     {
         return Config::get('factories-reloaded.factories_path') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+
+    protected function backupExampleAppFolder(): void
+    {
+        File::copyDirectory($this->basePath, __DIR__ . '/../backup');
+    }
+
+    protected function restoreExampleAppFolder(): void
+    {
+        File::moveDirectory(__DIR__ . '/../backup', $this->basePath, true);
+        File::deleteDirectory(__DIR__ . '/../backup');
     }
 
     /**
