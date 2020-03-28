@@ -7,9 +7,18 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use ReflectionClass;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    protected string $basePath;
+
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+
+        $this->basePath = realpath(__DIR__ . '/../example');
+    }
 
     public function setUp(): void
     {
@@ -34,6 +43,28 @@ class TestCase extends \Orchestra\Testbench\TestCase
         File::deleteDirectory(Config::get('factories-reloaded.factories_path'));
 
         parent::tearDown();
+    }
+
+    public function modelAnswer(string $model): string
+    {
+        $reflector = new ReflectionClass($model);
+
+        return "<href=file://{$reflector->getFileName()}>{$reflector->getName()}</>";
+    }
+
+    public function examplePath($path = ''): string
+    {
+        return $this->basePath . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+
+    public function exampleAppPath($path = ''): string
+    {
+        return $this->examplePath('app' . ($path ? DIRECTORY_SEPARATOR . $path : $path));
+    }
+
+    public function exampleFactoriesPath($path = ''): string
+    {
+        return Config::get('factories-reloaded.factories_path') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 
     /**
