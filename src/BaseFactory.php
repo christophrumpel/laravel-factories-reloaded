@@ -67,7 +67,7 @@ abstract class BaseFactory implements FactoryInterface
     }
 
 
-    public function overwrite(array $attributes): self
+    public function overwriteDefaults(array $attributes): self
     {
         $this->overwriteDefaults = $attributes;
 
