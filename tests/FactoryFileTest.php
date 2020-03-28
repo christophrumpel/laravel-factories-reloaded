@@ -75,9 +75,14 @@ class FactoryFileTest extends TestCase
 
         $content = $recipeFactoryFile->render();
 
+        $this->assertFalse(Str::containsAll($content, [
+            'factory(Group::class)',
+        ]));
+
         $this->assertTrue(Str::containsAll($content, [
             'public function withGroup',
             'public function withDifferentGroup',
+            'GroupFactory::new()->create()->id',
         ]));
     }
 

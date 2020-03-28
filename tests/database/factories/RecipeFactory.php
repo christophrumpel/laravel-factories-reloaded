@@ -10,6 +10,7 @@ $factory->define(Recipe::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
         'description' => $faker->sentence,
+        'group_id' => factory(Group::class)
     ];
 });
 

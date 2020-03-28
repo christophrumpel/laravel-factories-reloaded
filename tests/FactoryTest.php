@@ -112,6 +112,7 @@ class FactoryTest extends TestCase
 
         $this->assertEquals('Family Rumpel', GroupFactory::new()
             ->create()->name);
+
         $this->assertEquals(2, GroupFactory::new()
             ->create()->size);
     }

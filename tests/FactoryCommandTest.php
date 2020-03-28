@@ -2,6 +2,8 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
+use Christophrumpel\LaravelCommandFilePicker\ClassFinder;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
@@ -48,6 +50,30 @@ class FactoryCommandTest extends TestCase
         $this->assertTrue(File::exists(__DIR__.'/tmp/GroupFactory.php'));
         $this->assertTrue(File::exists(__DIR__.'/tmp/IngredientFactory.php'));
         $this->assertTrue(File::exists(__DIR__.'/tmp/RecipeFactory.php'));
+    }
+
+    /** @test **/
+    public function it_imports_laravel_factory_default_model_data_if_given(): void
+    {
+        Config::set('factories-reloaded.factories_namespace',
+            'Christophrumpel\LaravelFactoriesReloaded\Tests\Tmp');
+        $this->artisan('make:factory-reloaded')
+            ->expectsQuestion('Please pick a model',
+                '<href=file://'.__DIR__.'/Models/Recipe.php>Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe</>')
+            ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
+                'no')
+            ->assertExitCode(0);
+
+        $this->assertTrue(File::exists(__DIR__.'/tmp/RecipeFactory.php'));
+
+        $class_finder = new ClassFinder(new Filesystem());
+        $factoryClassName = $class_finder->getFullyQualifiedClassNameFromFile(__DIR__.'/tmp/RecipeFactory.php');
+        $recipe = $factoryClassName::new()->make();
+
+        $this->assertNotEmpty($recipe->name);
+        $this->assertNotEmpty($recipe->description);
+        $this->assertIsNotObject($recipe->group_id);
+        $this->assertIsNumeric($recipe->group_id);
     }
 
     /** @test */
