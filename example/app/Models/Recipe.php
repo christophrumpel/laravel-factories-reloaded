@@ -1,6 +1,6 @@
 <?php
 
-namespace Christophrumpel\LaravelFactoriesReloaded\Tests\Models;
+namespace ExampleApp\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

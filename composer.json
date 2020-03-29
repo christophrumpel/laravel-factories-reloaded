@@ -33,8 +33,13 @@
         }
     },
     "autoload-dev": {
+        "classmap": [
+            "example/database/factories"
+        ],
         "psr-4": {
-            "Christophrumpel\\LaravelFactoriesReloaded\\Tests\\": "tests"
+            "Christophrumpel\\LaravelFactoriesReloaded\\Tests\\": "tests",
+            "ExampleApp\\": "example/app/",
+            "ExampleAppTests\\": "example/tests/"
         }
     },
     "scripts": {

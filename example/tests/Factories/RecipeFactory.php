@@ -1,14 +1,13 @@
 <?php
 
-namespace Christophrumpel\LaravelFactoriesReloaded\Tests\Factories;
+namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
+use ExampleApp\Models\Recipe;
 use Faker\Generator;
 
 class RecipeFactory extends BaseFactory
 {
-
     protected string $modelClass = Recipe::class;
 
     public function create(array $extra = []): Recipe
@@ -28,5 +27,4 @@ class RecipeFactory extends BaseFactory
             'description' => 'Our family lasagne recipe.'
         ];
     }
-
 }

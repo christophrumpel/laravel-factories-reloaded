@@ -4,11 +4,12 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
 use Christophrumpel\LaravelFactoriesReloaded\FactoryCollection;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\DifferentLocation\Comment;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Group;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Ingredient;
-use Christophrumpel\LaravelFactoriesReloaded\Tests\Models\Recipe;
+use ExampleApp\Models\DifferentLocation\Comment;
+use ExampleApp\Models\Group;
+use ExampleApp\Models\Ingredient;
+use ExampleApp\Models\Recipe;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class FactoryCollectionTest extends TestCase
@@ -38,8 +39,8 @@ class FactoryCollectionTest extends TestCase
     public function it_returns_collection_of_factory_files_from_different_model_locations(): void
     {
         Config::set('factories-reloaded.models_paths', [
-            __DIR__.'/Models',
-            __DIR__.'/Models/DifferentLocation'
+            $this->exampleAppPath('Models'),
+            $this->exampleAppPath('Models/DifferentLocation'),
         ]);
 
         $factoryCollection = FactoryCollection::fromModels();
@@ -69,20 +70,22 @@ class FactoryCollectionTest extends TestCase
         FactoryCollection::fromModels()
             ->write();
 
-        $this->assertFileExists(__DIR__.'/../tests/tmp/RecipeFactory.php');
-        $this->assertFileExists(__DIR__.'/../tests/tmp/GroupFactory.php');
-        $this->assertFileExists(__DIR__.'/../tests/tmp/IngredientFactory.php');
+        $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
+        $this->assertFileExists($this->exampleFactoriesPath('GroupFactory.php'));
+        $this->assertFileExists($this->exampleFactoriesPath('IngredientFactory.php'));
     }
 
     /** @test * */
     public function it_writes_factory_class_to_file_with_states(): void
     {
+        File::delete($this->exampleFactoriesPath('RecipeFactory.php'));
+
         FactoryCollection::fromModels()
             ->write();
 
-        $this->assertFileExists(__DIR__.'/../tests/tmp/RecipeFactory.php');
+        $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
 
-        $generatedRecipeFactoryContent = file_get_contents(__DIR__.'/../tests/tmp/RecipeFactory.php');
+        $generatedRecipeFactoryContent = file_get_contents($this->exampleFactoriesPath('RecipeFactory.php'));
 
         $this->assertTrue(Str::containsAll($generatedRecipeFactoryContent, [
             'public function withGroup',
@@ -94,13 +97,15 @@ class FactoryCollectionTest extends TestCase
     /** @test * */
     public function it_writes_factory_class_to_file_without_states(): void
     {
+        File::delete($this->exampleFactoriesPath('RecipeFactory.php'));
+
         FactoryCollection::fromModels()
             ->withoutStates()
             ->write();
 
-        $this->assertFileExists(__DIR__.'/../tests/tmp/RecipeFactory.php');
+        $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
 
-        $generatedRecipeFactoryContent = file_get_contents(__DIR__.'/../tests/tmp/RecipeFactory.php');
+        $generatedRecipeFactoryContent = file_get_contents($this->exampleFactoriesPath('RecipeFactory.php'));
 
         $this->assertFalse(Str::containsAll($generatedRecipeFactoryContent, [
             'public function withGroup',
