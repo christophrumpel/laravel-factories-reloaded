@@ -6,7 +6,6 @@ use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProv
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use ReflectionClass;
 
 class TestCase extends \Orchestra\Testbench\TestCase
@@ -29,14 +28,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
         Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/tmp');
         Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories\Tmp');
 
-        //$this->backupExampleAppFolder();
-
         $this->loadMigrationsFrom($this->basePath . '/database/migrations');
     }
 
     public function tearDown(): void
     {
-        //$this->restoreExampleAppFolder();
         File::cleanDirectory($this->exampleFactoriesPath());
 
         parent::tearDown();
@@ -62,17 +58,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function exampleFactoriesPath($path = ''): string
     {
         return Config::get('factories-reloaded.factories_path') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
-    }
-
-    protected function backupExampleAppFolder(): void
-    {
-        File::copyDirectory($this->basePath, __DIR__ . '/../backup');
-    }
-
-    protected function restoreExampleAppFolder(): void
-    {
-        File::moveDirectory(__DIR__ . '/../backup', $this->basePath, true);
-        File::deleteDirectory(__DIR__ . '/../backup');
     }
 
     /**
