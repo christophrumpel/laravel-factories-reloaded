@@ -60,6 +60,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
         return Config::get('factories-reloaded.factories_path') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 
+    public function exampleFactoriesNamespace(): string
+    {
+        return Config::get('factories-reloaded.factories_namespace');
+    }
+
     /**
      * add the package provider
      *

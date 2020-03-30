@@ -38,7 +38,7 @@ class FactoryCommandTest extends TestCase
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', 'All')
             ->expectsQuestion('You have defined states in your old factories, do you want to import them to your new factory classes?', 'No')
-            ->expectsOutput('GroupFactory, IngredientFactory, RecipeFactory were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.')
+            ->expectsOutput('GroupFactory, IngredientFactory, RecipeFactory were created successfully under the '.$this->exampleFactoriesNamespace().' namespace.')
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('GroupFactory.php'));
@@ -57,13 +57,7 @@ class FactoryCommandTest extends TestCase
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
 
-        $generatedFactoryContent = file_get_contents($this->exampleFactoriesPath('RecipeFactory.php'));
-
-        $this->assertTrue(Str::containsAll($generatedFactoryContent, [
-            'public function withGroup(',
-            '$clone = clone $this;',
-            'return $clone;',
-        ]));
+        $this->assertTrue(method_exists($this->exampleFactoriesNamespace().'\RecipeFactory', 'withGroup'));
     }
 
     /** @test */
@@ -76,7 +70,7 @@ class FactoryCommandTest extends TestCase
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
-        $createdFactoryClassName = Config::get('factories-reloaded.factories_namespace').'\RecipeFactory';
+        $createdFactoryClassName = $this->exampleFactoriesNamespace().'\RecipeFactory';
         $recipeFactory = $createdFactoryClassName::new();
 
 
@@ -85,8 +79,6 @@ class FactoryCommandTest extends TestCase
 
         $this->assertNotNull($recipeOne->group_id);
         $this->assertNull($recipeTwo->group_id);
-
-
     }
 
     /** @test */
@@ -180,7 +172,7 @@ class FactoryCommandTest extends TestCase
         $this->artisan('make:factory-reloaded Ingredient');
 
         $this->artisan('make:factory-reloaded Ingredient --force')
-            ->expectsOutput(Config::get('factories-reloaded.factories_namespace').'\IngredientFactory created successfully.');
+            ->expectsOutput($this->exampleFactoriesNamespace().'\IngredientFactory created successfully.');
     }
 
     /** @test */
