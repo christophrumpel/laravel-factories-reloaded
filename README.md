@@ -203,7 +203,7 @@ class RecipeFactory extends BaseFactory
         $clone = clone $this;
         $clone->isPublished = true;
 
-        return $this;
+        return $clone;
     }
 
 }

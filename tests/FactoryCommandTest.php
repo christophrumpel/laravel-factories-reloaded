@@ -61,7 +61,32 @@ class FactoryCommandTest extends TestCase
 
         $this->assertTrue(Str::containsAll($generatedFactoryContent, [
             'public function withGroup(',
+            '$clone = clone $this;',
+            'return $clone;',
         ]));
+    }
+
+    /** @test */
+    public function it_creates_factories_with_immutable_states(): void
+    {
+        $this->artisan('make:factory-reloaded')
+            ->expectsQuestion('Please pick a model', $this->modelAnswer(Recipe::class))
+            ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
+                'Yes')
+            ->assertExitCode(0);
+
+        $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
+        $createdFactoryClassName = Config::get('factories-reloaded.factories_namespace').'\RecipeFactory';
+        $recipeFactory = $createdFactoryClassName::new();
+
+
+        $recipeOne = $recipeFactory->withGroup()->make();
+        $recipeTwo = $recipeFactory->make();
+
+        $this->assertNotNull($recipeOne->group_id);
+        $this->assertNull($recipeTwo->group_id);
+
+
     }
 
     /** @test */
