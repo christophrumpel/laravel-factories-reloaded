@@ -6,6 +6,7 @@ use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProv
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use ReflectionClass;
 
 class TestCase extends \Orchestra\Testbench\TestCase
@@ -25,17 +26,18 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         Config::set('factories-reloaded.models_paths', [$this->exampleAppPath('Models')]);
         Config::set('factories-reloaded.vanilla_factories_path', $this->basePath . '/database/factories');
-        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories');
-        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/tmp');
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories\Tmp');
 
-        $this->backupExampleAppFolder();
+        //$this->backupExampleAppFolder();
 
         $this->loadMigrationsFrom($this->basePath . '/database/migrations');
     }
 
     public function tearDown(): void
     {
-        $this->restoreExampleAppFolder();
+        //$this->restoreExampleAppFolder();
+        File::cleanDirectory($this->exampleFactoriesPath());
 
         parent::tearDown();
     }

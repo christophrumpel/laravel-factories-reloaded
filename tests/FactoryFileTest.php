@@ -105,7 +105,7 @@ class FactoryFileTest extends TestCase
     public function it_gives_factory_class_full_name(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
-        $this->assertEquals(RecipeFactory::class, $recipeFactoryFile->getTargetClassFullName());
+        $this->assertEquals('ExampleAppTests\Factories\Tmp\RecipeFactory', $recipeFactoryFile->getTargetClassFullName());
     }
 
     /** @test **/

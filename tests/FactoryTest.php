@@ -134,6 +134,8 @@ class FactoryTest extends TestCase
     /** @test * */
     public function it_lets_you_add_a_related_model(): void
     {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
         $group = GroupFactory::new()
             ->with(Recipe::class, 'recipes')
             ->create();
@@ -145,6 +147,8 @@ class FactoryTest extends TestCase
     /** @test * */
     public function it_lets_you_add_multiple_related_models(): void
     {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
         $group = GroupFactory::new()
             ->with(Recipe::class, 'recipes', 4)
             ->create();
@@ -156,6 +160,8 @@ class FactoryTest extends TestCase
     /** @test * */
     public function the_factory_is_immutable_when_adding_related_models(): void
     {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
         $group = GroupFactory::new()
             ->with(Recipe::class, 'recipes', 4);
 
