@@ -77,6 +77,8 @@ class FactoryFileTest extends TestCase
 
         $this->assertTrue(Str::containsAll($content, [
             'public function withGroup',
+            '$clone = clone $this;',
+            'return $clone',
             'public function withDifferentGroup',
         ]));
     }
