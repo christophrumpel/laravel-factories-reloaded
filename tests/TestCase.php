@@ -25,17 +25,15 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         Config::set('factories-reloaded.models_paths', [$this->exampleAppPath('Models')]);
         Config::set('factories-reloaded.vanilla_factories_path', $this->basePath . '/database/factories');
-        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories');
-        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
-
-        $this->backupExampleAppFolder();
+        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/tmp');
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories\Tmp');
 
         $this->loadMigrationsFrom($this->basePath . '/database/migrations');
     }
 
     public function tearDown(): void
     {
-        $this->restoreExampleAppFolder();
+        File::cleanDirectory($this->exampleFactoriesPath());
 
         parent::tearDown();
     }
@@ -60,17 +58,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function exampleFactoriesPath($path = ''): string
     {
         return Config::get('factories-reloaded.factories_path') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
-    }
-
-    protected function backupExampleAppFolder(): void
-    {
-        File::copyDirectory($this->basePath, __DIR__ . '/../backup');
-    }
-
-    protected function restoreExampleAppFolder(): void
-    {
-        File::moveDirectory(__DIR__ . '/../backup', $this->basePath, true);
-        File::deleteDirectory(__DIR__ . '/../backup');
     }
 
     /**

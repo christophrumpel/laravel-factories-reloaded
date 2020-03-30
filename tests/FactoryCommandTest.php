@@ -25,8 +25,6 @@ class FactoryCommandTest extends TestCase
     /** @test */
     public function it_creates_factory_for_chosen_model(): void
     {
-        File::delete($this->exampleFactoriesPath('GroupFactory.php'));
-
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', $this->modelAnswer(Group::class))
             ->assertExitCode(0);
@@ -37,11 +35,6 @@ class FactoryCommandTest extends TestCase
     /** @test */
     public function it_creates_factories_for_all_models(): void
     {
-        File::delete([
-            $this->exampleFactoriesPath('GroupFactory.php'),
-            $this->exampleFactoriesPath('RecipeFactory.php'),
-        ]);
-
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', 'All')
             ->expectsQuestion('You have defined states in your old factories, do you want to import them to your new factory classes?', 'No')
@@ -56,8 +49,6 @@ class FactoryCommandTest extends TestCase
     /** @test */
     public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_agrees_to(): void
     {
-        File::delete($this->exampleFactoriesPath('RecipeFactory.php'));
-
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', $this->modelAnswer(Recipe::class))
             ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
@@ -76,8 +67,6 @@ class FactoryCommandTest extends TestCase
     /** @test */
     public function it_asks_user_to_integrate_old_factory_states_if_given_which_he_denies(): void
     {
-        File::delete($this->exampleFactoriesPath('RecipeFactory.php'));
-
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', $this->modelAnswer(Recipe::class))
             ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
