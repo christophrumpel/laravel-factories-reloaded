@@ -29,7 +29,7 @@ class FactoryCommandTest extends TestCase
             ->expectsQuestion('Please pick a model', $this->modelAnswer(Group::class))
             ->assertExitCode(0);
 
-        $this->assertFileExists($this->exampleFactoriesPath('/GroupFactory.php'));
+        $this->assertFileExists($this->exampleFactoriesPath('GroupFactory.php'));
     }
 
     /** @test */
