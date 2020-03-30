@@ -23,7 +23,7 @@ class RecipeFactory extends BaseFactory
     public function getDefaults(Generator $faker): array
     {
         return [
-            'name' => $faker->name,
+            'name' => 'Lasagne',
             'description' => 'Our family lasagne recipe.'
         ];
     }

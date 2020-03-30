@@ -73,16 +73,6 @@ class FactoryTest extends TestCase
             ->create());
     }
 
-    /** @test * */
-    public function collection_of_factory_models_has_unique_values(): void
-    {
-        $recipes = RecipeFactory::new()
-            ->times(3)
-            ->create();
-
-        $this->assertNotEquals($recipes[0]->name, $recipes[1]->name);
-        $this->assertNotEquals($recipes[1]->name, $recipes[2]->name);
-    }
 
     /** @test * */
     public function it_gives_you_a_collection_of_made_factory_model_instances(): void
@@ -107,6 +97,8 @@ class FactoryTest extends TestCase
     /** @test * */
     public function it_uses_default_model_data(): void
     {
+        $this->assertEquals('Lasagne', RecipeFactory::new()
+            ->create()->name);
         $this->assertEquals('Our family lasagne recipe.', RecipeFactory::new()
             ->create()->description);
 
