@@ -210,11 +210,11 @@ class FactoryCommandTest extends TestCase
     public function it_creates_folder_for_new_factories_if_not_given(): void
     {
         // Set factories path that does not exist yet
-        Config::set('factories-reloaded.factories_path', $this->examplePath('tmp-factories'));
+        Config::set('factories-reloaded.factories_path', $this->exampleFactoriesPath('folder-not-given-yet'));
 
         $this->artisan('make:factory-reloaded Ingredient')
             ->assertExitCode(0);
 
-        $this->assertFileExists($this->examplePath('tmp-factories/IngredientFactory.php'));
+        $this->assertFileExists($this->exampleFactoriesPath('IngredientFactory.php'));
     }
 }

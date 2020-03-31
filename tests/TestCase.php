@@ -34,6 +34,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function tearDown(): void
     {
         File::cleanDirectory($this->exampleFactoriesPath());
+        File::deleteDirectory($this->exampleFactoriesPath('tmp-factories'));
 
         parent::tearDown();
     }
