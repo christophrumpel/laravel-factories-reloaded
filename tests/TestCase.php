@@ -28,12 +28,16 @@ class TestCase extends \Orchestra\Testbench\TestCase
         Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/tmp');
         Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories\Tmp');
 
+        if(!File::exists($this->exampleFactoriesPath())) {
+            File::makeDirectory($this->exampleFactoriesPath());
+        }
+
         $this->loadMigrationsFrom($this->basePath . '/database/migrations');
     }
 
     public function tearDown(): void
     {
-        File::cleanDirectory($this->exampleFactoriesPath());
+        File::deleteDirectory($this->exampleFactoriesPath());
         File::deleteDirectory($this->exampleFactoriesPath('tmp-factories'));
 
         parent::tearDown();
