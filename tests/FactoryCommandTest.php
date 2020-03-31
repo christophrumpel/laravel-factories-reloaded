@@ -56,7 +56,6 @@ class FactoryCommandTest extends TestCase
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
-
         $this->assertTrue(method_exists($this->exampleFactoriesNamespace().'\RecipeFactory', 'withGroup'));
     }
 
