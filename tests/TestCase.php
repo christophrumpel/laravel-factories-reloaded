@@ -25,7 +25,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         Config::set('factories-reloaded.models_paths', [$this->exampleAppPath('Models')]);
         Config::set('factories-reloaded.vanilla_factories_path', $this->basePath . '/database/factories');
-        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/tmp');
+        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/Tmp');
         Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories\Tmp');
 
         if(!File::exists($this->exampleFactoriesPath())) {
