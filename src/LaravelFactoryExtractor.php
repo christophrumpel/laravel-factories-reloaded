@@ -213,13 +213,14 @@ class LaravelFactoryExtractor
             return array_merge([
                 'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
                 '{',
-                str_replace('return ', '$this->overwrite(', $firstLine),
+                '    $clone = clone $this;',
+                str_replace('return ', '$clone->overwriteDefaults(', $firstLine),
             ],
                 $lines->toArray(),
                 [
                     str_replace('];', ']);', $lastLine),
                     '',
-                    '    return $this;',
+                    '    return $clone;',
                     '}'
                 ]
             );

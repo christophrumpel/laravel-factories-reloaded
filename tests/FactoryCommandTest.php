@@ -38,7 +38,7 @@ class FactoryCommandTest extends TestCase
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', 'All')
             ->expectsQuestion('You have defined states in your old factories, do you want to import them to your new factory classes?', 'No')
-            ->expectsOutput('GroupFactory, IngredientFactory, RecipeFactory were created successfully under the '.Config::get('factories-reloaded.factories_namespace').' namespace.')
+            ->expectsOutput('GroupFactory, IngredientFactory, RecipeFactory were created successfully under the '.$this->exampleFactoriesNamespace().' namespace.')
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('GroupFactory.php'));
@@ -56,12 +56,28 @@ class FactoryCommandTest extends TestCase
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
+        $this->assertTrue(method_exists($this->exampleFactoriesNamespace().'\RecipeFactory', 'withGroup'));
+    }
 
-        $generatedFactoryContent = file_get_contents($this->exampleFactoriesPath('RecipeFactory.php'));
+    /** @test */
+    public function it_creates_factories_with_immutable_states(): void
+    {
+        $this->artisan('make:factory-reloaded')
+            ->expectsQuestion('Please pick a model', $this->modelAnswer(Recipe::class))
+            ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
+                'Yes')
+            ->assertExitCode(0);
 
-        $this->assertTrue(Str::containsAll($generatedFactoryContent, [
-            'public function withGroup(',
-        ]));
+        $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
+        $createdFactoryClassName = $this->exampleFactoriesNamespace().'\RecipeFactory';
+        $recipeFactory = $createdFactoryClassName::new();
+
+
+        $recipeOne = $recipeFactory->withGroup()->make();
+        $recipeTwo = $recipeFactory->make();
+
+        $this->assertNotNull($recipeOne->group_id);
+        $this->assertNull($recipeTwo->group_id);
     }
 
     /** @test */
@@ -155,7 +171,7 @@ class FactoryCommandTest extends TestCase
         $this->artisan('make:factory-reloaded Ingredient');
 
         $this->artisan('make:factory-reloaded Ingredient --force')
-            ->expectsOutput(Config::get('factories-reloaded.factories_namespace').'\IngredientFactory created successfully.');
+            ->expectsOutput($this->exampleFactoriesNamespace().'\IngredientFactory created successfully.');
     }
 
     /** @test */
@@ -194,11 +210,11 @@ class FactoryCommandTest extends TestCase
     public function it_creates_folder_for_new_factories_if_not_given(): void
     {
         // Set factories path that does not exist yet
-        Config::set('factories-reloaded.factories_path', $this->examplePath('tmp-factories'));
+        Config::set('factories-reloaded.factories_path', $this->exampleFactoriesPath('folder-not-given-yet'));
 
         $this->artisan('make:factory-reloaded Ingredient')
             ->assertExitCode(0);
 
-        $this->assertFileExists($this->examplePath('tmp-factories/IngredientFactory.php'));
+        $this->assertFileExists($this->exampleFactoriesPath('IngredientFactory.php'));
     }
 }

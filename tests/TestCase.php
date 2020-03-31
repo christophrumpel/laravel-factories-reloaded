@@ -25,15 +25,20 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         Config::set('factories-reloaded.models_paths', [$this->exampleAppPath('Models')]);
         Config::set('factories-reloaded.vanilla_factories_path', $this->basePath . '/database/factories');
-        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/tmp');
+        Config::set('factories-reloaded.factories_path', $this->basePath . '/tests/Factories/Tmp');
         Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories\Tmp');
+
+        if(!File::exists($this->exampleFactoriesPath())) {
+            File::makeDirectory($this->exampleFactoriesPath());
+        }
 
         $this->loadMigrationsFrom($this->basePath . '/database/migrations');
     }
 
     public function tearDown(): void
     {
-        File::cleanDirectory($this->exampleFactoriesPath());
+        File::deleteDirectory($this->exampleFactoriesPath());
+        File::deleteDirectory($this->exampleFactoriesPath('tmp-factories'));
 
         parent::tearDown();
     }
@@ -58,6 +63,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function exampleFactoriesPath($path = ''): string
     {
         return Config::get('factories-reloaded.factories_path') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+
+    public function exampleFactoriesNamespace(): string
+    {
+        return Config::get('factories-reloaded.factories_namespace');
     }
 
     /**
