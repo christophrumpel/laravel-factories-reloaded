@@ -19,15 +19,16 @@ abstract class BaseFactory implements FactoryInterface
 
     private array $overwriteDefaults = [];
 
-    public function __construct(Generator $faker)
+    public function __construct(Generator $faker = null)
     {
-        $this->faker = $faker;
+        $this->faker = $faker ?? FakerFactory::create(config('app.faker_locale', 'en_US'));
     }
 
     /** @return static */
     public static function new(): self
     {
         $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+
         return new static($faker);
     }
 
