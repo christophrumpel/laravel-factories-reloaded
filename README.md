@@ -149,6 +149,35 @@ Like with Laravel factories you can also `make` a new model which gets `not` sto
 ``` php
 $user = UserFactory::new()->make();
 ```
+
+## Usage with Real Time Facades
+
+If you want a shorter API, you can eliminate the call to the `new` static method by using real-time facades.
+
+The only change that you need to make is to prefix the namespace of the imported Factory with `Facades`.
+
+Without using real-time facades
+``` php
+use Tests\Factories\UserFactory
+
+$user = UserFactory::new()->create();
+
+$user = UserFactory::new()->times(4)->create();
+
+$user = UserFactory::new()->make();
+```
+
+Using real-time facades
+``` php
+use Facades\Tests\Factories\UserFactory
+
+$user = UserFactory::create();
+
+$user = UserFactory::times(4)->create();
+
+$user = UserFactory::make();
+```
+
 ### States
 
 You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there are different ways to implement state-like functionality. If you have already defined states in your Laravel factory file, this package can convert them into `state methods` in the new factory class. When you run the command to create a new class factory, you will be asked about that.
