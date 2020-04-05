@@ -259,23 +259,12 @@ class UserFactory extends BaseFactory
 
     public function create(array $extra = []): User
     {
-        $user = parent::build($extra);
-
-        if ($this->recipes) {
-            $user->recipes()->saveMany($this->recipes);
-        }
-
-        return $user;
+        return parent::build($extra);
     }
 
-    public function withRecipes(int $times = 1)
+    public function withRecipes(int $times = 1): UserFactory
     {
-        $clone = clone $this;
-
-        $clone->recipes = RecipeFactory::new()
-            ->times($times)->make();
-
-        return $clone;
+        return $this->with(Recipe::class, 'recipes', $times);
     }
 
     public function getData(Generator $faker): array
@@ -289,10 +278,6 @@ class UserFactory extends BaseFactory
 
 }
 ```
-
-> :warning: **Note**: Whenever you return the factory itself from a method like `withRecipes`, you should use a `clone` of the instance like in the example above to prevent modifications.
-
-
 
 ### Testing
 
