@@ -7,6 +7,8 @@ use ExampleApp\Models\Recipe;
 use ExampleAppTests\Factories\GroupFactory;
 use ExampleAppTests\Factories\GroupFactoryUsingFaker;
 use ExampleAppTests\Factories\RecipeFactory;
+use ExampleAppTests\Factories\RecipeFactoryUsingFactoryForRelationship;
+use ExampleAppTests\Factories\RecipeFactoryUsingLaravelFactoryForRelationship;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -170,6 +172,38 @@ class FactoryTest extends TestCase
 
         $this->assertEquals(1, $firstGroup->recipes()->count());
         $this->assertEquals(4, $secondGroup->recipes()->count());
+    }
+
+    /** @test */
+    public function it_works_with_factory_as_relationship(): void
+    {
+        $recipe = RecipeFactoryUsingFactoryForRelationship::new()->create();
+
+        $this->assertInstanceOf(Recipe::class, $recipe);
+        $this->assertEquals(1, $recipe->group_id);
+        $this->assertCount(1, Recipe::all());
+        $this->assertCount(1, Group::all());
+    }
+
+    /** @test */
+    public function it_works_with_laravel_factory_as_relationship(): void
+    {
+        $recipe = RecipeFactoryUsingLaravelFactoryForRelationship::new()->create();
+
+        $this->assertEquals(1, $recipe->group_id);
+        $this->assertCount(1, Recipe::all());
+        $this->assertCount(1, Group::all());
+    }
+
+    /** @test */
+    public function it_works_with_factory_as_relationship_for_creating_multiple_models(): void
+    {
+        $recipes = RecipeFactoryUsingFactoryForRelationship::new()->times(4)->create();
+
+        $this->assertInstanceOf(Collection::class, $recipes);
+        $this->assertCount(4, Recipe::all());
+        $this->assertCount(4, Group::all());
+
     }
 
 }
