@@ -33,6 +33,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
         }
 
         $this->loadMigrationsFrom($this->basePath . '/database/migrations');
+        $this->withFactories($this->basePath . '/database/factories');
+
     }
 
     public function tearDown(): void
