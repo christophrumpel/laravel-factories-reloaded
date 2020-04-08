@@ -6,7 +6,6 @@ use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use ExampleApp\Models\Group;
 use ExampleApp\Models\Ingredient;
 use ExampleApp\Models\Recipe;
-use ExampleAppTests\Factories\RecipeFactory;
 use Illuminate\Support\Str;
 
 class FactoryFileTest extends TestCase

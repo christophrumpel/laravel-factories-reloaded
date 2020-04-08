@@ -24,7 +24,7 @@ class RecipeFactory extends BaseFactory
     {
         return [
             'name' => 'Lasagne',
-            'description' => 'Our family lasagne recipe.'
+            'description' => 'Our family lasagne recipe.',
         ];
     }
 }

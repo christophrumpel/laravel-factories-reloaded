@@ -14,7 +14,6 @@ use Illuminate\Support\Str;
 
 class FactoryCollectionTest extends TestCase
 {
-
     /** @test * */
     public function it_can_be_created(): void
     {
@@ -49,7 +48,7 @@ class FactoryCollectionTest extends TestCase
             Group::class,
             Recipe::class,
             Ingredient::class,
-            Comment::class
+            Comment::class,
         ]);
     }
 
@@ -91,7 +90,6 @@ class FactoryCollectionTest extends TestCase
             'public function withGroup',
             'public function withDifferentGroup',
         ]));
-
     }
 
     /** @test * */
@@ -122,5 +120,4 @@ class FactoryCollectionTest extends TestCase
         $this->assertInstanceOf(FactoryFile::class, $factoryFile);
         $this->assertEquals($factoryFile->modelClass, Group::class);
     }
-
 }

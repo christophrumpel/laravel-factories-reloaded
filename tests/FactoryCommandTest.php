@@ -4,13 +4,12 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
 use ExampleApp\Models\Group;
 use ExampleApp\Models\Recipe;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Config;
 
 class FactoryCommandTest extends TestCase
 {
-
     /** @test */
     public function it_fails_if_no_models_found(): void
     {
@@ -51,8 +50,10 @@ class FactoryCommandTest extends TestCase
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', $this->modelAnswer(Recipe::class))
-            ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
-                'Yes')
+            ->expectsQuestion(
+                'You have defined states in your old factory, do you want to import them to your new factory class?',
+                'Yes'
+            )
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
@@ -64,8 +65,10 @@ class FactoryCommandTest extends TestCase
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', $this->modelAnswer(Recipe::class))
-            ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
-                'Yes')
+            ->expectsQuestion(
+                'You have defined states in your old factory, do you want to import them to your new factory class?',
+                'Yes'
+            )
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
@@ -85,8 +88,10 @@ class FactoryCommandTest extends TestCase
     {
         $this->artisan('make:factory-reloaded')
             ->expectsQuestion('Please pick a model', $this->modelAnswer(Recipe::class))
-            ->expectsQuestion('You have defined states in your old factory, do you want to import them to your new factory class?',
-                'No')
+            ->expectsQuestion(
+                'You have defined states in your old factory, do you want to import them to your new factory class?',
+                'No'
+            )
             ->assertExitCode(0);
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
@@ -112,12 +117,14 @@ class FactoryCommandTest extends TestCase
     {
         $factoryPath = $this->exampleFactoriesPath('GroupFactory.php');
 
-        File::put($factoryPath,'test');
+        File::put($factoryPath, 'test');
         $this->assertFileExists($factoryPath);
 
         $this->artisan('make:factory-reloaded Group')
-            ->expectsQuestion('This factory class already exists. Do you want to overwrite it?',
-                'Yes')
+            ->expectsQuestion(
+                'This factory class already exists. Do you want to overwrite it?',
+                'Yes'
+            )
             ->assertExitCode(0);
 
         $generatedFactoryContent = file_get_contents($factoryPath);
@@ -132,13 +139,15 @@ class FactoryCommandTest extends TestCase
     {
         $factoryPath = $this->exampleFactoriesPath('GroupFactory.php');
 
-        File::put($factoryPath,'test');
+        File::put($factoryPath, 'test');
         $this->assertFileExists($factoryPath);
 
 
         $this->artisan('make:factory-reloaded Group')
-            ->expectsQuestion('This factory class already exists. Do you want to overwrite it?',
-                'No')
+            ->expectsQuestion(
+                'This factory class already exists. Do you want to overwrite it?',
+                'No'
+            )
             ->expectsOutput('No Files created.')
             ->assertExitCode(0);
 
@@ -150,7 +159,7 @@ class FactoryCommandTest extends TestCase
     {
         $factoryPath = $this->exampleFactoriesPath('GroupFactory.php');
 
-        File::put($factoryPath,'test');
+        File::put($factoryPath, 'test');
         $this->assertTrue(File::exists($factoryPath));
 
         $this->artisan('make:factory-reloaded Group --force')
@@ -187,7 +196,8 @@ class FactoryCommandTest extends TestCase
                 --factories_path=B
                 --factories_namespace=C')
                 ->assertExitCode(0);
-        } catch (\Exception $exception) {}
+        } catch (\Exception $exception) {
+        }
 
         $this->assertContains('A', Config::get('factories-reloaded.models_paths'));
         $this->assertEquals('B', Config::get('factories-reloaded.factories_path'));

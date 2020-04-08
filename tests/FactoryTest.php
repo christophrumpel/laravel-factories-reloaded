@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Config;
 
 class FactoryTest extends TestCase
 {
-
     use RefreshDatabase;
 
     /** @test * */
@@ -35,7 +34,6 @@ class FactoryTest extends TestCase
             ->create());
 
         $this->assertCount(1, Group::all());
-
     }
 
     /** @test * */
@@ -50,7 +48,6 @@ class FactoryTest extends TestCase
             ->make());
 
         $this->assertCount(0, Group::all());
-
     }
 
     /** @test * */
@@ -72,7 +69,6 @@ class FactoryTest extends TestCase
             ->times(12)
             ->create());
     }
-
 
     /** @test * */
     public function it_gives_you_a_collection_of_made_factory_model_instances(): void
@@ -171,5 +167,4 @@ class FactoryTest extends TestCase
         $this->assertEquals(1, $firstGroup->recipes()->count());
         $this->assertEquals(4, $secondGroup->recipes()->count());
     }
-
 }

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\File;
 
 class FactoryCollection
 {
-
     protected Collection $factoryFiles;
 
     protected bool $overwrite = false;
@@ -43,7 +42,7 @@ class FactoryCollection
 
     public function write(): Collection
     {
-        if ( ! File::exists(Config::get('factories-reloaded.factories_path'))) {
+        if (! File::exists(Config::get('factories-reloaded.factories_path'))) {
             File::makeDirectory(Config::get('factories-reloaded.factories_path'));
         }
 

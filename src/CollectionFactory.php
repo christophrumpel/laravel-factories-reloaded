@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 
 class CollectionFactory
 {
-
     private string $modelClass;
 
     private int $times;
@@ -34,6 +33,6 @@ class CollectionFactory
     {
         return collect()
             ->times($this->times)
-            ->transform(fn($value, $key) => $this->modelClass::$creationType(array_merge($this->modelsDefaultData[$key], $extra)));
+            ->transform(fn ($value, $key) => $this->modelClass::$creationType(array_merge($this->modelsDefaultData[$key], $extra)));
     }
 }

@@ -8,7 +8,6 @@ use Faker\Generator;
 
 class GroupFactoryUsingFaker extends BaseFactory
 {
-
     protected string $modelClass = Group::class;
 
     public function create(array $extra = []): Group
@@ -29,5 +28,4 @@ class GroupFactoryUsingFaker extends BaseFactory
             'mobile' => $faker->unique()->mobileNumber,
         ];
     }
-
 }
