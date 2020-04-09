@@ -4,13 +4,16 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
+use Illuminate\Support\Collection;
 use ReflectionClass;
 
 abstract class BaseFactory implements FactoryInterface
 {
+    use TranslatesFactoryData;
+
     protected string $modelClass;
 
-    private $relatedModel;
+    private Collection $relatedModels;
 
     private string $relatedModelRelationshipName;
 
@@ -23,6 +26,7 @@ abstract class BaseFactory implements FactoryInterface
     public function __construct(Generator $faker)
     {
         $this->faker = $faker;
+        $this->relatedModels = collect();
     }
 
     /** @return static */
@@ -35,14 +39,21 @@ abstract class BaseFactory implements FactoryInterface
 
     protected function build(array $extra = [], string $creationType = 'create')
     {
-        $model = $this->modelClass::$creationType(array_merge($this->getDefaults($this->faker), $this->overwriteDefaults, $extra));
+        $modelData = $this->prepareModelData($creationType, $this->getDefaults($this->faker));
+        $model = $this->modelClass::$creationType(array_merge($modelData, $this->overwriteDefaults, $extra));
 
-        if ($this->relatedModel) {
-            $model->{$this->relatedModelRelationshipName}()
-                ->saveMany($this->relatedModel);
+        if ($this->relatedModels->isEmpty()) {
+            return $model;
         }
 
-        return $model;
+        if ($creationType === 'create') {
+            $model->{$this->relatedModelRelationshipName}()
+                    ->saveMany($this->relatedModels);
+
+            return $model;
+        }
+
+        return $model->setRelation($this->relatedModelRelationshipName, $this->relatedModels);
     }
 
     public function times(int $times = 1): CollectionFactory
@@ -60,7 +71,7 @@ abstract class BaseFactory implements FactoryInterface
     {
         $clone = clone $this;
 
-        $clone->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
+        $clone->relatedModels = $this->getFactoryFromClassName($relatedModelClass)
             ->times($times)
             ->make();
         $clone->relatedModelRelationshipName = $relationshipName;
