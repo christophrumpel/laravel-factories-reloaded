@@ -152,6 +152,7 @@ class FactoryTest extends TestCase
             ->make();
 
         $this->assertEquals(1, $group->recipes->count());
+        $this->assertEquals(0, Recipe::count());
         $this->assertEquals(0, Group::count());
     }
 
