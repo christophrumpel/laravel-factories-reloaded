@@ -4,6 +4,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
+use Illuminate\Support\Collection;
 use ReflectionClass;
 
 abstract class BaseFactory implements FactoryInterface
@@ -12,19 +13,18 @@ abstract class BaseFactory implements FactoryInterface
 
     protected string $modelClass;
 
-    private $relatedModel;
+    private Collection $relatedModels;
 
     private string $relatedModelRelationshipName;
 
     private Generator $faker;
 
-    private array
-
- $overwriteDefaults = [];
+    private array $overwriteDefaults = [];
 
     public function __construct(Generator $faker)
     {
         $this->faker = $faker;
+        $this->relatedModels = collect();
     }
 
     /** @return static */
@@ -40,9 +40,13 @@ abstract class BaseFactory implements FactoryInterface
         $modelData = $this->prepareModelData($creationType, $this->getDefaults($this->faker));
 
         $model = $this->modelClass::$creationType(array_merge($modelData, $this->overwriteDefaults, $extra));
-        if ($this->relatedModel) {
-            $model->{$this->relatedModelRelationshipName}()
-                ->saveMany($this->relatedModel);
+        if ($this->relatedModels->isNotEmpty()) {
+            if ($creationType === 'create') {
+                $model->{$this->relatedModelRelationshipName}()
+                    ->saveMany($this->relatedModels);
+            } else {
+                $model->setRelation($this->relatedModelRelationshipName, $this->relatedModels);
+            }
         }
 
         return $model;
@@ -63,7 +67,7 @@ abstract class BaseFactory implements FactoryInterface
     {
         $clone = clone $this;
 
-        $clone->relatedModel = $this->getFactoryFromClassName($relatedModelClass)
+        $clone->relatedModels = $this->getFactoryFromClassName($relatedModelClass)
             ->times($times)
             ->make();
         $clone->relatedModelRelationshipName = $relationshipName;

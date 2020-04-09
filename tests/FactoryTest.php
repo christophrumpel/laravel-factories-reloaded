@@ -143,6 +143,19 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
+    public function it_lets_you_add_a_related_model_with_make(): void
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $group = GroupFactory::new()
+            ->with(Recipe::class, 'recipes')
+            ->make();
+
+        $this->assertEquals(1, $group->recipes->count());
+        $this->assertEquals(0, Group::count());
+    }
+
+    /** @test * */
     public function it_lets_you_add_multiple_related_models(): void
     {
         Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
@@ -199,6 +212,5 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf(Collection::class, $recipes);
         $this->assertCount(4, Recipe::all());
         $this->assertCount(4, Group::all());
-
     }
 }
