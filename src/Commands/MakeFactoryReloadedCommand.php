@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Config;
 
 class MakeFactoryReloadedCommand extends Command
 {
-
     use PicksClasses;
 
     /**
@@ -60,6 +59,7 @@ class MakeFactoryReloadedCommand extends Command
 
         if ($this->factoryCollection->write()->isEmpty()) {
             $this->info('No Files created.');
+
             return;
         }
 
@@ -79,12 +79,18 @@ class MakeFactoryReloadedCommand extends Command
 
     protected function overWriteConfigDependingOnGivenOptions(): void
     {
-        Config::set('factories-reloaded.models_paths',
-            $this->option('models_path') ?  [$this->option('models_path')] : config('factories-reloaded.models_paths'));
-        Config::set('factories-reloaded.factories_path',
-            $this->option('factories_path') ?? config('factories-reloaded.factories_path'));
-        Config::set('factories-reloaded.factories_namespace',
-            $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace'));
+        Config::set(
+            'factories-reloaded.models_paths',
+            $this->option('models_path') ?  [$this->option('models_path')] : config('factories-reloaded.models_paths')
+        );
+        Config::set(
+            'factories-reloaded.factories_path',
+            $this->option('factories_path') ?? config('factories-reloaded.factories_path')
+        );
+        Config::set(
+            'factories-reloaded.factories_namespace',
+            $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace')
+        );
     }
 
     protected function askAboutLaravelStatesIfGiven(): void

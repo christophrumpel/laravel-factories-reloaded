@@ -8,7 +8,6 @@ use Faker\Generator;
 
 class GroupFactory extends BaseFactory
 {
-
     protected string $modelClass = Group::class;
 
     public function create(array $extra = []): Group
@@ -28,5 +27,4 @@ class GroupFactory extends BaseFactory
             'size' => 2,
         ];
     }
-
 }

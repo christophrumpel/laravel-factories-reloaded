@@ -8,7 +8,6 @@ use ReflectionClass;
 
 abstract class BaseFactory implements FactoryInterface
 {
-
     use TranslatesFactoryData;
 
     protected string $modelClass;
@@ -19,7 +18,9 @@ abstract class BaseFactory implements FactoryInterface
 
     private Generator $faker;
 
-    private array $overwriteDefaults = [];
+    private array
+
+ $overwriteDefaults = [];
 
     public function __construct(Generator $faker)
     {
@@ -30,6 +31,7 @@ abstract class BaseFactory implements FactoryInterface
     public static function new(): self
     {
         $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+
         return new static($faker);
     }
 
@@ -68,7 +70,6 @@ abstract class BaseFactory implements FactoryInterface
 
         return $clone;
     }
-
 
     public function overwriteDefaults(array $attributes): self
     {

@@ -11,4 +11,3 @@ $factory->define(Group::class, function (Faker $faker) {
         'size' => $faker->numberBetween(1, 10),
     ];
 });
-

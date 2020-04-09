@@ -10,7 +10,9 @@ use SplFileObject;
 
 class LaravelFactoryExtractor
 {
-    protected ?array $uses = null;
+    protected ?array
+
+ $uses = null;
 
     protected string $className;
 
@@ -105,11 +107,10 @@ class LaravelFactoryExtractor
         $record = false;
         $currentUse = [
             'class' => '',
-            'as' => ''
+            'as' => '',
         ];
 
         foreach ($tokens as $token) {
-
             if ($token[0] === T_NAMESPACE) {
                 $buildingNamespace = true;
 
@@ -119,9 +120,9 @@ class LaravelFactoryExtractor
             }
 
             if ($buildingNamespace) {
-
                 if ($token === ';') {
                     $buildingNamespace = false;
+
                     continue;
                 }
 
@@ -130,20 +131,20 @@ class LaravelFactoryExtractor
                     case T_STRING:
                     case T_NS_SEPARATOR:
                         $builtNamespace .= $token[1];
+
                         break;
                 }
 
                 continue;
             }
 
-            if ($token === ';' || !is_array($token)) {
-
+            if ($token === ';' || ! is_array($token)) {
                 if ($record) {
                     $useStatements[] = $currentUse;
                     $record = false;
                     $currentUse = [
                         'class' => '',
-                        'as' => ''
+                        'as' => '',
                     ];
                 }
 
@@ -159,7 +160,6 @@ class LaravelFactoryExtractor
             }
 
             if ($matchedNamespace) {
-
                 if ($token[0] === T_USE) {
                     $record = 'class';
                 }
@@ -189,7 +189,6 @@ class LaravelFactoryExtractor
         // if there is no alias in the use statement.
         foreach ($useStatements as &$useStatement) {
             if (empty($useStatement['as'])) {
-
                 $useStatement['as'] = basename($useStatement['class']);
             }
         }
@@ -201,16 +200,17 @@ class LaravelFactoryExtractor
     {
         $states = collect($this->factory->getProperty('states'));
 
-        if (!$states->has($this->className)) {
+        if (! $states->has($this->className)) {
             return '';
         }
 
         return collect($states->get($this->className))->map(function ($closure, $state) {
-            $lines = collect($this->getClosureContent($closure))->filter()->map(fn($item) => str_replace("\n", '', $item));
+            $lines = collect($this->getClosureContent($closure))->filter()->map(fn ($item) => str_replace("\n", '', $item));
             $firstLine = $lines->shift();
             $lastLine = $lines->pop();
 
-            return array_merge([
+            return array_merge(
+                [
                 'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
                 '{',
                 '    $clone = clone $this;',
@@ -221,10 +221,10 @@ class LaravelFactoryExtractor
                     str_replace('];', ']);', $lastLine),
                     '',
                     '    return $clone;',
-                    '}'
+                    '}',
                 ]
             );
-        })->flatten()->map(fn($line) => '    ' . $line)->implode("\n");
+        })->flatten()->map(fn ($line) => '    ' . $line)->implode("\n");
     }
 
     protected function getStateMethodName(string $state): string
