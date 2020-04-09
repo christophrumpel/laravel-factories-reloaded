@@ -19,7 +19,9 @@ abstract class BaseFactory implements FactoryInterface
 
     private Generator $faker;
 
-    private array $overwriteDefaults = [];
+    private array
+
+ $overwriteDefaults = [];
 
     public function __construct(Generator $faker)
     {
@@ -38,18 +40,18 @@ abstract class BaseFactory implements FactoryInterface
     protected function build(array $extra = [], string $creationType = 'create')
     {
         $modelData = $this->prepareModelData($creationType, $this->getDefaults($this->faker));
-
         $model = $this->modelClass::$creationType(array_merge($modelData, $this->overwriteDefaults, $extra));
-        if ($this->relatedModels->isNotEmpty()) {
-            if ($creationType === 'create') {
-                $model->{$this->relatedModelRelationshipName}()
-                    ->saveMany($this->relatedModels);
-            } else {
-                $model->setRelation($this->relatedModelRelationshipName, $this->relatedModels);
-            }
+
+        if ($this->relatedModels->isEmpty()) {
+            return $model;
         }
 
-        return $model;
+        if ($creationType === 'create') {
+            return $model->{$this->relatedModelRelationshipName}()
+                    ->saveMany($this->relatedModels);
+        }
+
+        return $model->setRelation($this->relatedModelRelationshipName, $this->relatedModels);
     }
 
     public function times(int $times = 1): CollectionFactory
