@@ -47,8 +47,10 @@ abstract class BaseFactory implements FactoryInterface
         }
 
         if ($creationType === 'create') {
-            return $model->{$this->relatedModelRelationshipName}()
+            $model->{$this->relatedModelRelationshipName}()
                     ->saveMany($this->relatedModels);
+
+            return $model;
         }
 
         return $model->setRelation($this->relatedModelRelationshipName, $this->relatedModels);
