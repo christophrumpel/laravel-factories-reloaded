@@ -33,14 +33,16 @@ class CollectionFactory
 
     private function build(array $extra = [], string $creationType = 'create'): Collection
     {
-        $this->modelsDefaultData->transform(function(array $modelFields) use ($creationType) {
-           return $this->prepareModelData($creationType, $modelFields);
+        $this->modelsDefaultData->transform(function (array $modelFields) use ($creationType) {
+            return $this->prepareModelData($creationType, $modelFields);
         });
 
 
         return collect()
             ->times($this->times)
-            ->transform(fn($value, $key) => $this->modelClass::$creationType(array_merge($this->modelsDefaultData[$key],
-                $extra)));
+            ->transform(fn ($value, $key) => $this->modelClass::$creationType(array_merge(
+                $this->modelsDefaultData[$key],
+                $extra
+            )));
     }
 }

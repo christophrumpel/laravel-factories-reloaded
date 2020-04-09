@@ -3,7 +3,6 @@
 namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use ExampleApp\Models\Group;
 use ExampleApp\Models\Recipe;
 use Faker\Generator;
 
