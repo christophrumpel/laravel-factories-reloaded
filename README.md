@@ -56,6 +56,7 @@ public function getDefaults(Faker $faker): array
         'email_verified_at' => now(),
         'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         'remember_token' => Str::random(10),
+        'active' => false,
     ];
 }
 ```
@@ -89,7 +90,7 @@ You may have defined states in your old Laravel factories.
 ```php
 $factory->state(User::class, 'active', function () {
     return [
-        'name' => 'active',
+        'active' => true,
     ];
 });
 ```
@@ -151,6 +152,24 @@ public function getDefaults(Faker $faker): array
 ```
 
 > :warning: **Note**: Still, I wouldn't recommend both of them because you do not see that additional models are persisted in your tests. Please stick to dedicated methods.
+
+### Immutability
+
+You might have noticed that when this package imports a `state` for you, it will clone the factory before returning.
+
+```php
+public function active(): UserFactory
+{
+    $clone = clone $this;
+    $clone->overwriteDefaults([
+        'active' => true,
+    ]);
+
+    return $clone;
+}
+```
+
+This is recommended for all methods which you will use to setup your test model. If you wouldn't clone the factory, you will always modify the factory itself. This could lead into problems when you use the same factory again.
 
 ### What Else
 
