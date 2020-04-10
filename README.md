@@ -94,7 +94,7 @@ $factory->state(User::class, 'active', function () {
 });
 ```
 
-While creating a new class factory, you will be asked if you like those states to be imported to your new factories. If you agree, you can immediately use them:
+While creating a new class factory, you will be asked if you like those states to be imported to your new factories. If you agree, you can immediately use them. The state `active` is now a method on your `UserFactory`.
 
 ```php
 $recipe = UserFactory::new()
@@ -114,7 +114,7 @@ $user = UserFactory::new()
 
 Here were are getting a user instance that has three related recipes attached.
 
-> :warning: **Note**: For this to work, you need to have a new RecipeFactory as well.
+> :warning: **Note**: For this to work, you need to have a new RecipeFactory already created.
 
 In Laravel factories, you could also define a related model in your default data like:
 
