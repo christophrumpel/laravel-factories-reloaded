@@ -59,8 +59,7 @@ abstract class BaseFactory implements FactoryInterface
     public function times(int $times = 1): CollectionFactory
     {
         $collectionData = collect()
-            ->times($times)
-            ->map(function ($key) {
+            ->times($times, function ($key) {
                 return array_merge($this->getDefaults($this->faker), $this->overwriteDefaults);
             });
 
