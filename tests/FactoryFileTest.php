@@ -68,6 +68,19 @@ class FactoryFileTest extends TestCase
     }
 
     /** @test * */
+    public function it_imports_old_factory_default_data(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
+
+        $this->assertTrue(Str::containsAll($content, [
+            "'name' =>",
+            "'description' =>",
+        ]));
+    }
+
+    /** @test * */
     public function it_can_add_default_states(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
