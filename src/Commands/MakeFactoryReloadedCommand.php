@@ -115,7 +115,7 @@ class MakeFactoryReloadedCommand extends Command
             return;
         }
 
-        if ($this->hasOption('force') && $this->option('force')) {
+        if ($this->option('force')) {
             return;
         }
 
