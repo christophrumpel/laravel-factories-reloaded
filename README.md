@@ -1,23 +1,20 @@
-# Laravel Factories Reloaded
+# Laravel Factories Reloaded 🏭
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/christophrumpel/laravel-factories-reloaded.svg?style=flat-square)](https://packagist.org/packages/christophrumpel/laravel-factories-reloaded)
-[![Build Status](https://img.shields.io/travis/christophrumpel/laravel-factories-reloaded/master.svg?style=flat-square)](https://travis-ci.org/christophrumpel/laravel-factories-reloaded)
-[![Quality Score](https://img.shields.io/scrutinizer/g/christophrumpel/laravel-factories-reloaded.svg?style=flat-square)](https://scrutinizer-ci.com/g/christophrumpel/laravel-factories-reloaded)
 [![Total Downloads](https://img.shields.io/packagist/dt/christophrumpel/laravel-factories-reloaded.svg?style=flat-square)](https://packagist.org/packages/christophrumpel/laravel-factories-reloaded)
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 
-This package will generate `class-based factories` which you can use instead of the default Laravel factory files.
+This package generates `class-based` model factories, which you can use instead of the ones provided by Laravel.
 
-**Why Class-Based Factories?:**
+![Screenshot of the command](http://screenshots.nomoreencore.com/laravel_factories_reloaded_pick_01.png)
 
-- You have a dedicated class for every factory, and the default model data can be defined inside this class. This is a cleaner solution than the default factory files.
-- If creating test data gets more complicated than creating just one model, you hide this inside the factory class so that your tests stay clean.
-- The generated factory classes use return types so that your IDE knows what gets returned. (This is something you do not have with the default Laravel factories)
+These new factory classes can then be used to create your test models like:
 
-I already know a lot of people using factory classes. So why not just create your own classes when you need them?
+```php
+UserFactory::new()->create();
+```
 
-- Automate everything! Even just calling an artisan command that creates a class is much faster than you doing it yourself.
-- This package will create classes that already provide factory features, you know, like creating a new model instance, multiple ones and more.
-
+> :warning: **Note**: Interested in WHY you need class-based factories? Read [here](#why-class-based-factories).
 
 ## Installation
 
@@ -32,275 +29,159 @@ To publish the config file run:
 ```bash
 php artisan vendor:publish --provider="Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProvider"
 ```
+It will provide the package's config file where you can define the `paths of your models`, the `path of the newly generated factories`, as well as where your `old Laravel factories` are located.
 
-It will provide the package's config file where you can define the `paths of your models`, the `path of the generated factories`, as well as the `generated factories namespace`.
+## Usage
 
-```php
-<?php
+### Generate Factories
 
-/*
- * You can place your custom package configuration in here.
- */
-return [
-    'models_path' => [
-        base_path('app')
-    ],
-
-    'factories_path' => base_path('tests/Factories'),
-
-    'factories_namespace' => 'Tests\Factories',
-];
-```
-
-## Generate Factories
-
-First, you need to create a new factory class. This is done via a new command this package comes with. In this example, we want to create a new user factory.
+First, you need to create a new factory class. This is done via a newly provided command called `make:factory-reloaded`.
 
 ```shell script
 php artisan make:factory-reloaded
 ```
 
-After running this command, you have to select one of your models. Here you decide for which model you are creating a factory for. I will choose the user model. (Through a config you can define where your models live)
+You can pick one of the found models or create factories for `all` of them.
 
+-- image shown model list with all option --
 
-![Screenshot of the command](http://screenshots.nomoreencore.com/laravel_factories_reloaded_pick_v3.png)
+### Define Default Model Data
 
-This will give you a new `UserFactory` under the `Tests\Factories` namespace. Here is your new basic factory class:
+Similar to Laravel factories, you can define default data for your model instances. Inside your new factories, there is a `getDefaults` method defined for that. The `Faker` helper to create dummy data is available as well.
 
 ```php
-class UserFactory extends BaseFactory
+public function getDefaults(Faker $faker): array
 {
-
-    protected string $modelClass = User::class;
-
-    public function create(array $extra = []): User
-    {
-        return parent::build($extra);
-    }
-    
-    public function make(array $extra = []): User
-    {
-        return parent::build($extra, 'make');
-    }
-
-    public function getDefaults(Generator $faker): array
-    {
-        return [
-            'name' => $faker->name,
-            'email' => $faker->unique()->safeEmail,
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
-        ];
-    }
-
+    return [
+        'name' => $faker->name,
+        'email' => $faker->unique()->safeEmail,
+        'email_verified_at' => now(),
+        'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        'remember_token' => Str::random(10),
+    ];
 }
 ```
 
-Inside this class, you can define the properties of the model with the `getDefaults` method. It is very similar to what you would do with a Laravel default factory, and you can make use of Faker as well. Actually, if you have already a Laravel factory for a specific model, this package will copy the default data to the new class factory while generating.
+### Use New Factories
 
-The `create` method is only a copy of the one in the parent class `BaseFactory`. Still, we need it in our dedicated factory class so that we can define what gets returned. In our case, it is a user model. Other methods like `new` or `times` are hidden in the parent class.
+Let's say you have created a new user factory. You can now start using it and create a new user instance. Similar to Laravel factories, the `create` method will persist in a new model.
 
-### Additional Arguments And Options
-
-If you don't want to select your model from a list, you can pass the class name of a model in your model path as an argument and your factory will immediately be created for you:
 ```php
-php artisan make:factory-reloaded Ingredient
-```
-By default, this command will ask you if you want to overwrite the class factory, if it already exists. You can pass the `--force` option in order to skip this question.
-```php
-php artisan make:factory-reloaded Ingredient --force
-```
-
-### Configuration
-You can publish a configuration file that lets you set the path to your models and factories as well as the namespace of your factories. Alternatively, you can set the configurations as options when you run the command:
-
-`--models_path=app/models`
-
-`--factories_path=path/to/your/factories`
-
-`--factories_namespace=Your\Factories\Namespace`
-
-Most people won't need to override these configuration on the fly, but if you splitting your app up into domains you might be keeping your factories closer to their models. In this case you could do something like this:
-
-```shell script
-php artisan make:factory-reloaded --models_path=app/domains/customers/models 
-    --factories_path=app/domains/customers/factories --factories_namespace=App\Domains\Customers\Factories
-```
-
-## Usage
-
-Now you can start using your new user factory class in your tests. The static `new` method gives you a new instance of the factory. This is useful to chain other methods, like `create` for example.
-
-``` php
 $user = UserFactory::new()->create();
 ```
 
-This will give you back a newly created user instance from the database. If you want to create multiple instances, you can use the `times` method, which will use the `create` method behind the scenes and will return you a collection of the new model instances.
+If you like to get an instance that is not persisted yet, you can choose the `make` method.
 
-``` php
-$user = UserFactory::new()
+```php
+$user = UserFactory::new()->make();
+```
+
+To create `multiple` instances, you chain the `times()` method before the `create` or `make` method.
+
+```php
+$users = UserFactory::new()
     ->times(4)
     ->create();
 ```
 
-Like with Laravel factories you can also `make` a new model which gets `not` stored to the database yet.
-
-``` php
-$user = UserFactory::new()->make();
-```
 ### States
 
-You probably have used `states` with Laravel factories and that is possible with factory classes as well of course. Since you own your factory classes there are different ways to implement state-like functionality. If you have already defined states in your Laravel factory file, this package can convert them into `state methods` in the new factory class. When you run the command to create a new class factory, you will be asked about that.
-
-Besides, the easiest approach to create a new state is by calling a method which sets a property in the class.
+You may have defined states in your old Laravel factories.
 
 ```php
-$recipe = RecipeFactory::new()
-    ->published()
+$factory->state(User::class, 'active', function () {
+    return [
+        'name' => 'active',
+    ];
+});
+```
+
+While creating a new class factory, you will be asked if you like those states to be imported to your new factories. If you agree, you can immediately use them:
+
+```php
+$recipe = UserFactory::new()
+    ->active()
     ->create();
 ```
-
-And to make this work, we need to add the method to the factory class, as well as the property. In the `getDefaults` method we then use the property to fill the model.
-
-```php
-<?php
-
-namespace Tests\Factories;
-
-use App\Recipe;
-use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use Faker\Generator;
-
-class RecipeFactory extends BaseFactory
-{
-
-    protected string $modelClass = Recipe::class;
-   
-    private bool $isPublished = false;
-
-    public function create(array $extra = []): Recipe
-    {
-        return parent::build($extra);
-    }
-
-    public function make(array $extra = []): Recipe
-    {
-        return parent::build($extra, 'make');
-    }
-
-    public function getData(Generator $faker): array
-    {
-        return [
-            'category_id' => 1,
-            'name' => $faker->name,
-            'is_published' => $this->isPublished,
-        ];
-    }
-
-    public function published(): self
-    {
-        $clone = clone $this;
-        $clone->isPublished = true;
-
-        return $clone;
-    }
-
-}
-```
-
-> :warning: **Note**: We clone the factory class to make it immuteable when using the published method. You can read more about it in [Brent's factory article](https://stitcher.io/blog/laravel-beyond-crud-09-test-factories).
 
 ### Relations
 
-There will be situations when you need to add related models to your test data. This is already pretty easy with using multiple factory classes.
-
-```php
-$user = UserFactory::new()->create();
-$user->recipes()->saveMany(RecipeFactory::new()->times(4)->make());
-```
-
-Of course, the relations need to be set up before. Besides this, there is also an in-built solution.
+Often you will need to create a new model instance with related models. This is now pretty simple by using the `with` method:
 
 ```php
 $user = UserFactory::new()
-    ->with(Recipe::class, 'recipes')
+    ->with(Recipe::class, 'recipes', 3)
     ->create();
 ```
 
-With the `with` method, you can easily add relations in a more fluently way. The first parameter defines the mode and the second one the name of the relationship. If you need to add more than one related model, you can add a third argument to define the count.
+Here were are getting a user instance that has three related recipes attached.
+
+> :warning: **Note**: For this to work, you need to have a new RecipeFactory as well.
+
+In Laravel factories, you could also define a related model in your default data like:
 
 ```php
-$user = UserFactory::new()
-    ->with(Recipe::class, 'recipes', 4)
-    ->create();
+$factory->define(Ingredient::class, function (Faker $faker) {
+    return [
+        'name' => $faker->name,
+        'recipe_id' => factory(Recipe::class),
+    ];
+});
 ```
 
-> :warning: **Note**: For this to work, you need to have created a RecipeFactory before.
-
-But there is one more way to add related data. Since you own your factory classes, you can add a method on the class itself. This way you can pick a much more expressive name like `withRecipes`.
+This can also be achieved in our new factory classes.
 
 ```php
-$user = UserFactory::new()
-    ->withRecipes(4)
-    ->create();
-```
-
-This way you can define yourself how to set up recipes and you are more flexible doing it. Here is an example of how your `UserFactory` could look like with a custom relation method.
-
-```php
-class UserFactory extends BaseFactory
+public function getDefaults(Faker $faker): array
 {
-
-    protected string $modelClass = User::class;
-
-    /** @var Collection */
-    private $recipes;
-
-    public function create(array $extra = []): User
-    {
-        $user = parent::build($extra);
-
-        if ($this->recipes) {
-            $user->recipes()->saveMany($this->recipes);
-        }
-
-        return $user;
-    }
-
-    public function withRecipes(int $times = 1)
-    {
-        $clone = clone $this;
-
-        $clone->recipes = RecipeFactory::new()
-            ->times($times)->make();
-
-        return $clone;
-    }
-
-    public function getData(Generator $faker): array
-    {
-        return [
-            'name' => $faker->name,
-            'email' => 'test@email.at',
-            'password' => bcrypt('test'),
-        ];
-    }
-
+    return [
+        'name' => $faker->name,
+        'recipe_id' => factory(Recipe::class),
+    ];
 }
 ```
 
-> :warning: **Note**: Whenever you return the factory itself from a method like `withRecipes`, you should use a `clone` of the instance like in the example above to prevent modifications.
+Or even better through an instance of a new factory class.
+```php
+public function getDefaults(Faker $faker): array
+{
+    return [
+        'name' => $faker->name,
+        'recipe_id' => RecipeFactory::new(),
+    ];
+}
+```
 
+> :warning: **Note**: Still, I wouldn't recommend both of them because you do not see that additional models are persisted in your tests. Please stick to dedicated methods.
 
+### What Else
 
-### Testing
+The best thing about those new factory classes is that you `own` them. You can create as many methods or properties as you like to help you create those specific instances that you need. Here is how a more complex factory call could look like:
+
+```php
+User::new()
+    ->active()
+    ->onSubscriptionPlan(SubscriptionPlan::paid)
+    ->withRecipesAndIngredients()
+    ->times(10)
+    ->create();
+```    
+
+Using such a factory call will help your tests to stay clean and give everyone a good overview of what is happening here.
+
+## Why Class-Based Factories?
+
+* They give you much more flexibility on how to create your model instances.
+* They make your tests much cleaner because you can hide complex preparations inside the class.
+* They provide IDE auto-completion which you do not get have with Laravel factories.
+
+## Testing
 
 ``` bash
 composer test
 ```
 
-### Changelog
+## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information about what has changed recently.
 
@@ -308,7 +189,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information about what has changed
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-### Security
+## Security
 
 If you discover any security-related issues, please email christoph@christoph-rumpel.com instead of using the issue tracker.
 
@@ -317,12 +198,10 @@ If you discover any security-related issues, please email christoph@christoph-ru
 - [Christoph Rumpel](https://github.com/christophrumpel)
 - [All Contributors](../../contributors)
 
-The current implementation was improved with help from [Brent's article](https://stitcher.io/blog/laravel-beyond-crud-09-test-factories) about how they deal with factories at Spatie.
+Some of the implementations are inspired by [Brent's article](https://stitcher.io/blog/laravel-beyond-crud-09-test-factories) about how they deal with factories at Spatie.
+
+And a big thanks goes out to [Adrian](https://github.com/nuernbergerA) who helped me a lot with refactoring this package.
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-## Laravel Package Boilerplate
-
-This package was generated using the [Laravel Package Boilerplate](https://laravelpackageboilerplate.com).
