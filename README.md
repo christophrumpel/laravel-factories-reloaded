@@ -8,7 +8,7 @@ This package generates `class-based` model factories, which you can use instead 
 
 ![Screenshot of the command](http://screenshots.nomoreencore.com/laravel_factories_reloaded_pick_01.png)
 
-These new factory classes can then be used to create your test models like:
+These new factory classes can then be used to create your test model instances like:
 
 ```php
 UserFactory::new()->create();
@@ -42,8 +42,6 @@ php artisan make:factory-reloaded
 ```
 
 You can pick one of the found models or create factories for `all` of them.
-
--- image shown model list with all option --
 
 ### Define Default Model Data
 
