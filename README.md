@@ -45,6 +45,14 @@ You can pick one of the found models or create factories for `all` of them.
 
 #### Command Options
 
+If you want to define options through the command itself, you can do that as well:
+
+```shell script
+php artisan make:factory-reloaded --models_path="app/Models"  --factories_path="tests/ClassFactories" --factories_namespace="Tests\ClassFactories"
+```
+
+Currently, you can only define one location for your models this way.
+
 ### Define Default Model Data
 
 Similar to Laravel factories, you can define default data for your model instances. Inside your new factories, there is a `getDefaults` method defined for that. The `Faker` helper to create dummy data is available as well.

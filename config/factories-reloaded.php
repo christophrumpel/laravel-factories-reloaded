@@ -15,6 +15,11 @@ return [
     'factories_path' => base_path('tests/Factories'),
 
     /**
+     * Defines the namespace ofr your new factories.
+     */
+    'factories_namespace' => 'Tests\Factories',
+
+    /**
      * Defines where your Laravel factories are located.
      * They are used while generating new factories.
      */
