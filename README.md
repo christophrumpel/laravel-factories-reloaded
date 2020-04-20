@@ -11,7 +11,7 @@ This package generates `class-based` model factories, which you can use instead 
 These new factory classes can then be used to create your test model instances like:
 
 ```php
-UserFactory::new()->create();
+$user = UserFactory::new()->create();
 ```
 
 > :warning: **Note**: Interested in WHY you need class-based factories? Read [here](#why-class-based-factories).
