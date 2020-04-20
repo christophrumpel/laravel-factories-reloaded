@@ -186,7 +186,7 @@ This is recommended for all methods which you will use to setup your test model.
 The best thing about those new factory classes is that you `own` them. You can create as many methods or properties as you like to help you create those specific instances that you need. Here is how a more complex factory call could look like:
 
 ```php
-User::new()
+UserFactory::new()
     ->active()
     ->onSubscriptionPlan(SubscriptionPlan::paid)
     ->withRecipesAndIngredients()
