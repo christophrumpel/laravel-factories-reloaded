@@ -6,7 +6,7 @@
 
 This package generates `class-based` model factories, which you can use instead of the ones provided by Laravel.
 
-![Screenshot of the command](http://screenshots.nomoreencore.com/laravel_factories_reloaded_pick_01.png)
+![Screenshot of the command](http://screenshots.nomoreencore.com/lfr_social_image.png)
 
 These new factory classes can then be used to create your test model instances like:
 
