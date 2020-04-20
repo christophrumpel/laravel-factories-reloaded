@@ -43,6 +43,8 @@ php artisan make:factory-reloaded
 
 You can pick one of the found models or create factories for `all` of them.
 
+#### Command Options
+
 ### Define Default Model Data
 
 Similar to Laravel factories, you can define default data for your model instances. Inside your new factories, there is a `getDefaults` method defined for that. The `Faker` helper to create dummy data is available as well.
