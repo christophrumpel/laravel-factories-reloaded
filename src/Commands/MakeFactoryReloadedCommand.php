@@ -91,7 +91,6 @@ class MakeFactoryReloadedCommand extends Command
             'factories-reloaded.factories_namespace',
             $this->option('factories_namespace') ?? config('factories-reloaded.factories_namespace')
         );
-
     }
 
     protected function askAboutLaravelStatesIfGiven(): void
