@@ -123,7 +123,7 @@ $user = UserFactory::new()
     ->create();
 ```
 
-Here were are getting a user instance that has three related recipes attached.
+Here were are getting a user instance that has three related recipes attached. The second argument here defines the relationship name.
 
 > :warning: **Note**: For this to work, you need to have a new RecipeFactory already created.
 
@@ -161,7 +161,7 @@ public function getDefaults(Faker $faker): array
 }
 ```
 
-> :warning: **Note**: Still, I wouldn't recommend both of them because you do not see that additional models are persisted in your tests. Please stick to dedicated methods.
+> :warning: **Note**: I wouldn't recommend any of these options because you do not see that additional models are persisted in your tests. Please use the given "with" method create a dedicated method for creating a relation yourself.
 
 ### Immutability
 
