@@ -35,7 +35,7 @@ It will provide the package's config file where you can define the `paths of you
 
 ### Generate Factories
 
-First, you need to create a new factory class. This is done via a newly provided command called `make:factory-reloaded`.
+First, you need to create a new factory class for one of your models. This is done via a newly provided command called `make:factory-reloaded`.
 
 ```shell script
 php artisan make:factory-reloaded
