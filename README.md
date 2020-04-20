@@ -29,7 +29,7 @@ To publish the config file run:
 ```bash
 php artisan vendor:publish --provider="Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProvider"
 ```
-It will provide the package's config file where you can define the `paths of your models`, the `path of the newly generated factories`, as well as where your `old Laravel factories` are located.
+It will provide the package's config file where you can define `multiple paths of your models`, the `path of the newly generated factories`, as well as where your `old Laravel factories` are located.
 
 ## Usage
 
