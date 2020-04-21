@@ -76,8 +76,16 @@ abstract class BaseFactory implements FactoryInterface
         return $clone;
     }
 
-    public function overwriteDefaults(array $attributes): self
+    /**
+     * @param array|callable $attributes
+     * @return $this
+     */
+    public function overwriteDefaults($attributes): self
     {
+        if (is_callable($attributes)) {
+            $attributes = $attributes();
+        }
+
         $this->overwriteDefaults = $attributes;
 
         return $this;
