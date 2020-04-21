@@ -14,6 +14,13 @@ These new factory classes can then be used to create your test model instances l
 $user = UserFactory::new()->create();
 ```
 
+## Benefits
+
+* use the **features you already love from Laravel factories** (`create`, `make`, `times`, `states`)
+* **automatically create** new class factories for specific or `All` your models
+* **automatically import** defined `default data` and `states` from your Laravel factories
+* and many more...
+
 > :warning: **Note**: Interested in WHY you need class-based factories? Read [here](#why-class-based-factories).
 
 ## Installation
