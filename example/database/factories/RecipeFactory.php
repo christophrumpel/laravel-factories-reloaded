@@ -20,7 +20,9 @@ $factory->state(Recipe::class, 'withGroup', function () {
 });
 
 $factory->state(Recipe::class, 'withDifferentGroup', function () {
+    $group = factory(Group::class)->create();
+
     return [
-        'group_id' => factory(Group::class),
+        'group_id' => $group->id,
     ];
 });

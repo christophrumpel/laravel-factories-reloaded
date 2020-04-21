@@ -87,12 +87,24 @@ class FactoryFileTest extends TestCase
 
         $content = $recipeFactoryFile->render();
 
-        $this->assertTrue(Str::containsAll($content, [
-            'public function withGroup',
-            '$clone = clone $this;',
-            'return $clone',
-            'public function withDifferentGroup',
-        ]));
+        $this->assertTrue(Str::contains($content, '    public function withGroup(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults([
+            \'group_id\' => factory(Group::class),
+        ]);
+    }'));
+
+        $this->assertTrue(Str::contains($content, 'public function withDifferentGroup(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults(function() {
+            $group = factory(Group::class)->create();
+
+            return [
+                \'group_id\' => $group->id,
+            ];
+        });
+    }'));
+
     }
 
     /** @test * */

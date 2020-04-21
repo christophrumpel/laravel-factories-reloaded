@@ -209,22 +209,40 @@ class LaravelFactoryExtractor
             $firstLine = $lines->shift();
             $lastLine = $lines->pop();
 
-            return array_merge(
-                [
-                'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
-                '{',
-                '    $clone = clone $this;',
-                str_replace('return ', '$clone->overwriteDefaults(', $firstLine),
-            ],
+            if(Str::startsWith(ltrim($firstLine), 'return')) {
+                return array_merge([
+                    '',
+                    'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
+                    '{',
+                    str_replace('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
+                ],
                 $lines->toArray(),
                 [
                     str_replace('];', ']);', $lastLine),
-                    '',
-                    '    return $clone;',
                     '}',
-                ]
-            );
-        })->flatten()->map(fn ($line) => '    ' . $line)->implode("\n");
+                ]);
+            }
+
+            return array_merge([
+                '',
+                'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
+                '{',
+                '    return tap(clone $this)->overwriteDefaults(function() {',
+                '    '.$firstLine,
+            ],
+            $lines->map(fn ($line) => '    '.$line)->toArray(),
+            [
+                '    '.$lastLine,
+                '    });',
+                '}',
+            ]);
+        })->flatten()->map(function ($line) {
+            if(ltrim($line) === '') {
+                return '';
+            }
+
+            return '    ' . $line;
+        })->implode("\n");
     }
 
     protected function getStateMethodName(string $state): string
