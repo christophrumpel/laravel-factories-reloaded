@@ -104,7 +104,6 @@ class FactoryFileTest extends TestCase
             ];
         });
     }'));
-
     }
 
     /** @test * */
