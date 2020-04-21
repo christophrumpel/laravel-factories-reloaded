@@ -204,7 +204,10 @@ class LaravelFactoryExtractor
             return '';
         }
 
+
         return collect($states->get($this->className))->map(function ($closure, $state) {
+            throw_if(! is_callable($closure), new \RuntimeException('One of your factory states is defined as an array. It must be of the type closure to import it.'));
+
             $lines = collect($this->getClosureContent($closure))->filter()->map(fn ($item) => str_replace("\n", '', $item));
             $firstLine = $lines->shift();
             $lastLine = $lines->pop();

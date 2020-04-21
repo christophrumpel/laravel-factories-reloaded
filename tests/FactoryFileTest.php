@@ -5,6 +5,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use ExampleApp\Models\Group;
 use ExampleApp\Models\Ingredient;
+use ExampleApp\Models\ModelsWithArrayState\Book;
 use ExampleApp\Models\Recipe;
 use Illuminate\Support\Str;
 
@@ -104,6 +105,16 @@ class FactoryFileTest extends TestCase
             ];
         });
     }'));
+    }
+
+    /** @test * */
+    public function it_throws_error_if_state_uses_array_instead_closure(): void
+    {
+        try {
+            FactoryFile::forModel(Book::class);
+        } catch (\RuntimeException $exception) {
+            $this->assertEquals('One of your factory states is defined as an array. It must be of the type closure to import it.', $exception->getMessage());
+        }
     }
 
     /** @test * */
