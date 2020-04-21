@@ -13,15 +13,13 @@ abstract class BaseFactory implements FactoryInterface
 
     protected string $modelClass;
 
-    private Collection $relatedModels;
+    protected Collection $relatedModels;
 
-    private string $relatedModelRelationshipName;
+    protected string $relatedModelRelationshipName;
 
-    private Generator $faker;
+    protected Generator $faker;
 
-    private array
-
- $overwriteDefaults = [];
+    protected array $overwriteDefaults = [];
 
     public function __construct(Generator $faker)
     {
@@ -85,7 +83,7 @@ abstract class BaseFactory implements FactoryInterface
         return $this;
     }
 
-    private function getFactoryFromClassName(string $className): FactoryInterface
+    protected function getFactoryFromClassName(string $className): FactoryInterface
     {
         $baseClassName = (new ReflectionClass($className))->getShortName();
         $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
