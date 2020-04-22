@@ -8,11 +8,6 @@ This package generates `class-based` model factories, which you can use instead 
 
 ![Screenshot of the command](http://screenshots.nomoreencore.com/lfr_social_image_full.png)
 
-These new factory classes can then be used to create your test model instances like:
-
-```php
-$user = UserFactory::new()->create();
-```
 
 ## Benefits
 
