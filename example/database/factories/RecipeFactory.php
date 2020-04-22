@@ -26,3 +26,7 @@ $factory->state(Recipe::class, 'withDifferentGroup', function () {
         'group_id' => $group->id,
     ];
 });
+
+$factory->state(Recipe::class, 'withOneLineGroup', function () {
+    return ['group_id' => factory(Group::class)];
+});

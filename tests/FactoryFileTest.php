@@ -99,11 +99,15 @@ class FactoryFileTest extends TestCase
     {
         return tap(clone $this)->overwriteDefaults(function() {
             $group = factory(Group::class)->create();
-
             return [
                 \'group_id\' => $group->id,
             ];
         });
+    }'));
+
+        $this->assertTrue(Str::contains($content, 'public function withOneLineGroup(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults([\'group_id\' => factory(Group::class)]);
     }'));
     }
 
