@@ -202,55 +202,50 @@ class LaravelFactoryExtractor
             return '';
         }
 
-
-        return PHP_EOL . collect($states->get($this->className))->map(function ($closure, $state) {
+        return collect($states->get($this->className))->map(function ($closure, $state) {
             throw_if(
                 ! is_callable($closure),
                 new \RuntimeException('One of your factory states is defined as an array. It must be of the type closure to import it.')
             );
 
-            $lines =
-                collect($this->getClosureContent($closure))
-                ->map(fn ($item) => rtrim($item, "\r\n"))
-                ->filter();
+            $lines = collect($this->getClosureContent($closure))->filter()->map(fn ($item) => str_replace("\n", '', $item));
+            $firstLine = $lines->shift();
+            $lastLine = $lines->pop();
 
-            $returnRaw = $this->detectReturn($lines->implode(PHP_EOL));
-            if ((Str::startsWith(mb_strtolower(ltrim($lines->first())), 'return')) && (mb_strlen($returnRaw))) {
-                $method =
-                    'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory' . PHP_EOL
-                    . '{' . PHP_EOL
-                    . '    return tap(clone $this)->overwriteDefaults(' . $returnRaw . ');' . PHP_EOL
-                    . '}' . PHP_EOL;
-            } else {
-                $method =
-                    'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory' . PHP_EOL
-                    . '{' . PHP_EOL
-                    . '    return tap(clone $this)->overwriteDefaults(function() {' . PHP_EOL
-                    . $this->indent($lines->implode(PHP_EOL)) . PHP_EOL
-                    . '    });' . PHP_EOL
-                    . '}' . PHP_EOL;
+            if (Str::startsWith(ltrim($firstLine), 'return')) {
+                if ($lastLine === null) {
+                    $firstLine = str_replace('];', ']);', $firstLine);
+                } else {
+                    $lines->push(str_replace('];', ']);', $lastLine));
+                }
+                $lines->push('}');
+
+                return $lines->prepend([
+                    '',
+                    'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
+                    '{',
+                    str_replace('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
+                ])->toArray();
             }
 
-            return $this->indent($method);
-        })->implode(PHP_EOL);
-    }
+            return collect([
+                '',
+                'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
+                '{',
+                '    return tap(clone $this)->overwriteDefaults(function() {',
+                '    ' . $firstLine,
+            ])->merge($lines->map(fn ($line) => '    ' . $line))->merge([
+                '    ' . $lastLine,
+                '    });',
+                '}',
+            ]);
+        })->flatten()->map(function ($line) {
+            if (ltrim($line) === '') {
+                return '';
+            }
 
-    protected function detectReturn(string $lines): ?string
-    {
-        $regex = '/'
-            . 'return\s*'
-            . '('
-            . '(?:"[^"]*"|\'[^\']*\'|[^;])*' // pick all chars that aren't ";" (unless inside a quoted string)
-            . ');'
-            . '\s*/i';
-        $matched = preg_match($regex, $lines, $matches);
-
-        return ($matched) && mb_strlen($matches[1]) ? $matches[1] : null;
-    }
-
-    protected function indent(string $source): string
-    {
-        return collect(explode(PHP_EOL, $source))->map(fn ($item) => '    ' . $item)->implode(PHP_EOL);
+            return '    ' . $line;
+        })->implode("\n");
     }
 
     protected function getStateMethodName(string $state): string
