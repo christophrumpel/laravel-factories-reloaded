@@ -10,9 +10,7 @@ use SplFileObject;
 
 class LaravelFactoryExtractor
 {
-    protected ?array
-
- $uses = null;
+    protected ?array $uses = null;
 
     protected string $className;
 
