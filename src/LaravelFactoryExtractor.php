@@ -214,9 +214,9 @@ class LaravelFactoryExtractor
 
             if (Str::startsWith(ltrim($firstLine), 'return')) {
                 if ($lastLine === null) {
-                    $firstLine = str_replace('];', ']);', $firstLine);
+                    $firstLine = Str::replaceLast('];', ']);', $firstLine);
                 } else {
-                    $lines->push(str_replace('];', ']);', $lastLine));
+                    $lines->push(Str::replaceLast('];', ']);', $lastLine));
                 }
                 $lines->push('}');
 
@@ -224,7 +224,7 @@ class LaravelFactoryExtractor
                     '',
                     'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
                     '{',
-                    str_replace('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
+                    Str::replaceFirst('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
                 ])->toArray();
             }
 
