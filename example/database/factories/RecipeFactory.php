@@ -32,7 +32,7 @@ $factory->state(Recipe::class, 'withOneLineGroup', function () {
 });
 
 $factory->state(Recipe::class, 'withOneLineGroup2', function () {
-    ReTuRn ['group_id' => factory(Group::class)];
+    return ['group_id' => factory(Group::class)];
 });
 
 $factory->state(Recipe::class, 'withReturnGroupName', function () {
