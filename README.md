@@ -172,12 +172,9 @@ You might have noticed that when this package imports a `state` for you, it will
 ```php
 public function active(): UserFactory
 {
-    $clone = clone $this;
-    $clone->overwriteDefaults([
+    return tap(clone $this)->overwriteDefaults([
         'active' => true,
     ]);
-
-    return $clone;
 }
 ```
 

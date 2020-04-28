@@ -10,9 +10,7 @@ use SplFileObject;
 
 class LaravelFactoryExtractor
 {
-    protected ?array
-
- $uses = null;
+    protected ?array $uses = null;
 
     protected string $className;
 
@@ -204,45 +202,43 @@ class LaravelFactoryExtractor
             return '';
         }
 
-
         return collect($states->get($this->className))->map(function ($closure, $state) {
-            throw_if(! is_callable($closure), new \RuntimeException('One of your factory states is defined as an array. It must be of the type closure to import it.'));
+            throw_if(
+                ! is_callable($closure),
+                new \RuntimeException('One of your factory states is defined as an array. It must be of the type closure to import it.')
+            );
 
             $lines = collect($this->getClosureContent($closure))->filter()->map(fn ($item) => str_replace("\n", '', $item));
             $firstLine = $lines->shift();
             $lastLine = $lines->pop();
 
             if (Str::startsWith(ltrim($firstLine), 'return')) {
-                return array_merge(
-                    [
+                if ($lastLine === null) {
+                    $firstLine = Str::replaceLast('];', ']);', $firstLine);
+                } else {
+                    $lines->push(Str::replaceLast('];', ']);', $lastLine));
+                }
+                $lines->push('}');
+
+                return $lines->prepend([
                     '',
                     'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
                     '{',
-                    str_replace('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
-                ],
-                    $lines->toArray(),
-                    [
-                    str_replace('];', ']);', $lastLine),
-                    '}',
-                ]
-                );
+                    Str::replaceFirst('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
+                ])->toArray();
             }
 
-            return array_merge(
-                [
+            return collect([
                 '',
                 'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
                 '{',
                 '    return tap(clone $this)->overwriteDefaults(function() {',
-                '    '.$firstLine,
-            ],
-                $lines->map(fn ($line) => '    '.$line)->toArray(),
-                [
-                '    '.$lastLine,
+                '    ' . $firstLine,
+            ])->merge($lines->map(fn ($line) => '    ' . $line))->merge([
+                '    ' . $lastLine,
                 '    });',
                 '}',
-            ]
-            );
+            ]);
         })->flatten()->map(function ($line) {
             if (ltrim($line) === '') {
                 return '';

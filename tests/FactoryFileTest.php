@@ -88,6 +88,7 @@ class FactoryFileTest extends TestCase
 
         $content = $recipeFactoryFile->render();
 
+        // where the state php closure simply returns an array - but was over multiple lines of code
         $this->assertTrue(Str::contains($content, '    public function withGroup(): RecipeFactory
     {
         return tap(clone $this)->overwriteDefaults([
@@ -95,7 +96,8 @@ class FactoryFileTest extends TestCase
         ]);
     }'));
 
-        $this->assertTrue(Str::contains($content, 'public function withDifferentGroup(): RecipeFactory
+        // where the state php closure does some work before returning its array of values
+        $this->assertTrue(Str::contains($content, '    public function withDifferentGroup(): RecipeFactory
     {
         return tap(clone $this)->overwriteDefaults(function() {
             $group = factory(Group::class)->create();
@@ -104,6 +106,24 @@ class FactoryFileTest extends TestCase
                 \'group_id\' => $group->id,
             ];
         });
+    }'));
+
+        // where the state php closure simply returns an array and was on one line
+        $this->assertTrue(Str::contains($content, '    public function withOneLineGroup(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults([\'group_id\' => factory(Group::class)]);
+    }'));
+
+        // where the state php closure simply returns an array and was on one line - and contains the string "return " within its values
+        $this->assertTrue(Str::contains($content, '    public function withReturnGroupName(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'return all\']);
+    }'));
+
+        // where the state php closure simply returns an array and was on one line - and contains the string "];" within its values
+        $this->assertTrue(Str::contains($content, '    public function withSquareBracketGroupName(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);
     }'));
     }
 

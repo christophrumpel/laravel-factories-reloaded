@@ -26,3 +26,15 @@ $factory->state(Recipe::class, 'withDifferentGroup', function () {
         'group_id' => $group->id,
     ];
 });
+
+$factory->state(Recipe::class, 'withOneLineGroup', function () {
+    return ['group_id' => factory(Group::class)];
+});
+
+$factory->state(Recipe::class, 'withReturnGroupName', function () {
+    return ['group_name' => 'return all'];
+});
+
+$factory->state(Recipe::class, 'withSquareBracketGroupName', function () {
+    return ['group_name' => 'something];'];
+});
