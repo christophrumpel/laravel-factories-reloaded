@@ -31,10 +31,6 @@ $factory->state(Recipe::class, 'withOneLineGroup', function () {
     return ['group_id' => factory(Group::class)];
 });
 
-$factory->state(Recipe::class, 'withOneLineGroup2', function () {
-    return ['group_id' => factory(Group::class)];
-});
-
 $factory->state(Recipe::class, 'withReturnGroupName', function () {
     return ['group_name' => 'return all'];
 });

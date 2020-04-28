@@ -114,12 +114,6 @@ class FactoryFileTest extends TestCase
         return tap(clone $this)->overwriteDefaults([\'group_id\' => factory(Group::class)]);
     }'));
 
-        // where the state php closure simply returns an array and was on one line - and "return" isn't all lower case
-        $this->assertTrue(Str::contains($content, '    public function withOneLineGroup2(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_id\' => factory(Group::class)]);
-    }'));
-
         // where the state php closure simply returns an array and was on one line - and contains the string "return " within its values
         $this->assertTrue(Str::contains($content, '    public function withReturnGroupName(): RecipeFactory
     {
