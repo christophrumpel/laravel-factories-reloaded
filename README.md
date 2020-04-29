@@ -16,7 +16,7 @@ This package generates `class-based` model factories, which you can use instead 
 * **automatically import** defined `default data` and `states` from your Laravel factories
 * and many more...
 
-I've recorded some [videos](https://www.youtube.com/playlist?list=PLk9WlAgeZoTep60sHw8tMhXVpLuH3DV0Z) to give you an overview of the features.
+📺 I've recorded some [videos](https://www.youtube.com/playlist?list=PLk9WlAgeZoTep60sHw8tMhXVpLuH3DV0Z) to give you an overview of the features.
 
 > :warning: **Note**: Interested in WHY you need class-based factories? Read [here](#why-class-based-factories).
 
