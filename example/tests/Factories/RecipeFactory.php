@@ -27,4 +27,17 @@ class RecipeFactory extends BaseFactory
             'description' => 'Our family lasagne recipe.',
         ];
     }
+
+    public function withCustomDescription(): self
+    {
+        return tap(clone $this)->overwriteDefaults([
+            'description' => 'my-desc',
+        ]);
+    }
+    public function withCustomName(): self
+    {
+        return tap(clone $this)->overwriteDefaults([
+            'name' => 'my-name',
+        ]);
+    }
 }

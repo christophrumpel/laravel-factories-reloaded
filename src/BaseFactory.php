@@ -86,7 +86,7 @@ abstract class BaseFactory implements FactoryInterface
             $attributes = $attributes();
         }
 
-        $this->overwriteDefaults = $attributes;
+        $this->overwriteDefaults = array_merge($this->overwriteDefaults, $attributes);
 
         return $this;
     }

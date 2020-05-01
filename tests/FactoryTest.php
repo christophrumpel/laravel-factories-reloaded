@@ -117,6 +117,18 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
+    public function it_lets_you_overwrite_default_data_through_factory_methods(): void
+    {
+        $recipe = RecipeFactory::new()
+            ->withCustomName()
+            ->withCustomDescription()
+            ->create();
+
+        $this->assertEquals('my-desc', $recipe->description);
+        $this->assertEquals('my-name', $recipe->name);
+    }
+
+    /** @test * */
     public function it_lets_you_use_faker_for_defining_data(): void
     {
         // Set local to en_SG so that we can test that also local faker data is being used
