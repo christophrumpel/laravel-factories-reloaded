@@ -34,6 +34,7 @@ class RecipeFactory extends BaseFactory
             'description' => 'my-desc',
         ]);
     }
+
     public function withCustomName(): self
     {
         return tap(clone $this)->overwriteDefaults([
