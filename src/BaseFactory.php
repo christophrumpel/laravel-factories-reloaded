@@ -4,6 +4,8 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 
@@ -45,8 +47,13 @@ abstract class BaseFactory implements FactoryInterface
         }
 
         if ($creationType === 'create') {
-            $model->{$this->relatedModelRelationshipName}()
-                    ->saveMany($this->relatedModels);
+            $relationship = $model->{$this->relatedModelRelationshipName}();
+            if ($relationship instanceof HasMany) {
+                $relationship->saveMany($this->relatedModels);
+            } elseif ($relationship instanceof BelongsTo) {
+                $this->relatedModels->first()->save();
+                $relationship->associate($this->relatedModels->first());
+            }
 
             return $model;
         }
@@ -56,10 +63,9 @@ abstract class BaseFactory implements FactoryInterface
 
     public function times(int $times = 1): CollectionFactory
     {
-        $collectionData = collect()
-            ->times($times, function ($key) {
-                return array_merge($this->getDefaults($this->faker), $this->overwriteDefaults);
-            });
+        $collectionData = collect()->times($times, function ($key) {
+            return array_merge($this->getDefaults($this->faker), $this->overwriteDefaults);
+        });
 
         return new CollectionFactory($this->modelClass, $times, $collectionData);
     }
@@ -77,7 +83,8 @@ abstract class BaseFactory implements FactoryInterface
     }
 
     /**
-     * @param array|callable $attributes
+     * @param  array|callable  $attributes
+     *
      * @return $this
      */
     public function overwriteDefaults($attributes): self

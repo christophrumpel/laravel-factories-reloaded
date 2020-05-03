@@ -155,6 +155,18 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
+    public function it_lets_you_add_a_belongs_to_related_model(): void
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $recipe = RecipeFactory::new()
+            ->with(Group::class, 'group')
+            ->create();
+
+        $this->assertInstanceOf(Group::class, $recipe->group);
+    }
+
+    /** @test * */
     public function it_lets_you_add_a_related_model_with_make(): void
     {
         Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
