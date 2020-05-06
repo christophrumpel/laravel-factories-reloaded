@@ -17,9 +17,10 @@
     ],
     "require": {
         "php": "^7.4",
+        "christophrumpel/laravel-command-file-picker": "^1.0",
+        "doctrine/dbal": "^2.10",
         "illuminate/support": "^6.0|^7.0",
         "laravel/framework": "^6.0|^7.0",
-        "christophrumpel/laravel-command-file-picker": "^1.0",
         "nikic/php-parser": "^4.3"
     },
     "require-dev": {

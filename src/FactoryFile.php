@@ -2,6 +2,7 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
+use Christophrumpel\LaravelFactoriesReloaded\AttributeGenerator\DefaultAttributesGenerator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -28,6 +29,9 @@ class FactoryFile
             $this->defaults = $extractor->getDefinitions();
             $this->states = $extractor->getStates();
             $this->uses = $extractor->getUses();
+        } else {
+            $generator = new DefaultAttributesGenerator($this->modelClass);
+            $this->defaults = $generator->getDefinitionsCodeBlock();
         }
     }
 
