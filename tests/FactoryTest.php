@@ -214,4 +214,19 @@ class FactoryTest extends TestCase
         $this->assertCount(4, Recipe::all());
         $this->assertCount(4, Group::all());
     }
+
+    /** @test */
+    public function it_lets_you_add_related_models_when_creating_multiple()
+    {
+        $groups = GroupFactory::new()
+            ->with(Recipe::class, 'recipes', 5, true)
+            ->times(3)
+            ->create();
+
+        $this->assertCount(3, $groups);
+        $this->assertCount(15, Recipe::all());
+        $groups->each(function(Group $group) {
+            $this->assertCount(5, $group->recipes);
+        });
+    }
 }

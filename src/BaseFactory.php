@@ -13,7 +13,7 @@ abstract class BaseFactory implements FactoryInterface
 
     protected string $modelClass;
 
-    protected Collection $relatedModels;
+    protected Collection $relatedModelFactories;
 
     protected string $relatedModelRelationshipName;
 
@@ -24,7 +24,7 @@ abstract class BaseFactory implements FactoryInterface
     public function __construct(Generator $faker)
     {
         $this->faker = $faker;
-        $this->relatedModels = collect();
+        $this->relatedModelFactories = collect();
     }
 
     /** @return static */
@@ -40,37 +40,35 @@ abstract class BaseFactory implements FactoryInterface
         $modelData = $this->prepareModelData($creationType, $this->getDefaults($this->faker));
         $model = $this->modelClass::$creationType(array_merge($modelData, $this->overwriteDefaults, $extra));
 
-        if ($this->relatedModels->isEmpty()) {
+        if ($this->relatedModelFactories->isEmpty()) {
             return $model;
         }
+
+        $relatedModels = $this->relatedModelFactories->map(fn($factory) => $factory->make());
 
         if ($creationType === 'create') {
             $model->{$this->relatedModelRelationshipName}()
-                    ->saveMany($this->relatedModels);
+                    ->saveMany($relatedModels);
 
             return $model;
         }
 
-        return $model->setRelation($this->relatedModelRelationshipName, $this->relatedModels);
+        return $model->setRelation($this->relatedModelRelationshipName, $relatedModels);
     }
 
-    public function times(int $times = 1): CollectionFactory
+    public function times(int $times = 1): MultiFactoryCollection
     {
-        $collectionData = collect()
-            ->times($times, function ($key) {
-                return array_merge($this->getDefaults($this->faker), $this->overwriteDefaults);
-            });
-
-        return new CollectionFactory($this->modelClass, $times, $collectionData);
+        return new MultiFactoryCollection(collect()->times($times, function() {
+            return clone $this;
+        }));
     }
 
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
     {
         $clone = clone $this;
 
-        $clone->relatedModels = $this->getFactoryFromClassName($relatedModelClass)
-            ->times($times)
-            ->make();
+        $clone->relatedModelFactories = collect()->times($times, fn() => $this->getFactoryFromClassName($relatedModelClass));
+
         $clone->relatedModelRelationshipName = $relationshipName;
 
         return $clone;
