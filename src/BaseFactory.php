@@ -44,7 +44,7 @@ abstract class BaseFactory implements FactoryInterface
             return $model;
         }
 
-        $relatedModels = $this->relatedModelFactories->map(fn($factory) => $factory->make());
+        $relatedModels = $this->relatedModelFactories->map->make();
 
         if ($creationType === 'create') {
             $model->{$this->relatedModelRelationshipName}()
