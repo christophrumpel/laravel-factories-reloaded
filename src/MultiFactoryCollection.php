@@ -3,7 +3,8 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Illuminate\Support\Collection;
 
-class MultiFactoryCollection {
+class MultiFactoryCollection
+{
     protected Collection $factories;
 
     public function __construct(Collection $factories)

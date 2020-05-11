@@ -237,7 +237,7 @@ class FactoryTest extends TestCase
 
         $this->assertCount(3, $groups);
         $this->assertCount(15, Recipe::all());
-        $groups->each(function(Group $group) {
+        $groups->each(function (Group $group) {
             $this->assertCount(5, $group->recipes);
         });
     }

@@ -58,7 +58,7 @@ abstract class BaseFactory implements FactoryInterface
 
     public function times(int $times = 1): MultiFactoryCollection
     {
-        return new MultiFactoryCollection(collect()->times($times, function() {
+        return new MultiFactoryCollection(collect()->times($times, function () {
             return clone $this;
         }));
     }
@@ -67,7 +67,7 @@ abstract class BaseFactory implements FactoryInterface
     {
         $clone = clone $this;
 
-        $clone->relatedModelFactories = collect()->times($times, fn() => $this->getFactoryFromClassName($relatedModelClass));
+        $clone->relatedModelFactories = collect()->times($times, fn () => $this->getFactoryFromClassName($relatedModelClass));
 
         $clone->relatedModelRelationshipName = $relationshipName;
 
