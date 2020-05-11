@@ -167,6 +167,24 @@ public function getDefaults(Faker $faker): array
 
 > :warning: **Note**: I wouldn't recommend any of these options because you do not see that additional models are persisted in your tests. Please use the given "with" method create a dedicated method for creating a relation yourself.
 
+### Callbacks
+
+In Laravel, you are able to define factory `callbacks` for `afterCreating` and `afterMaking`. You can do something similar also with factory classes. Since both the `make` and `create` method are inside your factory class, you are free to add code there:
+
+```php
+public function create(array $extra = []): Group
+{
+    return parent::build($extra);
+}
+
+public function make(array $extra = []): Group
+{
+    return parent::build($extra, 'make');
+}
+```
+
+It depends on what you want to achive, but personally I would add a method to your factory which you call from within your test. This way it is more obvious what is happening.
+
 ### Immutability
 
 You might have noticed that when this package imports a `state` for you, it will clone the factory before returning.
