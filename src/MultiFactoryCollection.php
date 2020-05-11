@@ -3,7 +3,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Illuminate\Support\Collection;
 
-class MultiFactoryCollection{
+class MultiFactoryCollection {
     protected Collection $factories;
 
     public function __construct(Collection $factories)
@@ -11,14 +11,14 @@ class MultiFactoryCollection{
         $this->factories = $factories;
     }
 
-    public function create()
+    public function create(): Collection
     {
         return $this->factories->map(function($factory) {
             return $factory->create();
         });
     }
 
-    public function make()
+    public function make(): Collection
     {
         return $this->factories->map(function($factory) {
             return $factory->make();
