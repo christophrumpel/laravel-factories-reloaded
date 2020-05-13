@@ -15,7 +15,7 @@ return [
     'factories_path' => base_path('tests/Factories'),
 
     /**
-     * Defines the namespace ofr your new factories.
+     * Defines the namespace of your new factories.
      */
     'factories_namespace' => 'Tests\Factories',
 
