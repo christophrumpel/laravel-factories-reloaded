@@ -108,7 +108,7 @@ class FactoryFile
             ->replace('{{ uses }}', $this->uses)
             ->replace('{{ dummyData }}', $this->defaults)
             ->replace('{{ states }}', $this->withStates ? $this->states : '')
-            ->replaceMatches('/(?P<imports>(?:use [^;]+;$\n?)+)/m', static function ($match) {
+            ->replaceMatches('/(?P<imports>(?:use [^;]+;$\n?)+)/m', function ($match) {
                 return Str::of($match['imports'])->trim()->explode("\n")->sort()->implode("\n");
             });
     }

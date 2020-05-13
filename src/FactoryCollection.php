@@ -29,7 +29,7 @@ class FactoryCollection
 
     public static function fromCollection(Collection $collection): self
     {
-        return static::fromModels($collection->transform(static function ($item) {
+        return static::fromModels($collection->transform(function ($item) {
             return $item['name'];
         })->toArray());
     }
@@ -84,19 +84,19 @@ class FactoryCollection
     protected function buildFromModels(array $models = []): void
     {
         $this->factoryFiles = collect($models)
-            ->whenEmpty(static function () {
+            ->whenEmpty(function () {
                 $classFinder = new ClassFinder(new Filesystem());
 
-                return collect(Config::get('factories-reloaded.models_paths'))->transform(static function (string $path) use (
+                return collect(Config::get('factories-reloaded.models_paths'))->transform(function (string $path) use (
                     $classFinder
                 ) {
                     return $classFinder->getModelsInDirectory($path)
-                        ->transform(static function ($item) {
+                        ->transform(function ($item) {
                             return $item['name'];
                         });
                 });
             })->flatten()
-            ->transform(static function (string $model) {
+            ->transform(function (string $model) {
                 return FactoryFile::forModel($model);
             });
     }

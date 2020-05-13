@@ -137,7 +137,7 @@ class MakeFactoryReloadedCommand extends Command
             $this->info($this->factoryCollection->all()->first()->getTargetClassFullName().' created successfully.');
         } else {
             $factoryNames = $this->factoryCollection->all()
-                ->map(static function (FactoryFile $factoryFile) {
+                ->map(function (FactoryFile $factoryFile) {
                     return $factoryFile->getTargetClassName();
                 })
                 ->implode(', ');

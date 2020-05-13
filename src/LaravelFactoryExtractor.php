@@ -239,7 +239,7 @@ class LaravelFactoryExtractor
                 '    });',
                 '}',
             ]);
-        })->flatten()->map(static function ($line) {
+        })->flatten()->map(function ($line) {
             if (ltrim($line) === '') {
                 return '';
             }

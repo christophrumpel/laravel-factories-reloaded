@@ -4,7 +4,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(\ExampleApp\Models\ModelsWithArrayState\Book::class, static function (Faker $faker) {
+$factory->define(\ExampleApp\Models\ModelsWithArrayState\Book::class, function (Faker $faker) {
     return [
         'name' => $faker->word,
     ];
