@@ -63,7 +63,7 @@ abstract class BaseFactory implements FactoryInterface
         }));
     }
 
-    public function with(string $relatedModelClass, string $relationshipName, int $times = 1)
+    public function with(string $relatedModelClass, string $relationshipName, int $times = 1): self
     {
         $clone = clone $this;
 
