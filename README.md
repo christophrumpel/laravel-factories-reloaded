@@ -25,7 +25,7 @@ This package generates `class-based` model factories, which you can use instead 
 You can install the package via composer:
 
 ```bash
-composer require christophrumpel/laravel-factories-reloaded
+composer require --dev christophrumpel/laravel-factories-reloaded
 ```
 
 To publish the config file run:
@@ -41,7 +41,7 @@ It will provide the package's config file where you can define `multiple paths o
 
 First, you need to create a new factory class for one of your models. This is done via a newly provided command called `make:factory-reloaded`.
 
-```shell script
+```bash
 php artisan make:factory-reloaded
 ```
 
@@ -51,7 +51,7 @@ You can pick one of the found models or create factories for `all` of them.
 
 If you want to define options through the command itself, you can do that as well:
 
-```shell script
+```bash
 php artisan make:factory-reloaded --models_path="app/Models"  --factories_path="tests/ClassFactories" --factories_namespace="Tests\ClassFactories"
 ```
 
@@ -155,6 +155,7 @@ public function getDefaults(Faker $faker): array
 ```
 
 Or even better through an instance of a new factory class.
+
 ```php
 public function getDefaults(Faker $faker): array
 {
@@ -223,7 +224,7 @@ Using such a factory call will help your tests to stay clean and give everyone a
 
 ## Testing
 
-``` bash
+```bash
 composer test
 ```
 

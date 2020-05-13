@@ -13,7 +13,7 @@ class CreateRecipesTable extends Migration
      */
     public function up()
     {
-        Schema::create('recipes', function (Blueprint $table) {
+        Schema::create('recipes', static function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('group_id')->nullable();
             $table->string('name');
