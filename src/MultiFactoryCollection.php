@@ -12,13 +12,13 @@ class MultiFactoryCollection
         $this->factories = $factories;
     }
 
-    public function create(): Collection
+    public function create(array $extra = []): Collection
     {
-        return $this->factories->map->create();
+        return $this->factories->map->create($extra);
     }
 
-    public function make(): Collection
+    public function make(array $extra = []): Collection
     {
-        return $this->factories->map->make();
+        return $this->factories->map->make($extra);
     }
 }

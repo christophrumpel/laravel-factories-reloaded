@@ -129,6 +129,26 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
+    public function it_lets_you_overwrite_default_data_when_creating_multiple_instances(): void
+    {
+        $pancakes = RecipeFactory::new()
+           ->times(5)
+           ->create(['name' => 'Pancakes']);
+
+        $this->assertEquals('Pancakes', $pancakes->first()->name);
+    }
+
+    /** @test * */
+    public function it_lets_you_overwrite_default_data_when_making_multiple_instances(): void
+    {
+        $pancakes = RecipeFactory::new()
+            ->times(5)
+            ->make(['name' => 'Pancakes']);
+
+        $this->assertEquals('Pancakes', $pancakes->first()->name);
+    }
+
+    /** @test * */
     public function it_lets_you_use_faker_for_defining_data(): void
     {
         // Set local to en_SG so that we can test that also local faker data is being used
