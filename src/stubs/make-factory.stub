@@ -9,7 +9,6 @@ use DummyFullModelClass;
 
 class DummyFactory extends BaseFactory
 {
-
     protected string $modelClass = DummyModelClass::class;
 
     public function create(array $extra = []): DummyModelClass
@@ -28,4 +27,3 @@ class DummyFactory extends BaseFactory
     }
 {{ states }}
 }
-

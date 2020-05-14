@@ -133,11 +133,8 @@ class MakeFactoryReloadedCommand extends Command
 
     protected function showSuccessMessage(): void
     {
-        if ($this->factoryCollection->all()
-                ->count() === 1) {
-            $this->info($this->factoryCollection->all()
-                    ->first()
-                    ->getTargetClassFullName().' created successfully.');
+        if ($this->factoryCollection->all()->count() === 1) {
+            $this->info($this->factoryCollection->all()->first()->getTargetClassFullName().' created successfully.');
         } else {
             $factoryNames = $this->factoryCollection->all()
                 ->map(function (FactoryFile $factoryFile) {

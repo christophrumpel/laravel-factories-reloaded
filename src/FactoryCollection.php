@@ -31,8 +31,7 @@ class FactoryCollection
     {
         return static::fromModels($collection->transform(function ($item) {
             return $item['name'];
-        })
-            ->toArray());
+        })->toArray());
     }
 
     public function all(): Collection
