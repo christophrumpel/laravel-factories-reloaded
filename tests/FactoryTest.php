@@ -148,6 +148,17 @@ class FactoryTest extends TestCase
         $this->assertEquals('Pancakes', $pancakes->first()->name);
     }
 
+    /** @test */
+    public function it_fills_field_that_is_not_fillable(): void
+    {
+        $group = GroupFactory::new()->create([
+            'mobile' => 'fake-mobile',
+        ]);
+
+        $this->assertFalse($group->isFillable('mobile'));
+        $this->assertIsString($group->mobile);
+    }
+
     /** @test * */
     public function it_lets_you_use_faker_for_defining_data(): void
     {
