@@ -155,10 +155,11 @@ class FactoryTest extends TestCase
         // Faker unique mobile number exists for en_SG
         Config::set('app.faker_locale', 'en_SG');
 
-        $this->assertIsString(GroupFactoryUsingFaker::new()
-            ->create()->name);
-        $this->assertIsInt(GroupFactoryUsingFaker::new()
-            ->create()->size);
+        $group = GroupFactoryUsingFaker::new()->create();
+
+        $this->assertIsString($group->name);
+        $this->assertIsInt($group->size);
+        $this->assertIsString($group->mobile);
     }
 
     /** @test * */
