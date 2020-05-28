@@ -17,6 +17,7 @@ class CreateGroupsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('size');
+            $table->string('mobile')->nullable();
             $table->timestamps();
         });
     }
