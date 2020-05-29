@@ -38,7 +38,7 @@ abstract class BaseFactory implements FactoryInterface
     protected function build(array $extra = [], string $creationType = 'create')
     {
         $modelData = $this->prepareModelData($creationType, $this->getDefaults($this->faker));
-        $model = $this->modelClass::$creationType(array_merge($modelData, $this->overwriteDefaults, $extra));
+        $model = $this->unguardedIfNeeded(fn () => $this->modelClass::$creationType(array_merge($modelData, $this->overwriteDefaults, $extra)));
 
         if ($this->relatedModelFactories->isEmpty()) {
             return $model;
@@ -54,6 +54,15 @@ abstract class BaseFactory implements FactoryInterface
         }
 
         return $model->setRelation($this->relatedModelRelationshipName, $relatedModels);
+    }
+
+    protected function unguardedIfNeeded(\Closure $closure)
+    {
+        if (! config('factories-reloaded.unguard_models')) {
+            return $closure();
+        }
+
+        return $this->modelClass::unguarded($closure);
     }
 
     public function times(int $times = 1): MultiFactoryCollection

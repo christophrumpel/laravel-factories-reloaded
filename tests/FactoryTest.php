@@ -148,17 +148,47 @@ class FactoryTest extends TestCase
         $this->assertEquals('Pancakes', $pancakes->first()->name);
     }
 
+    /** @test */
+    public function it_does_not_fill_field_that_is_not_fillable_according_to_config(): void
+    {
+        config()->set('factories-reloaded.unguard_models', false);
+
+        $group = GroupFactory::new()->create([
+            'mobile' => 'fake-mobile',
+        ]);
+
+        $this->assertFalse($group->isFillable('mobile'));
+        $this->assertNull($group->mobile);
+    }
+
+    /** @test */
+    public function it_fills_field_that_is_not_fillable_according_to_config(): void
+    {
+        config()->set('factories-reloaded.unguard_models', true);
+
+        $group = GroupFactory::new()->create([
+            'mobile' => 'fake-mobile',
+        ]);
+
+        $this->assertFalse($group->isFillable('mobile'));
+        $this->assertIsString($group->mobile);
+    }
+
     /** @test * */
     public function it_lets_you_use_faker_for_defining_data(): void
     {
+        // We need `unguard_models` to be `true` here because `mobile` is not fillable.
+        config()->set('factories-reloaded.unguard_models', true);
+
         // Set local to en_SG so that we can test that also local faker data is being used
         // Faker unique mobile number exists for en_SG
         Config::set('app.faker_locale', 'en_SG');
 
-        $this->assertIsString(GroupFactoryUsingFaker::new()
-            ->create()->name);
-        $this->assertIsInt(GroupFactoryUsingFaker::new()
-            ->create()->size);
+        $group = GroupFactoryUsingFaker::new()->create();
+
+        $this->assertIsString($group->name);
+        $this->assertIsInt($group->size);
+        $this->assertIsString($group->mobile);
     }
 
     /** @test * */
