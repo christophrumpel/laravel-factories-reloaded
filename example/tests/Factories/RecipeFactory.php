@@ -3,6 +3,7 @@
 namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
+use ExampleApp\Models\Group;
 use ExampleApp\Models\Recipe;
 use Faker\Generator;
 
@@ -39,6 +40,20 @@ class RecipeFactory extends BaseFactory
     {
         return tap(clone $this)->overwriteDefaults([
             'name' => 'my-name',
+        ]);
+    }
+
+    public function withGroup(): self
+    {
+        return tap(clone $this)->overwriteDefaults([
+            'group_id' => GroupFactory::new(),
+        ]);
+    }
+
+    public function withLaravelGroup(): self
+    {
+        return tap(clone $this)->overwriteDefaults([
+            'group_id' => factory(Group::class),
         ]);
     }
 }
