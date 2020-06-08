@@ -131,6 +131,20 @@ Here were are getting a user instance that has three related recipes attached. T
 
 > :warning: **Note**: For this to work, you need to have a new RecipeFactory already created.
 
+You can create many related models instances by chaining `with`s.
+
+```php
+$recipe = RecipeFactory::new()
+    ->with(Group::class, 'group')
+    ->with(Ingredient::class, 'ingredients')
+    ->with(Ingredient::class, 'ingredients', 3)
+    ->create();
+```
+
+Here we are getting a recipe that has a group and four ingredients.
+
+> :warning: **Note**: Up to the version 1.0.8, only the last `with` relation is built.
+
 In Laravel factories, you could also define a related model in your default data like:
 
 ```php

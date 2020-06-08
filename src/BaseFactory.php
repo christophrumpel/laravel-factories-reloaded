@@ -4,7 +4,9 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use ReflectionClass;
 
 abstract class BaseFactory implements FactoryInterface
@@ -14,8 +16,6 @@ abstract class BaseFactory implements FactoryInterface
     protected string $modelClass;
 
     protected Collection $relatedModelFactories;
-
-    protected string $relatedModelRelationshipName;
 
     protected Generator $faker;
 
@@ -46,16 +46,7 @@ abstract class BaseFactory implements FactoryInterface
             return $model;
         }
 
-        $relatedModels = $this->relatedModelFactories->map->make();
-
-        if ($creationType === 'create') {
-            $model->{$this->relatedModelRelationshipName}()
-                    ->saveMany($relatedModels);
-
-            return $model;
-        }
-
-        return $model->setRelation($this->relatedModelRelationshipName, $relatedModels);
+        return $this->buildRelationsForModel($model, $creationType);
     }
 
     protected function unguardedIfNeeded(\Closure $closure)
@@ -74,13 +65,16 @@ abstract class BaseFactory implements FactoryInterface
         }));
     }
 
+    /** @return static */
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1): self
     {
         $clone = clone $this;
 
-        $clone->relatedModelFactories = collect()->times($times, fn () => $this->getFactoryFromClassName($relatedModelClass));
-
-        $clone->relatedModelRelationshipName = $relationshipName;
+        $clone->relatedModelFactories = clone $clone->relatedModelFactories;
+        $clone->relatedModelFactories[$relationshipName] ??= collect();
+        $clone->relatedModelFactories[$relationshipName] = $clone->relatedModelFactories[$relationshipName]->merge(
+            collect()->times($times, fn() => $this->getFactoryFromClassName($relatedModelClass))
+        );
 
         return $clone;
     }
@@ -106,5 +100,38 @@ abstract class BaseFactory implements FactoryInterface
         $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
 
         return new $factoryClass($this->faker);
+    }
+
+    private function buildRelationsForModel(Model $model, string $creationType): Model
+    {
+        foreach ($this->relatedModelFactories as $relationshipName => $factories) {
+            $relation = $model->{$relationshipName}();
+
+            if (method_exists($relation, 'saveMany')) {
+                $relatedModels = $factories->map->make();
+                $model->setRelation($relationshipName, $relatedModels);
+
+                if ($creationType === 'create') {
+                    $relation->saveMany($relatedModels);
+                }
+
+                continue;
+            }
+
+            if (method_exists($relation, 'associate')) {
+                $relatedModels = $factories->map->$creationType();
+                $relatedModels->each(fn($related) => $relation->associate($related));
+
+                if ($creationType === 'create') {
+                    $model->save();
+                }
+
+                continue;
+            }
+
+            throw new InvalidArgumentException('Unsupported relation `'.$relationshipName.'` of ` type `'.get_class($relation).'`.');
+        }
+
+        return $model;
     }
 }
