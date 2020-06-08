@@ -38,7 +38,6 @@ abstract class BaseFactory implements FactoryInterface
     protected function build(array $extra = [], string $creationType = 'create')
     {
         $modelData = $this->prepareModelData(
-            $creationType,
             array_merge($this->getDefaults($this->faker), $this->overwriteDefaults, $extra)
         );
         $model = $this->unguardedIfNeeded(fn () => $this->modelClass::$creationType($modelData));

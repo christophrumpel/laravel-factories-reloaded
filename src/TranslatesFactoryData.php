@@ -11,12 +11,12 @@ trait TranslatesFactoryData
         return $item instanceof BaseFactory || $item instanceof FactoryBuilder;
     }
 
-    private function prepareModelData(string $creationType, array $defaultModelFields): array
+    private function prepareModelData(array $defaultModelFields): array
     {
         return collect($defaultModelFields)
-            ->map(function ($item) use ($creationType) {
+            ->map(function ($item) {
                 if ($this->isFactory($item)) {
-                    return $creationType === 'create' ? $item->create()->id : null;
+                    return $item->create()->id;
                 }
 
                 return $item;
