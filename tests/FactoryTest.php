@@ -258,10 +258,54 @@ class FactoryTest extends TestCase
     }
 
     /** @test */
+    public function it_works_with_factory_as_relationship_in_state(): void
+    {
+        $recipe = RecipeFactory::new()->withGroup()->create();
+
+        $this->assertInstanceOf(Recipe::class, $recipe);
+        $this->assertEquals(1, $recipe->group_id);
+        $this->assertCount(1, Recipe::all());
+        $this->assertCount(1, Group::all());
+    }
+
+    /** @test */
+    public function it_works_with_factory_as_relationship_in_extras(): void
+    {
+        $recipe = RecipeFactory::new()->create(['group_id' => GroupFactory::new()]);
+
+        $this->assertInstanceOf(Recipe::class, $recipe);
+        $this->assertEquals(1, $recipe->group_id);
+        $this->assertCount(1, Recipe::all());
+        $this->assertCount(1, Group::all());
+    }
+
+    /** @test */
     public function it_works_with_laravel_factory_as_relationship(): void
     {
         $recipe = RecipeFactoryUsingLaravelFactoryForRelationship::new()->create();
 
+        $this->assertEquals(1, $recipe->group_id);
+        $this->assertCount(1, Recipe::all());
+        $this->assertCount(1, Group::all());
+    }
+
+    /** @test */
+    public function it_works_with_laravel_factory_as_relationship_in_state(): void
+    {
+        $recipe = RecipeFactory::new()->withLaravelGroup()->create();
+
+        $this->assertInstanceOf(Recipe::class, $recipe);
+        $this->assertEquals(1, $recipe->group_id);
+        $this->assertCount(1, Recipe::all());
+        $this->assertCount(1, Group::all());
+    }
+
+    /** @test */
+    public function it_works_with_laravel_factory_as_relationship_in_extras(): void
+    {
+        $recipe = RecipeFactory::new()->create(['group_id' => factory(Group::class)]);
+
+        $this->assertInstanceOf(Recipe::class, $recipe);
         $this->assertEquals(1, $recipe->group_id);
         $this->assertCount(1, Recipe::all());
         $this->assertCount(1, Group::all());
