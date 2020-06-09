@@ -29,9 +29,8 @@ class FactoryCollection
 
     public static function fromCollection(Collection $collection): self
     {
-        return static::fromModels($collection->transform(function ($item) {
-            return $item['name'];
-        })->toArray());
+        return static::fromModels($collection->transform(fn ($item) => $item['name'])
+            ->toArray());
     }
 
     public function all(): Collection
@@ -45,9 +44,7 @@ class FactoryCollection
             File::makeDirectory(Config::get('factories-reloaded.factories_path'));
         }
 
-        return $this->factoryFiles->filter(function (FactoryFile $factoryFile) {
-            return $factoryFile->write($this->overwrite);
-        });
+        return $this->factoryFiles->filter(fn (FactoryFile $factoryFile) => $factoryFile->write($this->overwrite));
     }
 
     public function withoutStates(): self
@@ -87,17 +84,12 @@ class FactoryCollection
             ->whenEmpty(function () {
                 $classFinder = new ClassFinder(new Filesystem());
 
-                return collect(Config::get('factories-reloaded.models_paths'))->transform(function (string $path) use (
-                    $classFinder
-                ) {
-                    return $classFinder->getModelsInDirectory($path)
-                        ->transform(function ($item) {
-                            return $item['name'];
-                        });
-                });
-            })->flatten()
-            ->transform(function (string $model) {
-                return FactoryFile::forModel($model);
-            });
+                return collect(Config::get('factories-reloaded.models_paths'))->transform(fn (
+                    string $path
+                ) => $classFinder->getModelsInDirectory($path)
+                    ->transform(fn ($item) => $item['name']));
+            })
+            ->flatten()
+            ->transform(fn (string $model) => FactoryFile::forModel($model));
     }
 }

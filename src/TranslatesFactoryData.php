@@ -11,7 +11,7 @@ trait TranslatesFactoryData
         return $item instanceof BaseFactory || $item instanceof FactoryBuilder;
     }
 
-    private function prepareModelData(array $defaultModelFields): array
+    private function transformFactoriesToRelationIds(array $defaultModelFields): array
     {
         return collect($defaultModelFields)
             ->map(function ($item) {
