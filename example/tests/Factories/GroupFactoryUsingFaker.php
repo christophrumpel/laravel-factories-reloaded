@@ -12,12 +12,12 @@ class GroupFactoryUsingFaker extends BaseFactory
 
     public function create(array $extra = []): Group
     {
-        return parent::build($extra);
+        return $this->build($extra);
     }
 
     public function make(array $extra = []): Group
     {
-        return parent::build($extra, 'make');
+        return $this->build($extra, 'make');
     }
 
     public function getDefaults(Generator $faker): array
