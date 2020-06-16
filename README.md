@@ -175,12 +175,12 @@ In Laravel, you are able to define factory `callbacks` for `afterCreating` and `
 ```php
 public function create(array $extra = []): Group
 {
-    return parent::build($extra);
+    return $this->build($extra);
 }
 
 public function make(array $extra = []): Group
 {
-    return parent::build($extra, 'make');
+    return $this->build($extra, 'make');
 }
 ```
 
