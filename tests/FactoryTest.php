@@ -3,6 +3,7 @@
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
 use ExampleApp\Models\Group;
+use ExampleApp\Models\Ingredient;
 use ExampleApp\Models\Recipe;
 use ExampleAppTests\Factories\GroupFactory;
 use ExampleAppTests\Factories\GroupFactoryUsingFaker;
@@ -242,7 +243,7 @@ class FactoryTest extends TestCase
         $firstGroup = $group->with(Recipe::class, 'recipes')->create();
         $secondGroup = $group->create();
 
-        $this->assertEquals(1, $firstGroup->recipes()->count());
+        $this->assertEquals(5, $firstGroup->recipes()->count());
         $this->assertEquals(4, $secondGroup->recipes()->count());
     }
 
@@ -334,5 +335,53 @@ class FactoryTest extends TestCase
         $groups->each(function (Group $group) {
             $this->assertCount(5, $group->recipes);
         });
+    }
+
+    /** @test */
+    public function it_lets_you_create_many_related_models_at_once()
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $recipe = RecipeFactory::new()
+            ->with(Group::class, 'group')
+            ->with(Ingredient::class, 'ingredients', 3)
+            ->create();
+
+        $this->assertCount(1, Group::all());
+        $this->assertCount(3, Ingredient::all());
+        $this->assertTrue($recipe->group()->exists());
+        $this->assertEquals(3, $recipe->ingredients()->count());
+    }
+
+    /** @test */
+    public function it_lets_you_make_many_related_models_at_once()
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $recipe = RecipeFactory::new()
+            ->with(Group::class, 'group')
+            ->with(Ingredient::class, 'ingredients', 3)
+            ->make();
+
+        $this->assertCount(0, Group::all());
+        $this->assertCount(0, Ingredient::all());
+
+        $this->assertInstanceOf(Group::class, $recipe->group);
+        $this->assertEquals(3, $recipe->ingredients->count());
+        $this->assertInstanceOf(Ingredient::class, $recipe->ingredients->first());
+    }
+
+    /** @test */
+    public function it_lets_you_stack_relations()
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $recipe = RecipeFactory::new()
+            ->with(Ingredient::class, 'ingredients')
+            ->with(Ingredient::class, 'ingredients', 3)
+            ->create();
+
+        $this->assertCount(4, Ingredient::all());
+        $this->assertEquals(4, $recipe->ingredients()->count());
     }
 }
