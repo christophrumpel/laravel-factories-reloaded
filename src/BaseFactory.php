@@ -73,7 +73,7 @@ abstract class BaseFactory implements FactoryInterface
         $clone->relatedModelFactories = clone $clone->relatedModelFactories;
         $clone->relatedModelFactories[$relationshipName] ??= collect();
         $clone->relatedModelFactories[$relationshipName] = $clone->relatedModelFactories[$relationshipName]->merge(
-            collect()->times($times, fn() => $this->getFactoryFromClassName($relatedModelClass))
+            collect()->times($times, fn () => $this->getFactoryFromClassName($relatedModelClass))
         );
 
         return $clone;
@@ -120,7 +120,7 @@ abstract class BaseFactory implements FactoryInterface
 
             if (method_exists($relation, 'associate')) {
                 $relatedModels = $factories->map->$creationType();
-                $relatedModels->each(fn($related) => $relation->associate($related));
+                $relatedModels->each(fn ($related) => $relation->associate($related));
 
                 if ($creationType === 'create') {
                     $model->save();
