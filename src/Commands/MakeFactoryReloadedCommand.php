@@ -55,7 +55,7 @@ class MakeFactoryReloadedCommand extends Command
 
         $this->askAboutLaravelStatesIfGiven();
 
-        $this->aksAboutOverwritingFactoriesIfNeeded();
+        $this->askAboutOverwritingFactoriesIfNeeded();
 
         if ($this->factoryCollection->write()->isEmpty()) {
             $this->info('No Files created.');
@@ -109,7 +109,7 @@ class MakeFactoryReloadedCommand extends Command
         }
     }
 
-    protected function aksAboutOverwritingFactoriesIfNeeded(): void
+    protected function askAboutOverwritingFactoriesIfNeeded(): void
     {
         if (! $this->factoryCollection->atLeastOneFactoryReloadedExists()) {
             return;
