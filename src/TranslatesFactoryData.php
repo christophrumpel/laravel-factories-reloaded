@@ -16,7 +16,7 @@ trait TranslatesFactoryData
         return collect($defaultModelFields)
             ->map(function ($item) {
                 if ($this->isFactory($item)) {
-                    return $item->create()->id;
+                    return $item->create()->getKey();
                 }
 
                 return $item;
