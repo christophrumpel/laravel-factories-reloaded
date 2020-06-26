@@ -11,16 +11,30 @@ trait TranslatesFactoryData
         return $item instanceof BaseFactory || $item instanceof FactoryBuilder;
     }
 
-    private function transformFactoriesToRelationIds(array $defaultModelFields): array
+    private static function isCallable($field): bool
     {
-        return collect($defaultModelFields)
-            ->map(function ($item) {
-                if ($this->isFactory($item)) {
-                    return $item->create()->getKey();
-                }
+        return is_callable($field) && ! is_string($field) && ! is_array($field);
+    }
 
-                return $item;
-            })
-            ->toArray();
+    private function transformModelFields(array $defaultModelFields): array
+    {
+        foreach ($defaultModelFields as &$field) {
+            $field = $this->transformField($field, $defaultModelFields);
+        }
+
+        return $defaultModelFields;
+    }
+
+    private function transformField($field, array $defaultModelFields)
+    {
+        if ($this->isFactory($field)) {
+            return $field->create()->getKey();
+        }
+
+        if ($this->isCallable($field)) {
+            return $field($defaultModelFields);
+        }
+
+        return $field;
     }
 }
