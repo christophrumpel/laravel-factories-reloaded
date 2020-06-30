@@ -208,7 +208,7 @@ class FactoryTest extends TestCase
     public function it_lets_you_use_a_closure_for_overriding_default_data(): void
     {
         $ingredient = IngredientFactoryUsingClosure::new()->create([
-            'name' => 'Basil',
+            'name' => fn (array $ingredient) => 'Basil',
             'description' => fn (array $ingredient) => "Super delicious {$ingredient['name']}",
         ]);
 
