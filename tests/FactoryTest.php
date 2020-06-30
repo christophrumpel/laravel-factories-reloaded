@@ -194,7 +194,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_lets_you_use_a_closure_for_defining_data(): void
+    public function it_lets_you_use_a_closure_for_defining_default_data(): void
     {
         $ingredient = IngredientFactoryUsingClosure::new()->create();
 
@@ -205,7 +205,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test * */
-    public function it_lets_you_use_a_closure_for_overriding_data(): void
+    public function it_lets_you_use_a_closure_for_overriding_default_data(): void
     {
         $ingredient = IngredientFactoryUsingClosure::new()->create([
             'name' => 'Basil',
