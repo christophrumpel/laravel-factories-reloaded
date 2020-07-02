@@ -2,14 +2,15 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Ingredient;
-use ExampleApp\Models\Recipe;
 use ExampleAppTests\Factories\GroupFactory;
 use ExampleAppTests\Factories\GroupFactoryUsingFaker;
+use ExampleAppTests\Factories\IngredientFactoryUsingClosure;
 use ExampleAppTests\Factories\RecipeFactory;
 use ExampleAppTests\Factories\RecipeFactoryUsingFactoryForRelationship;
 use ExampleAppTests\Factories\RecipeFactoryUsingLaravelFactoryForRelationship;
+use ExampleApp\Models\Group;
+use ExampleApp\Models\Ingredient;
+use ExampleApp\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -190,6 +191,31 @@ class FactoryTest extends TestCase
         $this->assertIsString($group->name);
         $this->assertIsInt($group->size);
         $this->assertIsString($group->mobile);
+    }
+
+    /** @test * */
+    public function it_lets_you_use_a_closure_for_defining_default_data(): void
+    {
+        $ingredient = IngredientFactoryUsingClosure::new()->create();
+
+        $this->assertIsString($ingredient->name);
+        $this->assertIsString($ingredient->description);
+        $this->assertEquals($ingredient->name, 'Pasta');
+        $this->assertEquals($ingredient->description, 'Super delicious Pasta');
+    }
+
+    /** @test * */
+    public function it_lets_you_use_a_closure_for_overriding_default_data(): void
+    {
+        $ingredient = IngredientFactoryUsingClosure::new()->create([
+            'name' => fn (array $ingredient) => 'Basil',
+            'description' => fn (array $ingredient) => "Super delicious {$ingredient['name']}",
+        ]);
+
+        $this->assertIsString($ingredient->name);
+        $this->assertIsString($ingredient->description);
+        $this->assertEquals($ingredient->name, 'Basil');
+        $this->assertEquals($ingredient->description, 'Super delicious Basil');
     }
 
     /** @test * */
