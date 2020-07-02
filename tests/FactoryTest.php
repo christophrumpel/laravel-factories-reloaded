@@ -2,15 +2,15 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
+use ExampleApp\Models\Group;
+use ExampleApp\Models\Ingredient;
+use ExampleApp\Models\Recipe;
 use ExampleAppTests\Factories\GroupFactory;
 use ExampleAppTests\Factories\GroupFactoryUsingFaker;
 use ExampleAppTests\Factories\IngredientFactoryUsingClosure;
 use ExampleAppTests\Factories\RecipeFactory;
 use ExampleAppTests\Factories\RecipeFactoryUsingFactoryForRelationship;
 use ExampleAppTests\Factories\RecipeFactoryUsingLaravelFactoryForRelationship;
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Ingredient;
-use ExampleApp\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
