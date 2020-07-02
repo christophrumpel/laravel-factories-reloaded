@@ -134,8 +134,8 @@ class FactoryTest extends TestCase
     public function it_lets_you_overwrite_default_data_when_creating_multiple_instances(): void
     {
         $pancakes = RecipeFactory::new()
-           ->times(5)
-           ->create(['name' => 'Pancakes']);
+            ->times(5)
+            ->create(['name' => 'Pancakes']);
 
         $this->assertEquals('Pancakes', $pancakes->first()->name);
     }
@@ -208,8 +208,8 @@ class FactoryTest extends TestCase
     public function it_lets_you_use_a_closure_for_overriding_default_data(): void
     {
         $ingredient = IngredientFactoryUsingClosure::new()->create([
-            'name' => fn (array $ingredient) => 'Basil',
-            'description' => fn (array $ingredient) => "Super delicious {$ingredient['name']}",
+            'name' => fn(array $ingredient) => 'Basil',
+            'description' => fn(array $ingredient) => "Super delicious {$ingredient['name']}",
         ]);
 
         $this->assertIsString($ingredient->name);
@@ -271,6 +271,91 @@ class FactoryTest extends TestCase
 
         $this->assertEquals(5, $firstGroup->recipes()->count());
         $this->assertEquals(4, $secondGroup->recipes()->count());
+    }
+
+    /** @test * */
+    public function it_lets_you_add_a_related_model_using_a_factory(): void
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $group = GroupFactory::new()
+            ->withFactory(RecipeFactory::new(), 'recipes')
+            ->create();
+
+        $this->assertEquals(1, $group->recipes->count());
+        $this->assertInstanceOf(Recipe::class, $group->recipes->first());
+    }
+
+    /** @test * */
+    public function it_lets_you_add_a_related_model_using_a_factory_with_make(): void
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $group = GroupFactory::new()
+            ->withFactory(RecipeFactory::new(), 'recipes')
+            ->make();
+
+        $this->assertEquals(1, $group->recipes->count());
+        $this->assertEquals(0, Recipe::count());
+        $this->assertEquals(0, Group::count());
+    }
+
+    /** @test * */
+    public function it_lets_you_add_multiple_related_models_using_factories(): void
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $group = GroupFactory::new()
+            ->withFactory(RecipeFactory::new(), 'recipes', 4)
+            ->create();
+
+        $this->assertEquals(4, $group->recipes->count());
+        $this->assertInstanceOf(Recipe::class, $group->recipes->first());
+    }
+
+    /** @test * */
+    public function the_factory_is_immutable_when_adding_related_models_using_factories(): void
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $group = GroupFactory::new()
+            ->withFactory(RecipeFactory::new(), 'recipes', 4);
+
+        $firstGroup = $group->withFactory(RecipeFactory::new(), 'recipes')->create();
+        $secondGroup = $group->create();
+
+        $this->assertEquals(5, $firstGroup->recipes()->count());
+        $this->assertEquals(4, $secondGroup->recipes()->count());
+    }
+
+    /** @test */
+    public function it_lets_you_define_extras_for_related_models_using_factories()
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $group = GroupFactory::new()
+            ->withFactory(RecipeFactory::new()
+                ->withCustomName()
+                ->withCustomDescription(), 'recipes')
+            ->create();
+
+        tap($group->recipes()->first(), function ($recipe) {
+            $this->assertEquals('my-name', $recipe->name);
+            $this->assertEquals('my-desc', $recipe->description);
+        });
+    }
+
+    /** @test */
+    public function it_lets_you_define_extras_for_multiple_related_models_at_once_using_factories()
+    {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
+        $group = GroupFactory::new()
+            ->withFactory(RecipeFactory::new()->withCustomName(), 'recipes', 3)
+            ->create();
+
+        $this->assertEquals(3, $group->recipes()->count());
+        $group->recipes->each(fn($recipe) => $this->assertEquals('my-name', $recipe->name));
     }
 
     /** @test */

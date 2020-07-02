@@ -40,7 +40,7 @@ abstract class BaseFactory implements FactoryInterface
         $modelData = $this->transformModelFields(
             array_merge($this->getDefaults($this->faker), $this->overwriteDefaults, $extra)
         );
-        $model = $this->unguardedIfNeeded(fn () => $this->modelClass::$creationType($modelData));
+        $model = $this->unguardedIfNeeded(fn() => $this->modelClass::$creationType($modelData));
 
         if ($this->relatedModelFactories->isEmpty()) {
             return $model;
@@ -51,7 +51,7 @@ abstract class BaseFactory implements FactoryInterface
 
     protected function unguardedIfNeeded(\Closure $closure)
     {
-        if (! config('factories-reloaded.unguard_models')) {
+        if (!config('factories-reloaded.unguard_models')) {
             return $closure();
         }
 
@@ -68,12 +68,18 @@ abstract class BaseFactory implements FactoryInterface
     /** @return static */
     public function with(string $relatedModelClass, string $relationshipName, int $times = 1): self
     {
+        return $this->withFactory($this->getFactoryFromClassName($relatedModelClass), $relationshipName, $times);
+    }
+
+    /** @return static */
+    public function withFactory(FactoryInterface $relatedFactory, string $relationshipName, int $times = 1): self
+    {
         $clone = clone $this;
 
         $clone->relatedModelFactories = clone $clone->relatedModelFactories;
         $clone->relatedModelFactories[$relationshipName] ??= collect();
         $clone->relatedModelFactories[$relationshipName] = $clone->relatedModelFactories[$relationshipName]->merge(
-            collect()->times($times, fn () => $this->getFactoryFromClassName($relatedModelClass))
+            collect()->times($times, fn() => $relatedFactory)
         );
 
         return $clone;
@@ -97,7 +103,7 @@ abstract class BaseFactory implements FactoryInterface
     protected function getFactoryFromClassName(string $className): FactoryInterface
     {
         $baseClassName = (new ReflectionClass($className))->getShortName();
-        $factoryClass = config('factories-reloaded.factories_namespace').'\\'.$baseClassName.'Factory';
+        $factoryClass = config('factories-reloaded.factories_namespace') . '\\' . $baseClassName . 'Factory';
 
         return new $factoryClass($this->faker);
     }
@@ -120,7 +126,7 @@ abstract class BaseFactory implements FactoryInterface
 
             if (method_exists($relation, 'associate')) {
                 $relatedModels = $factories->map->$creationType();
-                $relatedModels->each(fn ($related) => $relation->associate($related));
+                $relatedModels->each(fn($related) => $relation->associate($related));
 
                 if ($creationType === 'create') {
                     $model->save();
@@ -129,7 +135,7 @@ abstract class BaseFactory implements FactoryInterface
                 continue;
             }
 
-            throw new InvalidArgumentException('Unsupported relation `'.$relationshipName.'` of ` type `'.get_class($relation).'`.');
+            throw new InvalidArgumentException('Unsupported relation `' . $relationshipName . '` of ` type `' . get_class($relation) . '`.');
         }
 
         return $model;
