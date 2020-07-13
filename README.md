@@ -131,6 +131,14 @@ Here were are getting a user instance that has three related recipes attached. T
 
 > :warning: **Note**: For this to work, you need to have a new RecipeFactory already created.
 
+You can also define extras for the related models when using related model factories directly.
+
+```php
+$user = UserFactory::new()
+    ->withFactory(RecipeFactory::new()->withCustomName(), 'recipes', 3)
+    ->create();
+```
+
 You can create many related models instances by chaining `with`s.
 
 ```php
