@@ -4,7 +4,6 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
 use Christophrumpel\LaravelFactoriesReloaded\FactoryCollection;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
-use Christophrumpel\LaravelFactoriesReloaded\LaravelFactoryExtractor;
 use ExampleApp\Models\DifferentLocation\Comment;
 use ExampleApp\Models\Group;
 use ExampleApp\Models\Ingredient;

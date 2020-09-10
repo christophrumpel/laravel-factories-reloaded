@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class GroupFactory extends Factory
 {
-
     /**
      * The name of the factory's corresponding model.
      *
@@ -28,4 +27,3 @@ class GroupFactory extends Factory
         ];
     }
 }
-

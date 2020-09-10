@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RecipeFactory extends Factory
 {
-
     /**
      * The name of the factory's corresponding model.
      *
@@ -60,6 +59,4 @@ class RecipeFactory extends Factory
     {
         return $this->state(['group_name' => 'something];']);
     }
-
 }
-
