@@ -69,37 +69,6 @@ class FactoryFile
 
     public function render(): string
     {
-        // Fallback for Laravel 6.x
-        if (! method_exists(Str::class, 'of')) {
-            $stub = str_replace([
-                'DummyNamespace',
-                'DummyFullModelClass',
-                'DummyModelClass',
-                'DummyFactory',
-                '{{ uses }}',
-                '{{ dummyData }}',
-                '{{ states }}',
-            ], [
-                config('factories-reloaded.factories_namespace'),
-                $this->modelClass,
-                class_basename($this->modelClass),
-                $this->getTargetClassName(),
-                $this->uses,
-                $this->defaults,
-                $this->withStates ? $this->states : '',
-            ], $this->getStub());
-
-            if (preg_match('/(?P<imports>(?:use [^;]+;$\n?)+)/m', $stub, $match)) {
-                $imports = explode("\n", trim($match['imports']));
-
-                sort($imports);
-
-                return str_replace(trim($match['imports']), implode("\n", $imports), $stub);
-            }
-
-            return $stub;
-        }
-
         return Str::of($this->getStub())
             ->replace('DummyNamespace', config('factories-reloaded.factories_namespace'))
             ->replace('DummyFullModelClass', $this->modelClass)

@@ -6,7 +6,7 @@ return [
      * Will be used to find your models while generating new factories.
      */
     'models_paths' => [
-        base_path('app'),
+        base_path('app/Models'),
     ],
 
     /**

@@ -3,9 +3,11 @@
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Faker\Generator;
-use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use ReflectionFunction;
+use Roave\BetterReflection\BetterReflection;
+use Roave\BetterReflection\Reflection\ReflectionMethod;
 use SplFileObject;
 
 class LaravelFactoryExtractor
@@ -14,12 +16,19 @@ class LaravelFactoryExtractor
 
     protected string $className;
 
-    protected ObjectPrybar $factory;
+    protected $factory;
 
     public function __construct(string $className)
     {
         $this->className = $className;
-        $this->factory = new ObjectPrybar(Factory::construct(app(Generator::class), config('factories-reloaded.vanilla_factories_path')));
+        //$classNameForFactory = 'ExampleApp\Group';
+        $factoryName = Factory::resolveFactoryName(class_basename($className));
+
+        if (class_exists($factoryName)) {
+            $this->factory = Factory::factoryForModel(class_basename($className));
+        }
+
+        //$this->factory = new ObjectPrybar(Factory::construct(app(Generator::class), config('factories-reloaded.vanilla_factories_path')));
     }
 
     public static function from(string $className): self
@@ -34,35 +43,46 @@ class LaravelFactoryExtractor
 
     protected function vanillaFactoryPath(): string
     {
-        return config('factories-reloaded.vanilla_factories_path') . '/' . class_basename($this->className) . 'Factory.php';
+        return config('factories-reloaded.vanilla_factories_path').'/'.class_basename($this->className).'Factory.php';
     }
 
     public function getUses(): string
     {
-        return collect($this->uses)->map(function ($use) {
-            if (in_array($use['class'], ['Faker\\Generator', $this->className], true)) {
-                return;
-            }
+        return collect($this->uses)
+            ->map(function ($use) {
+                if (in_array($use['class'], [
+                    'Faker\\Generator',
+                    $this->className,
+                ], true)) {
+                    return;
+                }
 
-            if ($use['class'] === $use['as']) {
-                return 'use ' . $use['class'] . ';';
-            }
+                if ($use['class'] === $use['as']) {
+                    return 'use '.$use['class'].';';
+                }
 
-            return 'use ' . $use['class'] . ' as ' . $use['as'] . ';';
-        })->filter()->implode("\n");
+                return 'use '.$use['class'].' as '.$use['as'].';';
+            })
+            ->filter()
+            ->implode("\n");
     }
 
     public function getDefinitions(): string
     {
-        $definition = collect(
-            $this->factory->getProperty('definitions')
-        )->get($this->className);
+        $classInfo = (new \Roave\BetterReflection\BetterReflection())->classReflector()
+            ->reflect(get_class($this->factory));
 
-        return ltrim(
-            collect(
-                $this->getClosureContent($definition instanceof \Closure ? $definition : $definition['default'])
-            )->implode('    ')
-        );
+        return $classInfo->getMethod('definition')
+            ->getBodyCode();
+        //$definition = collect(
+        //    $this->factory->getProperty('definitions')
+        //)->get($this->className);
+        //
+        //return ltrim(
+        //    collect(
+        //        $this->getClosureContent($definition instanceof \Closure ? $definition : $definition['default'])
+        //    )->implode('    ')
+        //);
     }
 
     protected function getClosureContent(callable $closure): array
@@ -85,6 +105,7 @@ class LaravelFactoryExtractor
 
     /**
      * @see https://gist.github.com/Zeronights/7b7d90fcf8d4daf9db0c
+     *
      * @param $reflection
      */
     protected function parseUseStatements($reflection)
@@ -182,7 +203,6 @@ class LaravelFactoryExtractor
             }
         }
 
-
         // Make sure the as key has the name of the class even
         // if there is no alias in the use statement.
         foreach ($useStatements as &$useStatement) {
@@ -196,60 +216,110 @@ class LaravelFactoryExtractor
 
     public function getStates(): string
     {
+        $factoryReflection = (new BetterReflection())->classReflector()
+            ->reflect(get_class($this->factory));
+
+        $factoryFileName = $factoryReflection->getFileName();
+
+        $factoryMethods = $factoryReflection->getMethods();
+
+        return collect($factoryMethods)
+            ->filter(function (ReflectionMethod $method) use ($factoryFileName) {
+                return Str::of($method->getBodyCode())
+                        ->contains('$this->state(') && $method->getFileName() === $factoryFileName;
+            })
+            ->map(function (ReflectionMethod $method) {
+                $bodyLines = Str::of($method->getBodyCode())
+                    ->explode(";\n");
+
+                $body = collect($bodyLines)
+                    ->filter(fn ($line) => ! empty($line))
+                    ->map(function ($line) {
+                        if (Str::of($line)
+                            ->contains('return $this->state(')) {
+                            return (string) Str::of($line)
+                                ->replace('return $this->state(', '    return tap(clone $this)->overwriteDefaults(');
+                        }
+
+                        return '    '.$line.";\n\n";
+                    })->implode('');
+
+                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): self\n    {\n    $body \n    }";
+            })->implode("\n");
+
+        return $states;
+
         $states = collect($this->factory->getProperty('states'));
 
         if (! $states->has($this->className)) {
             return '';
         }
 
-        return collect($states->get($this->className))->map(function ($closure, $state) {
-            throw_if(
-                ! is_callable($closure),
-                new \RuntimeException('One of your factory states is defined as an array. It must be of the type closure to import it.')
-            );
+        return collect($states->get($this->className))
+            ->map(function ($closure, $state) {
+                $lines = collect($this->getClosureContent($closure))
+                    ->filter()
+                    ->map(fn ($item) => str_replace("\n", '', $item));
+                $firstLine = $lines->shift();
+                $lastLine = $lines->pop();
 
-            $lines = collect($this->getClosureContent($closure))->filter()->map(fn ($item) => str_replace("\n", '', $item));
-            $firstLine = $lines->shift();
-            $lastLine = $lines->pop();
+                if (Str::startsWith(ltrim($firstLine), 'return')) {
+                    if ($lastLine === null) {
+                        $firstLine = Str::replaceLast('];', ']);', $firstLine);
+                    } else {
+                        $lines->push(Str::replaceLast('];', ']);', $lastLine));
+                    }
+                    $lines->push('}');
 
-            if (Str::startsWith(ltrim($firstLine), 'return')) {
-                if ($lastLine === null) {
-                    $firstLine = Str::replaceLast('];', ']);', $firstLine);
-                } else {
-                    $lines->push(Str::replaceLast('];', ']);', $lastLine));
+                    return $lines->prepend([
+                        '',
+                        'public function '.$this->getStateMethodName($state).'(): '.class_basename($this->className).'Factory',
+                        '{',
+                        Str::replaceFirst('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
+                    ])
+                        ->toArray();
                 }
-                $lines->push('}');
 
-                return $lines->prepend([
+                return collect([
                     '',
-                    'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
+                    'public function '.$this->getStateMethodName($state).'(): '.class_basename($this->className).'Factory',
                     '{',
-                    Str::replaceFirst('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
-                ])->toArray();
-            }
+                    '    return tap(clone $this)->overwriteDefaults(function() {',
+                    '    '.$firstLine,
+                ])
+                    ->merge($lines->map(fn ($line) => '    '.$line))
+                    ->merge([
+                        '    '.$lastLine,
+                        '    });',
+                        '}',
+                    ]);
+            })
+            ->flatten()
+            ->map(function ($line) {
+                if (ltrim($line) === '') {
+                    return '';
+                }
 
-            return collect([
-                '',
-                'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
-                '{',
-                '    return tap(clone $this)->overwriteDefaults(function() {',
-                '    ' . $firstLine,
-            ])->merge($lines->map(fn ($line) => '    ' . $line))->merge([
-                '    ' . $lastLine,
-                '    });',
-                '}',
-            ]);
-        })->flatten()->map(function ($line) {
-            if (ltrim($line) === '') {
-                return '';
-            }
-
-            return '    ' . $line;
-        })->implode("\n");
+                return '    '.$line;
+            })
+            ->implode("\n");
     }
 
     protected function getStateMethodName(string $state): string
     {
         return lcfirst(Str::studly($state));
+    }
+
+    private function getMethodVisibility(ReflectionMethod $method): string
+    {
+        if ($method->isPrivate()) {
+            return 'private';
+        }
+
+        if ($method->isProtected()) {
+            return 'protected';
+        }
+
+        return 'public';
     }
 }
