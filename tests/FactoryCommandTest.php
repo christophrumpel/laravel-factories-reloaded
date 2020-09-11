@@ -75,7 +75,6 @@ class FactoryCommandTest extends TestCase
         $createdFactoryClassName = $this->exampleFactoriesNamespace().'\RecipeFactory';
         $recipeFactory = $createdFactoryClassName::new();
 
-
         $recipeOne = $recipeFactory->withGroup()->make();
         $recipeTwo = $recipeFactory->make();
 

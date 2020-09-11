@@ -86,7 +86,6 @@ class FactoryCollectionTest extends TestCase
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
 
         $generatedRecipeFactoryContent = file_get_contents($this->exampleFactoriesPath('RecipeFactory.php'));
-        //dd($generatedRecipeFactoryContent);
 
         $this->assertTrue(Str::containsAll($generatedRecipeFactoryContent, [
             'public function withGroup',
