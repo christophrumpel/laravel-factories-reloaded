@@ -1,6 +1,6 @@
 <?php
 
-namespace ExampleApp\Models\DifferentLocation;
+namespace App\Models\DifferentLocation;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

@@ -3,8 +3,8 @@
 namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Recipe;
+use App\Models\Group;
+use App\Models\Recipe;
 use Faker\Generator;
 
 class RecipeFactoryUsingLaravelFactoryForRelationship extends BaseFactory
@@ -26,7 +26,7 @@ class RecipeFactoryUsingLaravelFactoryForRelationship extends BaseFactory
         return [
             'name' => 'Lasagne',
             'description' => 'Our family lasagne recipe.',
-            'group_id' => factory(Group::class),
+            'group_id' => Group::factory(),
         ];
     }
 }

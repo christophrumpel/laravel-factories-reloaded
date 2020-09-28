@@ -3,7 +3,7 @@
 namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use ExampleApp\Models\Recipe;
+use App\Models\Recipe;
 use Faker\Generator;
 
 class RecipeFactoryUsingFactoryForRelationship extends BaseFactory

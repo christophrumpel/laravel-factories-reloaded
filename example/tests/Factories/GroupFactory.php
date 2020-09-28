@@ -3,7 +3,7 @@
 namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use ExampleApp\Models\Group;
+use App\Models\Group;
 use Faker\Generator;
 
 class GroupFactory extends BaseFactory

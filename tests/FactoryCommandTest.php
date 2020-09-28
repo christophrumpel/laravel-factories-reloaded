@@ -2,8 +2,8 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Recipe;
+use App\Models\Group;
+use App\Models\Recipe;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -207,7 +207,7 @@ class FactoryCommandTest extends TestCase
     public function it_can_find_models_in_option_passed_models_path(): void
     {
         $factoryPath = $this->exampleFactoriesPath('IngredientFactory.php');
-        $this->assertFileNotExists($factoryPath);
+        $this->assertFileDoesNotExist($factoryPath);
 
         $this->artisan('make:factory-reloaded Ingredient')
             ->assertExitCode(0);

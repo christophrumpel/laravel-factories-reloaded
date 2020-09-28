@@ -3,7 +3,7 @@
 namespace ExampleAppTests\Factories;
 
 use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
-use ExampleApp\Models\Ingredient;
+use App\Models\Ingredient;
 use Faker\Generator;
 
 class IngredientFactory extends BaseFactory

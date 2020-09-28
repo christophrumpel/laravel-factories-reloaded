@@ -12,6 +12,7 @@ use SplFileObject;
 
 class LaravelFactoryExtractor
 {
+
     protected ?array $uses = null;
 
     protected string $className;
@@ -233,7 +234,7 @@ class LaravelFactoryExtractor
                     ->explode(";\n");
 
                 $body = collect($bodyLines)
-                    ->filter(fn ($line) => ! empty($line))
+                    ->filter(fn($line) => ! empty($line))
                     ->map(function ($line) {
                         if (Str::of($line)
                             ->contains('return $this->state(')) {
@@ -242,16 +243,18 @@ class LaravelFactoryExtractor
                         }
 
                         return '    '.$line.";\n\n";
-                    })->implode('');
+                    })
+                    ->implode('');
 
-                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): self\n    {\n    $body \n    }";
-            })->implode("\n");
+                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className) . 'Factory'."\n    {\n    $body\n    }";
+            })
+            ->implode("\n");
 
         return $states;
 
         $states = collect($this->factory->getProperty('states'));
 
-        if (! $states->has($this->className)) {
+        if ( ! $states->has($this->className)) {
             return '';
         }
 
@@ -259,7 +262,7 @@ class LaravelFactoryExtractor
             ->map(function ($closure, $state) {
                 $lines = collect($this->getClosureContent($closure))
                     ->filter()
-                    ->map(fn ($item) => str_replace("\n", '', $item));
+                    ->map(fn($item) => str_replace("\n", '', $item));
                 $firstLine = $lines->shift();
                 $lastLine = $lines->pop();
 
@@ -287,7 +290,7 @@ class LaravelFactoryExtractor
                     '    return tap(clone $this)->overwriteDefaults(function() {',
                     '    '.$firstLine,
                 ])
-                    ->merge($lines->map(fn ($line) => '    '.$line))
+                    ->merge($lines->map(fn($line) => '    '.$line))
                     ->merge([
                         '    '.$lastLine,
                         '    });',

@@ -40,7 +40,7 @@
         ],
         "psr-4": {
             "Christophrumpel\\LaravelFactoriesReloaded\\Tests\\": "tests",
-            "ExampleApp\\": "example/app/",
+            "App\\": "example/app/",
             "ExampleAppTests\\": "example/tests/",
             "Database\\Factories\\": "database/factories/"
         }

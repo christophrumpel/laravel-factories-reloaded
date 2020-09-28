@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use ExampleApp\Models\ModelsWithArrayState\Book;
+use App\Models\ModelsWithArrayState\Book;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BookFactory extends Factory
