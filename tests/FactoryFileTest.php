@@ -74,10 +74,9 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-
         $this->assertTrue(Str::containsAll($content, [
-            "'name' =>",
-            "'description' =>",
+            '\'name\' => $this->faker->word,',
+            '\'description\' => $this->faker->sentence',
         ]));
     }
 
