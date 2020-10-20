@@ -236,11 +236,23 @@ class LaravelFactoryExtractor
                 $newMethodBody = Str::of($methodBody)
                     ->replace('return $this->state(', '        return tap(clone $this)->overwriteDefaults(');
 
+                // If the method body contains multiple lines, format them
                 $lines = explode(PHP_EOL, $newMethodBody);
+                $lineBefore = '';
                 if (count($lines) > 1) {
-                    $newMethodBody = collect(explode(PHP_EOL, $newMethodBody))->map(function ($line) {
-                        return Str::of($line)->ltrim(' ')->prepend('        ');
-                    })->implode(PHP_EOL);
+                    $newMethodBody = collect(explode(PHP_EOL, $newMethodBody))
+                        ->map(function ($line) use (&$lineBefore) {
+                            $prepend = '        ';
+                            // Add indention if the line before opens a function
+                            if (Str::of($lineBefore)->endsWith('{')) {
+                                $prepend .= '    ';
+                            }
+
+                            $lineBefore = $line;
+
+                            return Str::of($line)->ltrim(' ')->prepend($prepend);
+                        })
+                        ->implode(PHP_EOL);
                 }
 
                 // Put new method body in method
