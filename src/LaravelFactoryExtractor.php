@@ -225,108 +225,66 @@ class LaravelFactoryExtractor
 
         return collect($factoryMethods)
             ->filter(function (ReflectionMethod $method) use ($factoryFileName) {
+                // Get only methods where state method is used
                 return Str::of($method->getBodyCode())
                         ->contains('$this->state(') && $method->getFileName() === $factoryFileName;
             })
             ->map(function (ReflectionMethod $method) {
+                // Replace Laravel state method with overwrite method
+                $methodBody = $method->getBodyCode();
 
-                $body = collect($method->getBodyCode())
-                    ->filter(fn ($line) => ! empty($line))
-                    ->map(function ($line) {
-                        // If it calls the "return with state method", replace it with overwrite
-                        if (Str::of($line)
-                            ->contains('return $this->state(')) {
-                            return (string) Str::of($line)
-                                ->replace('return $this->state(', '    return tap(clone $this)->overwriteDefaults(');
-                        }
+                $newMethodBody = Str::of($methodBody)
+                    ->replace('return $this->state(', '        return tap(clone $this)->overwriteDefaults(');
 
-                        return $line.";\n\n";
-                    })
-                    ->map(function ($line) {
-
-                        // Get lines by splitting over new line snippet
-                        $lines = collect(explode(PHP_EOL, $line));
-
-
-                        //$firstLine = $lines->shift();
-
-                        //$givenSpaces = Str::of($firstLine)->before('return');
-                        //$givenSpaces = Str::of($firstLine)->match('/^(\s+)/');
-                        //
-                        //return $lines->map(function ($line) use ($givenSpaces) {
-                        //    $currentSpaces = Str::of($line)->match('/^(\s+)/')->length();
-                        //    if ($currentSpaces <= $givenSpaces->length()) {
-                        //        return $givenSpaces.$givenSpaces.$line;
-                        //    }
-                        //
-                        //    return '    '.$line;
-                        //})
-                        //    ->prepend($firstLine)->implode(PHP_EOL);
-                    })
-                    ->dd()
-                    ->implode('');
-
-                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className).'Factory'."\n    {\n    $body\n    }";
-            })
-            ->implode("\n");
-
-        return $states;
-
-        $states = collect($this->factory->getProperty('states'));
-
-        if (! $states->has($this->className)) {
-            return '';
-        }
-
-        return collect($states->get($this->className))
-            ->map(function ($closure, $state) {
-                $lines = collect($this->getClosureContent($closure))
-                    ->filter()
-                    ->map(fn ($item) => str_replace("\n", '', $item));
-                $firstLine = $lines->shift();
-                $lastLine = $lines->pop();
-
-                if (Str::startsWith(ltrim($firstLine), 'return')) {
-                    if ($lastLine === null) {
-                        $firstLine = Str::replaceLast('];', ']);', $firstLine);
-                    } else {
-                        $lines->push(Str::replaceLast('];', ']);', $lastLine));
-                    }
-                    $lines->push('}');
-
-                    return $lines->prepend([
-                        '',
-                        'public function '.$this->getStateMethodName($state).'(): '.class_basename($this->className).'Factory',
-                        '{',
-                        Str::replaceFirst('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
-                    ])
-                        ->toArray();
+                $lines = explode(PHP_EOL, $newMethodBody);
+                if (count($lines) > 1) {
+                    $newMethodBody = collect(explode(PHP_EOL, $newMethodBody))->map(function ($line) {
+                        return Str::of($line)->ltrim(' ')->prepend('        ');
+                    })->implode(PHP_EOL);
                 }
 
-                return collect([
-                    '',
-                    'public function '.$this->getStateMethodName($state).'(): '.class_basename($this->className).'Factory',
-                    '{',
-                    '    return tap(clone $this)->overwriteDefaults(function() {',
-                    '    '.$firstLine,
-                ])
-                    ->merge($lines->map(fn ($line) => '    '.$line))
-                    ->merge([
-                        '    '.$lastLine,
-                        '    });',
-                        '}',
-                    ]);
-            })
-            ->flatten()
-            ->map(function ($line) {
-                if (ltrim($line) === '') {
-                    return '';
-                }
-
-                return '    '.$line;
+                // Put new method body in method
+                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className).'Factory'."\n    {\n$newMethodBody\n    }";
             })
             ->implode("\n");
     }
+
+    //$body = collect($method->getBodyCode())
+    //    ->filter(fn ($line) => ! empty($line))
+    //    ->map(function ($line) {
+    //        // If it calls the "return with state method", replace it with overwrite
+    //        if (Str::of($line)
+    //            ->contains('return $this->state(')) {
+    //            return (string) Str::of($line)
+    //                ->replace('return $this->state(', '    return tap(clone $this)->overwriteDefaults(');
+    //        }
+    //
+    //        return $line.";\n\n";
+    //    })
+    //    ->map(function ($line) {
+    //
+    //        // Get lines by splitting over new line snippet
+    //        $lines = collect(explode(PHP_EOL, $line));
+
+    //$firstLine = $lines->shift();
+
+    //$givenSpaces = Str::of($firstLine)->before('return');
+    //$givenSpaces = Str::of($firstLine)->match('/^(\s+)/');
+    //
+    //return $lines->map(function ($line) use ($givenSpaces) {
+    //    $currentSpaces = Str::of($line)->match('/^(\s+)/')->length();
+    //    if ($currentSpaces <= $givenSpaces->length()) {
+    //        return $givenSpaces.$givenSpaces.$line;
+    //    }
+    //
+    //    return '    '.$line;
+    //})
+    //    ->prepend($firstLine)->implode(PHP_EOL);
+    //    })
+    //    ->dd()
+    //    ->implode('');
+    //
+    //return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className).'Factory'."\n    {\n    $body\n    }";
 
     protected function getStateMethodName(string $state): string
     {

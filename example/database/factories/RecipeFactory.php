@@ -36,15 +36,15 @@ class RecipeFactory extends Factory
         ]);
     }
 
-    //public function withDifferentGroup(): Factory
-    //{
-    //    $group = GroupFactory::new()
-    //        ->create();
-    //
-    //    return $this->state([
-    //        'group_id' => $group->id,
-    //    ]);
-    //}
+    public function withDifferentGroup(): Factory
+    {
+        $group = GroupFactory::new()
+            ->create();
+
+        return $this->state([
+            'group_id' => $group->id,
+        ]);
+    }
 
     //public function withOneLineGroup(): Factory
     //{
