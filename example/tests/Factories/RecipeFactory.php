@@ -56,4 +56,5 @@ class RecipeFactory extends BaseFactory
             'group_id' => Group::factory(),
         ]);
     }
+
 }

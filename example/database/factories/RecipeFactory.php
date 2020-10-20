@@ -36,30 +36,39 @@ class RecipeFactory extends Factory
         ]);
     }
 
-    public function withDifferentGroup(): Factory
-    {
-        $group = GroupFactory::new()
-            ->create();
+    //public function withDifferentGroup(): Factory
+    //{
+    //    $group = GroupFactory::new()
+    //        ->create();
+    //
+    //    return $this->state([
+    //        'group_id' => $group->id,
+    //    ]);
+    //}
 
-        return $this->state([
-            'group_id' => $group->id,
-        ]);
-    }
-
-    public function withOneLineGroup(): Factory
-    {
-        return $this->state(['group_id' => Group::factory()]);
-    }
-
-    public function withReturnGroupName(): Factory
-    {
-        return $this->state(['group_name' => 'return all']);
-    }
-
-    public function withSquareBracketGroupName(): Factory
-    {
-        return $this->state(['group_name' => 'something];']);
-    }
+    //public function withOneLineGroup(): Factory
+    //{
+    //    return $this->state(['group_id' => Group::factory()]);
+    //}
+    //
+    //public function withReturnGroupName(): Factory
+    //{
+    //    return $this->state(['group_name' => 'return all']);
+    //}
+    //
+    //public function withClosureGroupName(): Factory
+    //{
+    //    return $this->state(function (array $attributes) {
+    //        return [
+    //            'name' => $attributes['name'] . ' New Name',
+    //        ];
+    //    });
+    //}
+    //
+    //public function withSquareBracketGroupName(): Factory
+    //{
+    //    return $this->state(['group_name' => 'something];']);
+    //}
 
 }
 

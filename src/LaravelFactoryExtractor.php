@@ -12,7 +12,6 @@ use SplFileObject;
 
 class LaravelFactoryExtractor
 {
-
     protected ?array $uses = null;
 
     protected string $className;
@@ -230,23 +229,44 @@ class LaravelFactoryExtractor
                         ->contains('$this->state(') && $method->getFileName() === $factoryFileName;
             })
             ->map(function (ReflectionMethod $method) {
-                $bodyLines = Str::of($method->getBodyCode())
-                    ->explode(";\n");
 
-                $body = collect($bodyLines)
-                    ->filter(fn($line) => ! empty($line))
+                $body = collect($method->getBodyCode())
+                    ->filter(fn ($line) => ! empty($line))
                     ->map(function ($line) {
+                        // If it calls the "return with state method", replace it with overwrite
                         if (Str::of($line)
                             ->contains('return $this->state(')) {
                             return (string) Str::of($line)
                                 ->replace('return $this->state(', '    return tap(clone $this)->overwriteDefaults(');
                         }
 
-                        return '    '.$line.";\n\n";
+                        return $line.";\n\n";
                     })
+                    ->map(function ($line) {
+
+                        // Get lines by splitting over new line snippet
+                        $lines = collect(explode(PHP_EOL, $line));
+
+
+                        //$firstLine = $lines->shift();
+
+                        //$givenSpaces = Str::of($firstLine)->before('return');
+                        //$givenSpaces = Str::of($firstLine)->match('/^(\s+)/');
+                        //
+                        //return $lines->map(function ($line) use ($givenSpaces) {
+                        //    $currentSpaces = Str::of($line)->match('/^(\s+)/')->length();
+                        //    if ($currentSpaces <= $givenSpaces->length()) {
+                        //        return $givenSpaces.$givenSpaces.$line;
+                        //    }
+                        //
+                        //    return '    '.$line;
+                        //})
+                        //    ->prepend($firstLine)->implode(PHP_EOL);
+                    })
+                    ->dd()
                     ->implode('');
 
-                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className) . 'Factory'."\n    {\n    $body\n    }";
+                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className).'Factory'."\n    {\n    $body\n    }";
             })
             ->implode("\n");
 
@@ -254,7 +274,7 @@ class LaravelFactoryExtractor
 
         $states = collect($this->factory->getProperty('states'));
 
-        if ( ! $states->has($this->className)) {
+        if (! $states->has($this->className)) {
             return '';
         }
 
@@ -262,7 +282,7 @@ class LaravelFactoryExtractor
             ->map(function ($closure, $state) {
                 $lines = collect($this->getClosureContent($closure))
                     ->filter()
-                    ->map(fn($item) => str_replace("\n", '', $item));
+                    ->map(fn ($item) => str_replace("\n", '', $item));
                 $firstLine = $lines->shift();
                 $lastLine = $lines->pop();
 
@@ -290,7 +310,7 @@ class LaravelFactoryExtractor
                     '    return tap(clone $this)->overwriteDefaults(function() {',
                     '    '.$firstLine,
                 ])
-                    ->merge($lines->map(fn($line) => '    '.$line))
+                    ->merge($lines->map(fn ($line) => '    '.$line))
                     ->merge([
                         '    '.$lastLine,
                         '    });',

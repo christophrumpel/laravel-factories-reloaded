@@ -4,6 +4,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
 use App\Models\Group;
 use App\Models\Recipe;
+use ExampleAppTests\Factories\Tmp\RecipeFactory;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -58,6 +59,10 @@ class FactoryCommandTest extends TestCase
 
         $this->assertFileExists($this->exampleFactoriesPath('RecipeFactory.php'));
         $this->assertTrue(method_exists($this->exampleFactoriesNamespace().'\RecipeFactory', 'withGroup'));
+        $factoryClass = $this->exampleFactoriesNamespace().'\RecipeFactory';
+        $factory = $factoryClass::new();
+        $this->assertInstanceOf(RecipeFactory::class, $factory->withGroup());
+
     }
 
     /** @test */

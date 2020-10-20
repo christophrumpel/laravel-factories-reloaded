@@ -2,16 +2,14 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
-use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use App\Models\Group;
 use App\Models\Ingredient;
-use App\Models\ModelsWithArrayState\Book;
 use App\Models\Recipe;
+use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
 use Illuminate\Support\Str;
 
 class FactoryFileTest extends TestCase
 {
-
     /** @test * */
     public function it_can_be_created_from_static_method(): void
     {
@@ -94,27 +92,58 @@ class FactoryFileTest extends TestCase
     {
         return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
     }'));
+
+    //    // where the state php closure simply returns an array and was on one line
+    //    $this->assertTrue(Str::contains($content, '    public function withOneLineGroup(): RecipeFactory
+    //{
+    //    return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
+    //}'));
+    //    // where the state php closure simply returns an array and was on one line - and contains the string "return " within its values
+    //    $this->assertTrue(Str::contains($content, '    public function withReturnGroupName(): RecipeFactory
+    //{
+    //    return tap(clone $this)->overwriteDefaults([\'group_name\' => \'return all\']);
+    //}'));
+    //
+    //    // where the state php closure simply returns an array and was on one line - and contains the string "];" within its values
+    //    $this->assertTrue(Str::contains($content, '    public function withSquareBracketGroupName(): RecipeFactory
+    //{
+    //    return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);
+    //}'));
+    //
+    //    // state with closure
+    //    //
+    //    //return $this->state(function () {
+    //    //return [
+    //    //'name' => 'New Name',
+    //    //];
+    //    //});
+    //
+    //    $this->assertTrue(Str::contains($content, '    public function withClosureGroupName(): RecipeFactory
+    //{
+    //    return tap(clone $this)->overwriteDefaults([
+    //        \'name\' => \'New Name\'
+    //    ]);
+    //}'));
+
+        // state with closure and using given $attribute
+        // Possible? because when we override defaults, they are merged before building, so we cannot access them yet?
+        //return $this->state(function (array $attributes) {
+        //return [
+        //'name' => $attributes['name'] . ' New Name',
+        //];
+        //});
+    }
+
+    /** @test * */
+    public function it_can_add_default_state_withDifferentGroup(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
         $this->assertTrue(Str::contains($content, '    public function withDifferentGroup(): RecipeFactory
     {
         $group = \Database\Factories\GroupFactory::new()->create();
-
-    return tap(clone $this)->overwriteDefaults([\'group_id\' => $group->id]);
-    }'));
-            // where the state php closure simply returns an array and was on one line
-            $this->assertTrue(Str::contains($content, '    public function withOneLineGroup(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
-    }'));
-            // where the state php closure simply returns an array and was on one line - and contains the string "return " within its values
-            $this->assertTrue(Str::contains($content, '    public function withReturnGroupName(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'return all\']);
-    }'));
-
-            // where the state php closure simply returns an array and was on one line - and contains the string "];" within its values
-            $this->assertTrue(Str::contains($content, '    public function withSquareBracketGroupName(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);
+        return tap(clone $this)->overwriteDefaults([\'group_id\' => $group->id]);
     }'));
     }
 
@@ -143,8 +172,10 @@ class FactoryFileTest extends TestCase
     public function it_gives_factory_class_full_name(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
-        $this->assertEquals(config('factories-reloaded.factories_namespace').'\RecipeFactory',
-            $recipeFactoryFile->getTargetClassFullName());
+        $this->assertEquals(
+            config('factories-reloaded.factories_namespace').'\RecipeFactory',
+            $recipeFactoryFile->getTargetClassFullName()
+        );
     }
 
     /** @test * */
