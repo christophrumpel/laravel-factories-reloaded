@@ -92,37 +92,6 @@ class FactoryFileTest extends TestCase
     {
         return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
     }'));
-
-
-        //    // where the state php closure simply returns an array and was on one line
-        //    $this->assertTrue(Str::contains($content, '    public function withOneLineGroup(): RecipeFactory
-        //{
-        //    return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
-        //}'));
-        //
-        //
-        //    // state with closure
-        //    //
-        //    //return $this->state(function () {
-        //    //return [
-        //    //'name' => 'New Name',
-        //    //];
-        //    //});
-        //
-        //    $this->assertTrue(Str::contains($content, '    public function withClosureGroupName(): RecipeFactory
-        //{
-        //    return tap(clone $this)->overwriteDefaults([
-        //        \'name\' => \'New Name\'
-        //    ]);
-        //}'));
-
-        // state with closure and using given $attribute
-        // Possible? because when we override defaults, they are merged before building, so we cannot access them yet?
-        //return $this->state(function (array $attributes) {
-        //return [
-        //'name' => $attributes['name'] . ' New Name',
-        //];
-        //});
     }
 
     /** @test * */
@@ -134,6 +103,7 @@ class FactoryFileTest extends TestCase
         $this->assertTrue(Str::contains($content, '    public function withDifferentGroup(): RecipeFactory
     {
         $group = \Database\Factories\GroupFactory::new()->create();
+
         return tap(clone $this)->overwriteDefaults([\'group_id\' => $group->id]);
     }'));
     }
