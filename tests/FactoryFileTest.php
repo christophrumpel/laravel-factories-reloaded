@@ -93,10 +93,7 @@ class FactoryFileTest extends TestCase
         return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
     }'));
 
-    //    $this->assertTrue(Str::contains($content, '    public function withSquareBracketGroupName(): RecipeFactory
-    //{
-    //    return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);
-    //}'));
+
         //    // where the state php closure simply returns an array and was on one line
         //    $this->assertTrue(Str::contains($content, '    public function withOneLineGroup(): RecipeFactory
         //{
@@ -163,6 +160,18 @@ class FactoryFileTest extends TestCase
         $this->assertTrue(Str::contains($content, '    public function withReturnGroupName(): RecipeFactory
     {
         return tap(clone $this)->overwriteDefaults([\'group_name\' => \'return all\']);
+    }'));
+    }
+
+    /** @test * */
+    public function it_can_add_state_where_square_brackets_being_used_ind_string(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
+        $this->assertTrue(Str::contains($content, '    public function withSquareBracketGroupName(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);
     }'));
     }
 

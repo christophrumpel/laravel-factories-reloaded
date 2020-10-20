@@ -64,11 +64,11 @@ class RecipeFactory extends Factory
             ];
         });
     }
-    //
-    //public function withSquareBracketGroupName(): Factory
-    //{
-    //    return $this->state(['group_name' => 'something];']);
-    //}
+
+    public function withSquareBracketGroupName(): Factory
+    {
+        return $this->state(['group_name' => 'something];']);
+    }
 
 }
 
