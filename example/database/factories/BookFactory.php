@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BookFactory extends Factory
 {
-
     /**
      * The name of the factory's corresponding model.
      *
@@ -36,5 +35,4 @@ class BookFactory extends Factory
             'name' => 'custom-name',
         ]);
     }
-
 }
