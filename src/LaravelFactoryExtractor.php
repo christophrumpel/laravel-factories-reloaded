@@ -2,7 +2,6 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
-use Faker\Generator;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use ReflectionFunction;
@@ -27,8 +26,6 @@ class LaravelFactoryExtractor
         if (class_exists($factoryName)) {
             $this->factory = Factory::factoryForModel(class_basename($className));
         }
-
-        //$this->factory = new ObjectPrybar(Factory::construct(app(Generator::class), config('factories-reloaded.vanilla_factories_path')));
     }
 
     public static function from(string $className): self
@@ -74,15 +71,6 @@ class LaravelFactoryExtractor
 
         return $classInfo->getMethod('definition')
             ->getBodyCode();
-        //$definition = collect(
-        //    $this->factory->getProperty('definitions')
-        //)->get($this->className);
-        //
-        //return ltrim(
-        //    collect(
-        //        $this->getClosureContent($definition instanceof \Closure ? $definition : $definition['default'])
-        //    )->implode('    ')
-        //);
     }
 
     protected function getClosureContent(callable $closure): array
@@ -281,43 +269,6 @@ class LaravelFactoryExtractor
             })
             ->implode("\n");
     }
-
-    //$body = collect($method->getBodyCode())
-    //    ->filter(fn ($line) => ! empty($line))
-    //    ->map(function ($line) {
-    //        // If it calls the "return with state method", replace it with overwrite
-    //        if (Str::of($line)
-    //            ->contains('return $this->state(')) {
-    //            return (string) Str::of($line)
-    //                ->replace('return $this->state(', '    return tap(clone $this)->overwriteDefaults(');
-    //        }
-    //
-    //        return $line.";\n\n";
-    //    })
-    //    ->map(function ($line) {
-    //
-    //        // Get lines by splitting over new line snippet
-    //        $lines = collect(explode(PHP_EOL, $line));
-
-    //$firstLine = $lines->shift();
-
-    //$givenSpaces = Str::of($firstLine)->before('return');
-    //$givenSpaces = Str::of($firstLine)->match('/^(\s+)/');
-    //
-    //return $lines->map(function ($line) use ($givenSpaces) {
-    //    $currentSpaces = Str::of($line)->match('/^(\s+)/')->length();
-    //    if ($currentSpaces <= $givenSpaces->length()) {
-    //        return $givenSpaces.$givenSpaces.$line;
-    //    }
-    //
-    //    return '    '.$line;
-    //})
-    //    ->prepend($firstLine)->implode(PHP_EOL);
-    //    })
-    //    ->dd()
-    //    ->implode('');
-    //
-    //return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className).'Factory'."\n    {\n    $body\n    }";
 
     protected function getStateMethodName(string $state): string
     {
