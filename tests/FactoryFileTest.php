@@ -117,7 +117,6 @@ class FactoryFileTest extends TestCase
     {
         return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
     }'));
-
     }
 
     /** @test * */
@@ -156,7 +155,6 @@ class FactoryFileTest extends TestCase
             return [\'name\' => $attributes[\'name\'] . \' New Name\'];
         });
     }'));
-
     }
 
     /** @test * */

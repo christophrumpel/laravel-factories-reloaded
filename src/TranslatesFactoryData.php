@@ -3,7 +3,6 @@
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\FactoryBuilder;
 
 trait TranslatesFactoryData
 {

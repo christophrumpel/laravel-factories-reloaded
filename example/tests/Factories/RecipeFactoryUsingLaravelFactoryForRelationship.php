@@ -2,9 +2,9 @@
 
 namespace ExampleAppTests\Factories;
 
-use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
 use App\Models\Group;
 use App\Models\Recipe;
+use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
 use Faker\Generator;
 
 class RecipeFactoryUsingLaravelFactoryForRelationship extends BaseFactory
