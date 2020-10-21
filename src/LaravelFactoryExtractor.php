@@ -208,15 +208,10 @@ class LaravelFactoryExtractor
             ->reflect(get_class($this->factory));
 
         $factoryFileName = $factoryReflection->getFileName();
-
         $factoryMethods = $factoryReflection->getMethods();
 
         return collect($factoryMethods)
-            ->filter(function (ReflectionMethod $method) use ($factoryFileName) {
-                // Get only methods where state method is used
-                return Str::of($method->getBodyCode())
-                        ->contains('$this->state(') && $method->getFileName() === $factoryFileName;
-            })
+            ->filter(fn (ReflectionMethod $factoryMethod) => $this->isLaravelStateMethod($factoryMethod, $factoryFileName))
             ->map(function (ReflectionMethod $method) {
                 // Replace Laravel state method with overwrite method
                 $methodBody = $method->getBodyCode();
@@ -286,5 +281,11 @@ class LaravelFactoryExtractor
         }
 
         return 'public';
+    }
+
+    private function isLaravelStateMethod(ReflectionMethod $factoryMethod, string $factoryFileName): bool
+    {
+        return Str::of($factoryMethod->getBodyCode())
+                ->contains('$this->state(') && $factoryMethod->getFileName() === $factoryFileName;
     }
 }
