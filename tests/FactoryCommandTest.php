@@ -62,7 +62,6 @@ class FactoryCommandTest extends TestCase
         $factoryClass = $this->exampleFactoriesNamespace().'\RecipeFactory';
         $factory = $factoryClass::new();
         $this->assertInstanceOf(RecipeFactory::class, $factory->withGroup());
-
     }
 
     /** @test */

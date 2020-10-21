@@ -2,8 +2,8 @@
 
 namespace ExampleAppTests\Factories;
 
-use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
 use App\Models\Ingredient;
+use Christophrumpel\LaravelFactoriesReloaded\BaseFactory;
 use Faker\Generator;
 
 class IngredientFactory extends BaseFactory
