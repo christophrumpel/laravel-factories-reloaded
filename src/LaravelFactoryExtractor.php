@@ -4,6 +4,7 @@ namespace Christophrumpel\LaravelFactoriesReloaded;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 use ReflectionFunction;
 use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
@@ -66,7 +67,7 @@ class LaravelFactoryExtractor
 
     public function getDefinitions(): string
     {
-        $classInfo = (new \Roave\BetterReflection\BetterReflection())->classReflector()
+        $classInfo = (new BetterReflection())->classReflector()
             ->reflect(get_class($this->factory));
 
         return $classInfo->getMethod('definition')
@@ -213,50 +214,17 @@ class LaravelFactoryExtractor
         return collect($factoryMethods)
             ->filter(fn (ReflectionMethod $factoryMethod) => $this->isLaravelStateMethod($factoryMethod, $factoryFileName))
             ->map(function (ReflectionMethod $method) {
-                // Replace Laravel state method with overwrite method
+                // Transform method to new Factory Reloaded Overwrite Defaults method
                 $methodBody = $method->getBodyCode();
 
+                // Replace Laravel state method with overwrite method
                 $newMethodBody = Str::of($methodBody)
                     ->replace('return $this->state(', '        return tap(clone $this)->overwriteDefaults(');
 
                 // If the method body contains multiple lines, format them
                 $lines = explode(PHP_EOL, $newMethodBody);
-                $lineBefore = '';
                 if (count($lines) > 1) {
-                    $newMethodBody = collect(explode(PHP_EOL, $newMethodBody))
-                        ->map(function ($line) use (&$lineBefore) {
-                            $prepend = '        ';
-                            // Add indention if the line before opens a function
-                            if (Str::of($lineBefore)
-                                ->endsWith('{')) {
-                                $prepend .= '    ';
-                            }
-
-                            $lineBefore = $line;
-
-                            return Str::of($line)
-                                ->ltrim(' ')
-                                ->prepend($prepend);
-                        })
-                        ->map(function ($line, $key) use (&$lineBefore) {
-                            if ($key === 0) {
-                                $lineBefore = '';
-                            }
-
-                            if ($key !== 0
-                                && ! Str::of($lineBefore)->endsWith('{')
-                                && Str::of($line)
-                                    ->ltrim(' ')
-                                    ->startsWith('return')) {
-                                $line = Str::of($line)
-                                    ->prepend(PHP_EOL);
-                            }
-
-                            $lineBefore = $line;
-
-                            return $line;
-                        })
-                        ->implode(PHP_EOL);
+                    $newMethodBody = $this->formatMultipleLinesFactoryMethod($newMethodBody);
                 }
 
                 // Put new method body in method
@@ -287,5 +255,44 @@ class LaravelFactoryExtractor
     {
         return Str::of($factoryMethod->getBodyCode())
                 ->contains('$this->state(') && $factoryMethod->getFileName() === $factoryFileName;
+    }
+
+    private function formatMultipleLinesFactoryMethod(Stringable $newMethodBody): string
+    {
+        $lineBefore = '';
+
+        return collect(explode(PHP_EOL, $newMethodBody))
+            ->map(function ($line) use (&$lineBefore) {
+                $prepend = '        ';
+                // Add indention if the line before opens a function
+                if (Str::of($lineBefore)
+                    ->endsWith('{')) {
+                    $prepend .= '    ';
+                }
+
+                $lineBefore = $line;
+
+                return Str::of($line)
+                    ->ltrim(' ')
+                    ->prepend($prepend);
+            })
+            ->map(function ($line, $key) use (&$lineBefore) {
+                if ($key === 0) {
+                    $lineBefore = '';
+                }
+
+                if ($key !== 0 && ! Str::of($lineBefore)
+                        ->endsWith('{') && Str::of($line)
+                        ->ltrim(' ')
+                        ->startsWith('return')) {
+                    $line = Str::of($line)
+                        ->prepend(PHP_EOL);
+                }
+
+                $lineBefore = $line;
+
+                return $line;
+            })
+            ->implode(PHP_EOL);
     }
 }
