@@ -263,18 +263,18 @@ class LaravelFactoryExtractor
 
         return collect(explode(PHP_EOL, $newMethodBody))
             ->map(function ($line) use (&$lineBefore) {
-                $prepend = '        ';
+                $prependSpaces = '        ';
                 // Add indention if the line before opens a function
                 if (Str::of($lineBefore)
                     ->endsWith('{')) {
-                    $prepend .= '    ';
+                    $prependSpaces .= '    ';
                 }
 
                 $lineBefore = $line;
 
                 return Str::of($line)
                     ->ltrim(' ')
-                    ->prepend($prepend);
+                    ->prepend($prependSpaces);
             })
             ->map(function ($line, $key) use (&$lineBefore) {
                 if ($key === 0) {
