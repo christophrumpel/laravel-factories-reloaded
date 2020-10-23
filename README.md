@@ -8,6 +8,13 @@ This package generates `class-based` model factories, which you can use instead 
 
 ![Screenshot of the command](http://screenshots.nomoreencore.com/lfr_social_image_full.png)
 
+## Laravel 8 Support
+
+The new version v2 now supports Laravel 8. Since L8 changed their own implementation of factories a lot, this new v2 version ONLY works with Laravel 8.
+If you are not using L8 yet, use the latest 1.* version of this package.
+
+Most of the instructions here will stay the same, no matter which version you are using. Still, I'm going to rewrite the whole readme file to into detai about the differences between v1 and v2. In the meantime, have fun :-)
+
 
 ## Benefits
 
