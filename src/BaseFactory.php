@@ -40,6 +40,7 @@ abstract class BaseFactory implements FactoryInterface
         $modelData = $this->transformModelFields(
             array_merge($this->getDefaults($this->faker), $this->overwriteDefaults, $extra)
         );
+
         $model = $this->unguardedIfNeeded(fn () => $this->modelClass::$creationType($modelData));
 
         if ($this->relatedModelFactories->isEmpty()) {

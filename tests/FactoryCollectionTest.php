@@ -2,12 +2,12 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
+use App\Models\DifferentLocation\Comment;
+use App\Models\Group;
+use App\Models\Ingredient;
+use App\Models\Recipe;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryCollection;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
-use ExampleApp\Models\DifferentLocation\Comment;
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Ingredient;
-use ExampleApp\Models\Recipe;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;

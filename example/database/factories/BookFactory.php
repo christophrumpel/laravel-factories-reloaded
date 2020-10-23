@@ -1,19 +1,38 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
-use Faker\Generator as Faker;
+use App\Models\ModelsWithArrayState\Book;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(\ExampleApp\Models\ModelsWithArrayState\Book::class, function (Faker $faker) {
-    return [
-        'name' => $faker->word,
-    ];
-});
+class BookFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Book::class;
 
-$factory->state(
-    \ExampleApp\Models\ModelsWithArrayState\Book::class,
-    'customName',
-    [
-        'name' => 'custom-name',
-    ]
-);
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return ['name' => $this->faker->word];
+    }
+
+    /**
+     * Indicate that the user is suspended.
+     *
+     * @return Factory
+     */
+    public function customName(): Factory
+    {
+        return $this->state([
+            'name' => 'custom-name',
+        ]);
+    }
+}

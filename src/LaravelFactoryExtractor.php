@@ -2,10 +2,12 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
-use Faker\Generator;
-use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 use ReflectionFunction;
+use Roave\BetterReflection\BetterReflection;
+use Roave\BetterReflection\Reflection\ReflectionMethod;
 use SplFileObject;
 
 class LaravelFactoryExtractor
@@ -14,12 +16,17 @@ class LaravelFactoryExtractor
 
     protected string $className;
 
-    protected ObjectPrybar $factory;
+    protected $factory;
 
     public function __construct(string $className)
     {
         $this->className = $className;
-        $this->factory = new ObjectPrybar(Factory::construct(app(Generator::class), config('factories-reloaded.vanilla_factories_path')));
+        //$classNameForFactory = 'ExampleApp\Group';
+        $factoryName = Factory::resolveFactoryName(class_basename($className));
+
+        if (class_exists($factoryName)) {
+            $this->factory = Factory::factoryForModel(class_basename($className));
+        }
     }
 
     public static function from(string $className): self
@@ -34,35 +41,37 @@ class LaravelFactoryExtractor
 
     protected function vanillaFactoryPath(): string
     {
-        return config('factories-reloaded.vanilla_factories_path') . '/' . class_basename($this->className) . 'Factory.php';
+        return config('factories-reloaded.vanilla_factories_path').'/'.class_basename($this->className).'Factory.php';
     }
 
     public function getUses(): string
     {
-        return collect($this->uses)->map(function ($use) {
-            if (in_array($use['class'], ['Faker\\Generator', $this->className], true)) {
-                return;
-            }
+        return collect($this->uses)
+            ->map(function ($use) {
+                if (in_array($use['class'], [
+                    'Faker\\Generator',
+                    $this->className,
+                ], true)) {
+                    return;
+                }
 
-            if ($use['class'] === $use['as']) {
-                return 'use ' . $use['class'] . ';';
-            }
+                if ($use['class'] === $use['as']) {
+                    return 'use '.$use['class'].';';
+                }
 
-            return 'use ' . $use['class'] . ' as ' . $use['as'] . ';';
-        })->filter()->implode("\n");
+                return 'use '.$use['class'].' as '.$use['as'].';';
+            })
+            ->filter()
+            ->implode("\n");
     }
 
     public function getDefinitions(): string
     {
-        $definition = collect(
-            $this->factory->getProperty('definitions')
-        )->get($this->className);
+        $classInfo = (new BetterReflection())->classReflector()
+            ->reflect(get_class($this->factory));
 
-        return ltrim(
-            collect(
-                $this->getClosureContent($definition instanceof \Closure ? $definition : $definition['default'])
-            )->implode('    ')
-        );
+        return $classInfo->getMethod('definition')
+            ->getBodyCode();
     }
 
     protected function getClosureContent(callable $closure): array
@@ -85,6 +94,7 @@ class LaravelFactoryExtractor
 
     /**
      * @see https://gist.github.com/Zeronights/7b7d90fcf8d4daf9db0c
+     *
      * @param $reflection
      */
     protected function parseUseStatements($reflection)
@@ -182,7 +192,6 @@ class LaravelFactoryExtractor
             }
         }
 
-
         // Make sure the as key has the name of the class even
         // if there is no alias in the use statement.
         foreach ($useStatements as &$useStatement) {
@@ -196,60 +205,94 @@ class LaravelFactoryExtractor
 
     public function getStates(): string
     {
-        $states = collect($this->factory->getProperty('states'));
+        $factoryReflection = (new BetterReflection())->classReflector()
+            ->reflect(get_class($this->factory));
 
-        if (! $states->has($this->className)) {
-            return '';
-        }
+        $factoryFileName = $factoryReflection->getFileName();
+        $factoryMethods = $factoryReflection->getMethods();
 
-        return collect($states->get($this->className))->map(function ($closure, $state) {
-            throw_if(
-                ! is_callable($closure),
-                new \RuntimeException('One of your factory states is defined as an array. It must be of the type closure to import it.')
-            );
+        return collect($factoryMethods)
+            ->filter(fn (ReflectionMethod $factoryMethod) => $this->isLaravelStateMethod($factoryMethod, $factoryFileName))
+            ->map(function (ReflectionMethod $method) {
+                // Transform method to new Factory Reloaded Overwrite Defaults method
+                $methodBody = $method->getBodyCode();
 
-            $lines = collect($this->getClosureContent($closure))->filter()->map(fn ($item) => str_replace("\n", '', $item));
-            $firstLine = $lines->shift();
-            $lastLine = $lines->pop();
+                // Replace Laravel state method with overwrite method
+                $newMethodBody = Str::of($methodBody)
+                    ->replace('return $this->state(', '        return tap(clone $this)->overwriteDefaults(');
 
-            if (Str::startsWith(ltrim($firstLine), 'return')) {
-                if ($lastLine === null) {
-                    $firstLine = Str::replaceLast('];', ']);', $firstLine);
-                } else {
-                    $lines->push(Str::replaceLast('];', ']);', $lastLine));
+                // If the method body contains multiple lines, format them
+                $lines = explode(PHP_EOL, $newMethodBody);
+                if (count($lines) > 1) {
+                    $newMethodBody = $this->formatMultipleLinesFactoryMethod($newMethodBody);
                 }
-                $lines->push('}');
 
-                return $lines->prepend([
-                    '',
-                    'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
-                    '{',
-                    Str::replaceFirst('return ', 'return tap(clone $this)->overwriteDefaults(', $firstLine),
-                ])->toArray();
-            }
-
-            return collect([
-                '',
-                'public function ' . $this->getStateMethodName($state) . '(): ' . class_basename($this->className) . 'Factory',
-                '{',
-                '    return tap(clone $this)->overwriteDefaults(function() {',
-                '    ' . $firstLine,
-            ])->merge($lines->map(fn ($line) => '    ' . $line))->merge([
-                '    ' . $lastLine,
-                '    });',
-                '}',
-            ]);
-        })->flatten()->map(function ($line) {
-            if (ltrim($line) === '') {
-                return '';
-            }
-
-            return '    ' . $line;
-        })->implode("\n");
+                // Put new method body in method
+                return "\n    ".$this->getMethodVisibility($method)." function ".$method->getName()."(): ".class_basename($this->className).'Factory'."\n    {\n$newMethodBody\n    }";
+            })
+            ->implode("\n");
     }
 
     protected function getStateMethodName(string $state): string
     {
         return lcfirst(Str::studly($state));
+    }
+
+    private function getMethodVisibility(ReflectionMethod $method): string
+    {
+        if ($method->isPrivate()) {
+            return 'private';
+        }
+
+        if ($method->isProtected()) {
+            return 'protected';
+        }
+
+        return 'public';
+    }
+
+    private function isLaravelStateMethod(ReflectionMethod $factoryMethod, string $factoryFileName): bool
+    {
+        return Str::of($factoryMethod->getBodyCode())
+                ->contains('$this->state(') && $factoryMethod->getFileName() === $factoryFileName;
+    }
+
+    private function formatMultipleLinesFactoryMethod(Stringable $newMethodBody): string
+    {
+        $lineBefore = '';
+
+        return collect(explode(PHP_EOL, $newMethodBody))
+            ->map(function ($line) use (&$lineBefore) {
+                $prependSpaces = '        ';
+                // Add indention if the line before opens a function
+                if (Str::of($lineBefore)
+                    ->endsWith('{')) {
+                    $prependSpaces .= '    ';
+                }
+
+                $lineBefore = $line;
+
+                return Str::of($line)
+                    ->ltrim(' ')
+                    ->prepend($prependSpaces);
+            })
+            ->map(function ($line, $key) use (&$lineBefore) {
+                if ($key === 0) {
+                    $lineBefore = '';
+                }
+
+                if ($key !== 0 && ! Str::of($lineBefore)
+                        ->endsWith('{') && Str::of($line)
+                        ->ltrim(' ')
+                        ->startsWith('return')) {
+                    $line = Str::of($line)
+                        ->prepend(PHP_EOL);
+                }
+
+                $lineBefore = $line;
+
+                return $line;
+            })
+            ->implode(PHP_EOL);
     }
 }

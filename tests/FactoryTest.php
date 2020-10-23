@@ -2,9 +2,9 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Ingredient;
-use ExampleApp\Models\Recipe;
+use App\Models\Group;
+use App\Models\Ingredient;
+use App\Models\Recipe;
 use ExampleAppTests\Factories\GroupFactory;
 use ExampleAppTests\Factories\GroupFactoryUsingFaker;
 use ExampleAppTests\Factories\IngredientFactoryUsingClosure;
@@ -415,7 +415,7 @@ class FactoryTest extends TestCase
     /** @test */
     public function it_works_with_laravel_factory_as_relationship_in_extras(): void
     {
-        $recipe = RecipeFactory::new()->create(['group_id' => factory(Group::class)]);
+        $recipe = RecipeFactory::new()->create(['group_id' => Group::factory()]);
 
         $this->assertInstanceOf(Recipe::class, $recipe);
         $this->assertEquals(1, $recipe->group_id);
@@ -434,10 +434,12 @@ class FactoryTest extends TestCase
     }
 
     /** @test */
-    public function it_lets_you_add_related_models_when_creating_multiple()
+    public function it_lets_you_add_related_models_when_creating_multiple(): void
     {
+        Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
+
         $groups = GroupFactory::new()
-            ->with(Recipe::class, 'recipes', 5, true)
+            ->with(Recipe::class, 'recipes', 5)
             ->times(3)
             ->create();
 
@@ -449,7 +451,7 @@ class FactoryTest extends TestCase
     }
 
     /** @test */
-    public function it_lets_you_create_many_related_models_at_once()
+    public function it_lets_you_create_many_related_models_at_once(): void
     {
         Config::set('factories-reloaded.factories_namespace', 'ExampleAppTests\Factories');
 

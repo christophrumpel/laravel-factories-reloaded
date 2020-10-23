@@ -2,11 +2,10 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded\Tests;
 
+use App\Models\Group;
+use App\Models\Ingredient;
+use App\Models\Recipe;
 use Christophrumpel\LaravelFactoriesReloaded\FactoryFile;
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Ingredient;
-use ExampleApp\Models\ModelsWithArrayState\Book;
-use ExampleApp\Models\Recipe;
 use Illuminate\Support\Str;
 
 class FactoryFileTest extends TestCase
@@ -63,7 +62,8 @@ class FactoryFileTest extends TestCase
         $ingredientFactoryFile->write();
         $originalContent = file_get_contents($ingredientFactoryFile->getTargetClassPath());
 
-        $ingredientFactoryFile->withoutStates()->write(true);
+        $ingredientFactoryFile->withoutStates()
+            ->write(true);
 
         $this->assertNotSame($originalContent, file_get_contents($ingredientFactoryFile->getTargetClassPath()));
     }
@@ -74,10 +74,9 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-
         $this->assertTrue(Str::containsAll($content, [
-            "'name' =>",
-            "'description' =>",
+            '\'name\' => $this->faker->word,',
+            '\'description\' => $this->faker->sentence',
         ]));
     }
 
@@ -87,40 +86,57 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-
         // where the state php closure simply returns an array - but was over multiple lines of code
         $this->assertTrue(Str::contains($content, '    public function withGroup(): RecipeFactory
     {
-        return tap(clone $this)->overwriteDefaults([
-            \'group_id\' => factory(Group::class),
-        ]);
+        return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
     }'));
+    }
 
-        // where the state php closure does some work before returning its array of values
+    /** @test * */
+    public function it_can_add_default_state_withDifferentGroup(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
         $this->assertTrue(Str::contains($content, '    public function withDifferentGroup(): RecipeFactory
     {
-        return tap(clone $this)->overwriteDefaults(function() {
-            $group = factory(Group::class)->create();
+        $group = \Database\Factories\GroupFactory::new()->create();
 
-            return [
-                \'group_id\' => $group->id,
-            ];
-        });
+        return tap(clone $this)->overwriteDefaults([\'group_id\' => $group->id]);
     }'));
+    }
 
-        // where the state php closure simply returns an array and was on one line
+    /** @test * */
+    public function it_can_add_default_where_method_body_is_on_one_line(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
         $this->assertTrue(Str::contains($content, '    public function withOneLineGroup(): RecipeFactory
     {
-        return tap(clone $this)->overwriteDefaults([\'group_id\' => factory(Group::class)]);
+        return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
     }'));
+    }
 
-        // where the state php closure simply returns an array and was on one line - and contains the string "return " within its values
+    /** @test * */
+    public function it_can_add_state_where_return_string_is_contained(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
         $this->assertTrue(Str::contains($content, '    public function withReturnGroupName(): RecipeFactory
     {
         return tap(clone $this)->overwriteDefaults([\'group_name\' => \'return all\']);
     }'));
+    }
 
-        // where the state php closure simply returns an array and was on one line - and contains the string "];" within its values
+    /** @test * */
+    public function it_can_add_state_where_square_brackets_being_used_ind_string(): void
+    {
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
         $this->assertTrue(Str::contains($content, '    public function withSquareBracketGroupName(): RecipeFactory
     {
         return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);
@@ -128,13 +144,17 @@ class FactoryFileTest extends TestCase
     }
 
     /** @test * */
-    public function it_throws_error_if_state_uses_array_instead_closure(): void
+    public function it_can_add_state_with_closure_used(): void
     {
-        try {
-            FactoryFile::forModel(Book::class);
-        } catch (\RuntimeException $exception) {
-            $this->assertEquals('One of your factory states is defined as an array. It must be of the type closure to import it.', $exception->getMessage());
-        }
+        $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
+
+        $content = $recipeFactoryFile->render();
+        $this->assertTrue(Str::contains($content, '    public function withClosureGroupName(): RecipeFactory
+    {
+        return tap(clone $this)->overwriteDefaults(function (array $attributes) {
+            return [\'name\' => $attributes[\'name\'] . \' New Name\'];
+        });
+    }'));
     }
 
     /** @test * */
@@ -142,7 +162,8 @@ class FactoryFileTest extends TestCase
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
-        $content = $recipeFactoryFile->withoutStates()->render();
+        $content = $recipeFactoryFile->withoutStates()
+            ->render();
 
         $this->assertFalse(Str::containsAll($content, [
             'public function withGroup',
@@ -150,21 +171,24 @@ class FactoryFileTest extends TestCase
         ]));
     }
 
-    /** @test **/
+    /** @test * */
     public function it_gives_factory_path(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
         $this->assertEquals($this->exampleFactoriesPath('RecipeFactory.php'), $recipeFactoryFile->getTargetClassPath());
     }
 
-    /** @test **/
+    /** @test * */
     public function it_gives_factory_class_full_name(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
-        $this->assertEquals(config('factories-reloaded.factories_namespace').'\RecipeFactory', $recipeFactoryFile->getTargetClassFullName());
+        $this->assertEquals(
+            config('factories-reloaded.factories_namespace').'\RecipeFactory',
+            $recipeFactoryFile->getTargetClassFullName()
+        );
     }
 
-    /** @test **/
+    /** @test * */
     public function it_gives_factory_class_name(): void
     {
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);

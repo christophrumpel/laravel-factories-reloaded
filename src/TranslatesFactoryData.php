@@ -2,13 +2,13 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
-use Illuminate\Database\Eloquent\FactoryBuilder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 trait TranslatesFactoryData
 {
     private static function isFactory($item): bool
     {
-        return $item instanceof BaseFactory || $item instanceof FactoryBuilder;
+        return $item instanceof Factory || $item instanceof BaseFactory;
     }
 
     private static function isCallable($field): bool

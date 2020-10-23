@@ -1,40 +1,71 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
-use ExampleApp\Models\Group;
-use ExampleApp\Models\Recipe;
-use Faker\Generator as Faker;
+use App\Models\Group;
+use App\Models\Recipe;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Recipe::class, function (Faker $faker) {
-    return [
-        'name' => $faker->word,
-        'description' => $faker->sentence,
-    ];
-});
+class RecipeFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Recipe::class;
 
-$factory->state(Recipe::class, 'withGroup', function () {
-    return [
-        'group_id' => factory(Group::class),
-    ];
-});
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->word,
+            'description' => $this->faker->sentence,
+        ];
+    }
 
-$factory->state(Recipe::class, 'withDifferentGroup', function () {
-    $group = factory(Group::class)->create();
+    public function withGroup(): Factory
+    {
+        return $this->state([
+            'group_id' => Group::factory(),
+        ]);
+    }
 
-    return [
-        'group_id' => $group->id,
-    ];
-});
+    public function withDifferentGroup(): Factory
+    {
+        $group = GroupFactory::new()
+            ->create();
 
-$factory->state(Recipe::class, 'withOneLineGroup', function () {
-    return ['group_id' => factory(Group::class)];
-});
+        return $this->state([
+            'group_id' => $group->id,
+        ]);
+    }
 
-$factory->state(Recipe::class, 'withReturnGroupName', function () {
-    return ['group_name' => 'return all'];
-});
+    public function withOneLineGroup(): Factory
+    {
+        return $this->state(['group_id' => Group::factory()]);
+    }
 
-$factory->state(Recipe::class, 'withSquareBracketGroupName', function () {
-    return ['group_name' => 'something];'];
-});
+    public function withReturnGroupName(): Factory
+    {
+        return $this->state(['group_name' => 'return all']);
+    }
+
+    public function withClosureGroupName(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'name' => $attributes['name'] . ' New Name',
+            ];
+        });
+    }
+
+    public function withSquareBracketGroupName(): Factory
+    {
+        return $this->state(['group_name' => 'something];']);
+    }
+}
