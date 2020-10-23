@@ -40,7 +40,7 @@ abstract class BaseFactory implements FactoryInterface
         $modelData = $this->transformModelFields(
             array_merge($this->getDefaults($this->faker), $this->overwriteDefaults, $extra)
         );
-        $model = $this->unguardedIfNeeded(fn() => $this->modelClass::$creationType($modelData));
+        $model = $this->unguardedIfNeeded(fn () => $this->modelClass::$creationType($modelData));
 
         if ($this->relatedModelFactories->isEmpty()) {
             return $model;
@@ -51,7 +51,7 @@ abstract class BaseFactory implements FactoryInterface
 
     protected function unguardedIfNeeded(\Closure $closure)
     {
-        if (!config('factories-reloaded.unguard_models')) {
+        if (! config('factories-reloaded.unguard_models')) {
             return $closure();
         }
 
@@ -79,7 +79,7 @@ abstract class BaseFactory implements FactoryInterface
         $clone->relatedModelFactories = clone $clone->relatedModelFactories;
         $clone->relatedModelFactories[$relationshipName] ??= collect();
         $clone->relatedModelFactories[$relationshipName] = $clone->relatedModelFactories[$relationshipName]->merge(
-            collect()->times($times, fn() => $relatedFactory)
+            collect()->times($times, fn () => $relatedFactory)
         );
 
         return $clone;
@@ -126,7 +126,7 @@ abstract class BaseFactory implements FactoryInterface
 
             if (method_exists($relation, 'associate')) {
                 $relatedModels = $factories->map->$creationType();
-                $relatedModels->each(fn($related) => $relation->associate($related));
+                $relatedModels->each(fn ($related) => $relation->associate($related));
 
                 if ($creationType === 'create') {
                     $model->save();
