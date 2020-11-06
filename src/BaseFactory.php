@@ -2,7 +2,6 @@
 
 namespace Christophrumpel\LaravelFactoriesReloaded;
 
-use Faker\Factory as FakerFactory;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -30,7 +29,7 @@ abstract class BaseFactory implements FactoryInterface
     /** @return static */
     public static function new(): self
     {
-        $faker = FakerFactory::create(config('app.faker_locale', 'en_US'));
+        $faker = app(Generator::class);
 
         return new static($faker);
     }
