@@ -14,6 +14,8 @@ abstract class BaseFactory implements FactoryInterface
 
     protected string $modelClass;
 
+    protected bool $immutable = false;
+
     protected Collection $relatedModelFactories;
 
     protected Generator $faker;
@@ -32,6 +34,14 @@ abstract class BaseFactory implements FactoryInterface
         $faker = app(Generator::class);
 
         return new static($faker);
+    }
+
+    /** @return static */
+    public function immutable(bool $immutable = true): self
+    {
+        $this->immutable = $immutable;
+
+        return $this->immutable ? clone $this : $this;
     }
 
     protected function build(array $extra = [], string $creationType = 'create')
@@ -91,13 +101,15 @@ abstract class BaseFactory implements FactoryInterface
      */
     public function overwriteDefaults($attributes): self
     {
+        $clone = $this->immutable ? clone $this : $this;
+
         if (is_callable($attributes)) {
             $attributes = $attributes();
         }
 
-        $this->overwriteDefaults = array_merge($this->overwriteDefaults, $attributes);
+        $clone->overwriteDefaults = array_merge($clone->overwriteDefaults, $attributes);
 
-        return $this;
+        return $clone;
     }
 
     protected function getFactoryFromClassName(string $className): FactoryInterface
