@@ -9,6 +9,7 @@ use ExampleAppTests\Factories\GroupFactory;
 use ExampleAppTests\Factories\GroupFactoryUsingFaker;
 use ExampleAppTests\Factories\IngredientFactoryUsingClosure;
 use ExampleAppTests\Factories\RecipeFactory;
+use ExampleAppTests\Factories\RecipeFactoryImmutable;
 use ExampleAppTests\Factories\RecipeFactoryUsingFactoryForRelationship;
 use ExampleAppTests\Factories\RecipeFactoryUsingLaravelFactoryForRelationship;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -148,6 +149,39 @@ class FactoryTest extends TestCase
             ->make(['name' => 'Pancakes']);
 
         $this->assertEquals('Pancakes', $pancakes->first()->name);
+    }
+
+    /** @test */
+    public function it_lets_you_create_immutable_factories_by_default(): void
+    {
+        $recipe = RecipeFactoryImmutable::new()->overwriteDefaults(['name' => 'Pasta']);
+        $firstRecipe = $recipe->overwriteDefaults(['name' => 'Pizza'])->create();
+        $secondRecipe = $recipe->create();
+
+        $this->assertEquals('Pizza', $firstRecipe->name);
+        $this->assertEquals('Pasta', $secondRecipe->name);
+    }
+
+    /** @test */
+    public function it_makes_immutable_factory_methods_immutable(): void
+    {
+        $recipe = RecipeFactoryImmutable::new()->pasta();
+        $firstRecipe = $recipe->pizza()->create();
+        $secondRecipe = $recipe->create();
+
+        $this->assertEquals('Pizza', $firstRecipe->name);
+        $this->assertEquals('Pasta', $secondRecipe->name);
+    }
+
+    /** @test */
+    public function it_lets_you_use_a_mutable_factory_as_immutable(): void
+    {
+        $recipe = RecipeFactory::new()->immutable()->overwriteDefaults(['name' => 'Pasta']);
+        $firstRecipe = $recipe->overwriteDefaults(['name' => 'Pizza'])->create();
+        $secondRecipe = $recipe->create();
+
+        $this->assertEquals('Pizza', $firstRecipe->name);
+        $this->assertEquals('Pasta', $secondRecipe->name);
     }
 
     /** @test */

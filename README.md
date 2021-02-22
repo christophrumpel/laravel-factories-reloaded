@@ -119,7 +119,7 @@ $factory->state(User::class, 'active', function () {
 While creating a new class factory, you will be asked if you like those states to be imported to your new factories. If you agree, you can immediately use them. The state `active` is now a method on your `UserFactory`.
 
 ```php
-$recipe = UserFactory::new()
+$user = UserFactory::new()
     ->active()
     ->create();
 ```
@@ -230,6 +230,40 @@ public function active(): UserFactory
 
 This is recommended for all methods which you will use to setup your test model. If you wouldn't clone the factory, you will always modify the factory itself. This could lead into problems when you use the same factory again.
 
+To make a whole factory immutable by default, set the `$immutable` property to `true`. That way, every state change will automatically return a cloned instance.
+
+```php
+class UserFactory
+{
+    protected string $modelClass = User::class;
+    protected bool $immutable = true;
+
+    // ...
+
+    public function active(): UserFactory
+    {
+        return $this->overwriteDefaults([
+            'active' => true,
+        ]);
+    }
+}
+```
+
+In some context, you might want to use a standard factory as immutable. This can be done with the `immutable` method.
+
+```php
+$factory = UserFactory::new()
+    ->immutable();
+
+$activeUser = $factory
+    ->active()
+    ->create();
+
+$inactiveUser = $factory->create();
+```
+
+> **Note**: `with` and `withFactory` methods are always immutable.
+
 ### What Else
 
 The best thing about those new factory classes is that you `own` them. You can create as many methods or properties as you like to help you create those specific instances that you need. Here is how a more complex factory call could look like:
@@ -241,7 +275,7 @@ UserFactory::new()
     ->withRecipesAndIngredients()
     ->times(10)
     ->create();
-```    
+```
 
 Using such a factory call will help your tests to stay clean and give everyone a good overview of what is happening here.
 
