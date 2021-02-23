@@ -9,7 +9,9 @@ use ReflectionClass;
  */
 class ObjectPrybar
 {
-    protected $obj;
+    protected object $obj;
+
+    protected ReflectionClass $reflected;
 
     public function __construct($obj)
     {
