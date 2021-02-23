@@ -94,10 +94,8 @@ class LaravelFactoryExtractor
 
     /**
      * @see https://gist.github.com/Zeronights/7b7d90fcf8d4daf9db0c
-     *
-     * @param $reflection
      */
-    protected function parseUseStatements($reflection)
+    protected function parseUseStatements(ReflectionFunction $reflection): void
     {
         if ($this->uses !== null) {
             return;
