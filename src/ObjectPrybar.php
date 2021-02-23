@@ -12,8 +12,7 @@ class ObjectPrybar
     /** @var object */
     protected $obj;
 
-    /** @var \ReflectionClass */
-    protected $reflected;
+    protected ReflectionClass $reflected;
 
     public function __construct($obj)
     {
