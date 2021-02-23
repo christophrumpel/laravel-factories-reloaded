@@ -182,9 +182,7 @@ class LaravelFactoryExtractor
                         case T_STRING:
                         case T_NS_SEPARATOR:
 
-                            if ($record) {
-                                $currentUse[$record] .= $token[1];
-                            }
+                            $currentUse[$record] .= $token[1];
 
                             break;
                     }
