@@ -9,8 +9,7 @@ use ReflectionClass;
  */
 class ObjectPrybar
 {
-    /** @var object */
-    protected $obj;
+    protected object $obj;
 
     protected ReflectionClass $reflected;
 
