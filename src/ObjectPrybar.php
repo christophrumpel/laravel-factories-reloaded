@@ -9,7 +9,11 @@ use ReflectionClass;
  */
 class ObjectPrybar
 {
+    /** @var object */
     protected $obj;
+
+    /** @var \ReflectionClass */
+    protected $reflected;
 
     public function __construct($obj)
     {
