@@ -26,6 +26,13 @@ return [
     'vanilla_factories_path' => database_path('factories'),
 
     /**
+     * Defines whether or not your Laravel factories namespace
+     * is using the model's namespace hierarchy.
+     * They are used while generating new factories.
+     */
+    'vanilla_factories_namespace_using_models_hierarchy' => false,
+
+    /**
      * Defines whether or not models should be unguarded before building
      * instances. This allows using unfillable fields in factories.
      */

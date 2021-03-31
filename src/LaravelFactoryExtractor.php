@@ -22,10 +22,16 @@ class LaravelFactoryExtractor
     {
         $this->className = $className;
         //$classNameForFactory = 'ExampleApp\Group';
-        $factoryName = Factory::resolveFactoryName(class_basename($className));
+
+        $classNameToBeResolved=
+            config('factories-reloaded.vanilla_factories_namespace_using_models_hierarchy')?
+            $className:
+            class_basename($className);
+        
+        $factoryName = Factory::resolveFactoryName($classNameToBeResolved);
 
         if (class_exists($factoryName)) {
-            $this->factory = Factory::factoryForModel(class_basename($className));
+            $this->factory = Factory::factoryForModel($classNameToBeResolved);
         }
     }
 
