@@ -24,7 +24,7 @@ class LaravelFactoryExtractor
         //$classNameForFactory = 'ExampleApp\Group';
 
         $classNameToBeResolved=
-            (config('factories-reloaded.vanilla_factories_namespace')=='Database\Factories')?
+            (config('factories-reloaded.vanilla_factories_namespace', 'Database\Factories')=='Database\Factories')?
             class_basename($className):
             $className;
         
