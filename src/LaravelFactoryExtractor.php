@@ -18,21 +18,41 @@ class LaravelFactoryExtractor
 
     protected $factory;
 
+    protected $vanillaFactoriesNamespace;
+
+    protected $laravelFactoriesNamespace = 'Database\Factories';
+
     public function __construct(string $className)
     {
         $this->className = $className;
         //$classNameForFactory = 'ExampleApp\Group';
-
-        $classNameToBeResolved=
-            (config('factories-reloaded.vanilla_factories_namespace', 'Database\Factories')=='Database\Factories')?
-            class_basename($className):
-            $className;
         
-        $factoryName = Factory::resolveFactoryName($classNameToBeResolved);
+        $this->vanillaFactoriesNamespace = config('factories-reloaded.vanilla_factories_namespace', $this->laravelFactoriesNamespace);
+
+        $this->resolveFactory($className);
+    }
+
+    public function resolveFactory($className): void
+    {
+        $factoryName = $this->resolveFactoryName($className);
 
         if (class_exists($factoryName)) {
-            $this->factory = Factory::factoryForModel($classNameToBeResolved);
+            $this->factory = $factoryName::new();
         }
+    }
+
+    public function resolveFactoryName($className): string
+    {
+        $modelName=class_basename($className);
+
+        return ($this->isDefaultFactoriesNamespace())?
+            Factory::resolveFactoryName($modelName):
+            $this->vanillaFactoriesNamespace . '\\' . $modelName . 'Factory';
+    }
+
+    public function isDefaultFactoriesNamespace(): bool
+    {
+        return $this->vanillaFactoriesNamespace == $this->laravelFactoriesNamespace;
     }
 
     public static function from(string $className): self
