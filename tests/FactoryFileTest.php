@@ -87,10 +87,13 @@ class FactoryFileTest extends TestCase
 
         $content = $recipeFactoryFile->render();
         // where the state php closure simply returns an array - but was over multiple lines of code
-        $this->assertTrue(Str::contains($content, '    public function withGroup(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
-    }'));
+        $this->assertTrue(Str::contains(
+            $content,
+            '    public function withGroup(): RecipeFactory' . PHP_EOL .
+            '    {' . PHP_EOL .
+            '        return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);' . PHP_EOL .
+            '    }'
+        ));
     }
 
     /** @test * */
@@ -99,12 +102,15 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-        $this->assertTrue(Str::contains($content, '    public function withDifferentGroup(): RecipeFactory
-    {
-        $group = \Database\Factories\GroupFactory::new()->create();
-
-        return tap(clone $this)->overwriteDefaults([\'group_id\' => $group->id]);
-    }'));
+        $this->assertTrue(Str::contains(
+            $content,
+            '    public function withDifferentGroup(): RecipeFactory' . PHP_EOL .
+            '    {' . PHP_EOL .
+            '        $group = \Database\Factories\GroupFactory::new()->create();' . PHP_EOL .
+            PHP_EOL .
+            '        return tap(clone $this)->overwriteDefaults([\'group_id\' => $group->id]);' . PHP_EOL .
+            '    }'
+        ));
     }
 
     /** @test * */
@@ -113,10 +119,13 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-        $this->assertTrue(Str::contains($content, '    public function withOneLineGroup(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);
-    }'));
+        $this->assertTrue(Str::contains(
+            $content,
+            '    public function withOneLineGroup(): RecipeFactory' . PHP_EOL .
+            '    {' . PHP_EOL .
+            '        return tap(clone $this)->overwriteDefaults([\'group_id\' => \App\Models\Group::factory()]);' . PHP_EOL .
+            '    }'
+        ));
     }
 
     /** @test * */
@@ -125,10 +134,13 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-        $this->assertTrue(Str::contains($content, '    public function withReturnGroupName(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'return all\']);
-    }'));
+        $this->assertTrue(Str::contains(
+            $content,
+            '    public function withReturnGroupName(): RecipeFactory' . PHP_EOL .
+            '    {' . PHP_EOL .
+            '        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'return all\']);' . PHP_EOL .
+            '    }'
+        ));
     }
 
     /** @test * */
@@ -137,10 +149,13 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-        $this->assertTrue(Str::contains($content, '    public function withSquareBracketGroupName(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);
-    }'));
+        $this->assertTrue(Str::contains(
+            $content,
+            '    public function withSquareBracketGroupName(): RecipeFactory' . PHP_EOL .
+            '    {' . PHP_EOL .
+            '        return tap(clone $this)->overwriteDefaults([\'group_name\' => \'something];\']);' . PHP_EOL .
+            '    }'
+        ));
     }
 
     /** @test * */
@@ -149,12 +164,14 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-        $this->assertTrue(Str::contains($content, '    public function withClosureGroupName(): RecipeFactory
-    {
-        return tap(clone $this)->overwriteDefaults(function (array $attributes) {
-            return [\'name\' => $attributes[\'name\'] . \' New Name\'];
-        });
-    }'));
+        $this->assertTrue(Str::contains($content, 
+            '    public function withClosureGroupName(): RecipeFactory' . PHP_EOL .
+            '    {' . PHP_EOL .
+            '        return tap(clone $this)->overwriteDefaults(function (array $attributes) {'. PHP_EOL .
+            '            return [\'name\' => $attributes[\'name\'] . \' New Name\'];' . PHP_EOL .
+            '        });' . PHP_EOL .
+            '    }'
+        ));
     }
 
     /** @test * */
