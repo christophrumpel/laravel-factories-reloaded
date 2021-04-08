@@ -26,7 +26,7 @@ class LaravelFactoryExtractor
     {
         $this->className = $className;
         //$classNameForFactory = 'ExampleApp\Group';
-        
+
         $this->vanillaFactoriesNamespace = config('factories-reloaded.vanilla_factories_namespace', $this->laravelFactoriesNamespace);
 
         $this->resolveFactory($className);
@@ -43,11 +43,11 @@ class LaravelFactoryExtractor
 
     public function resolveFactoryName($className): string
     {
-        $modelName=class_basename($className);
+        $modelName = class_basename($className);
 
-        return ($this->isDefaultFactoriesNamespace())?
-            Factory::resolveFactoryName($modelName):
-            $this->vanillaFactoriesNamespace . '\\' . $modelName . 'Factory';
+        return ($this->isDefaultFactoriesNamespace())
+            ? Factory::resolveFactoryName($modelName)
+            : $this->vanillaFactoriesNamespace . '\\' . $modelName . 'Factory';
     }
 
     public function isDefaultFactoriesNamespace(): bool
