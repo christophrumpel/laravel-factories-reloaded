@@ -40,7 +40,17 @@ To publish the config file run:
 ```bash
 php artisan vendor:publish --provider="Christophrumpel\LaravelFactoriesReloaded\LaravelFactoriesReloadedServiceProvider"
 ```
-It will provide the package's config file where you can define `multiple paths of your models`, the `path of the newly generated factories`, as well as where your `old Laravel factories` are located.
+It will provide the package's config file where you can define `multiple paths of your models`, the `path of the newly generated factories`, the `namespace of your old Laravel factories`, as well as where your `old Laravel factories` are located.
+
+## Configuration
+
+### Laravel Factories Namespace
+
+Factories are namespaced since Laravel 8, and the default factories namespace is `Database\Factories`. If your laravel factories namespace is `Database\Factories\ClassFactories`, you can customize it at the config file as below:
+```php
+'vanilla_factories_namespace' => 'Database\Factories\ClassFactories',
+```
+It will resolve your old laravel factory class as `Database\Factories\ClassFactories\UserFactory`, instead of `Database\Factories\UserFactory`.
 
 ## Usage
 
