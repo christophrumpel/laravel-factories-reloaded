@@ -26,6 +26,11 @@ return [
     'vanilla_factories_path' => database_path('factories'),
 
     /**
+     * Defines the namespace of your Laravel factories.
+     */
+    'vanilla_factories_namespace' => 'Database\Factories',
+
+    /**
      * Defines whether or not models should be unguarded before building
      * instances. This allows using unfillable fields in factories.
      */
