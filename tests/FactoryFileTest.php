@@ -164,7 +164,8 @@ class FactoryFileTest extends TestCase
         $recipeFactoryFile = FactoryFile::forModel(Recipe::class);
 
         $content = $recipeFactoryFile->render();
-        $this->assertTrue(Str::contains($content, 
+        $this->assertTrue(Str::contains(
+            $content,
             '    public function withClosureGroupName(): RecipeFactory' . PHP_EOL .
             '    {' . PHP_EOL .
             '        return tap(clone $this)->overwriteDefaults(function (array $attributes) {'. PHP_EOL .

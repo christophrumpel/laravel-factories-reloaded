@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 
 class LaravelFactoryExtractorTest extends TestCase
 {
-    /** @test 
+    /** @test
      * @dataProvider factoryNameProvider
      */
     public function it_can_resolve_factory_name($className, $vanillaFactoriesNamespace, $expectedFactoryName): void
@@ -19,7 +19,7 @@ class LaravelFactoryExtractorTest extends TestCase
             ->onlyMethods([])
             ->getMock();
 
-        $this->assertSame($expectedFactoryName,$extractor->resolveFactoryName($className));
+        $this->assertSame($expectedFactoryName, $extractor->resolveFactoryName($className));
     }
 
     public function factoryNameProvider()
@@ -28,23 +28,23 @@ class LaravelFactoryExtractorTest extends TestCase
             [
                 "App\Models\Zoo\Animal",
                 "Database\Factories\Zoo",
-                "Database\Factories\Zoo\AnimalFactory"
+                "Database\Factories\Zoo\AnimalFactory",
             ],
             [
                 "App\Models\Zoo\Animal",
                 "Database\Factories",
-                "Database\Factories\AnimalFactory"
+                "Database\Factories\AnimalFactory",
             ],
             [
                 "App\Models\Animal",
                 "Database\Factories\Zoo",
-                "Database\Factories\Zoo\AnimalFactory"
+                "Database\Factories\Zoo\AnimalFactory",
             ],
             [
                 "App\Models\Zoo\Animal",
                 "Database\Factories\Creature",
-                "Database\Factories\Creature\AnimalFactory"
-            ]
+                "Database\Factories\Creature\AnimalFactory",
+            ],
         ];
     }
 }
