@@ -227,9 +227,8 @@ class LaravelFactoryExtractor
 
     public function getStates(): string
     {
-        $factoryReflection = (new BetterReflection())->reflector()->reflectClass(
-            get_class($this->factory)
-        );
+        $factoryReflection = (new BetterReflection())->reflector()
+            ->reflectClass(get_class($this->factory));
 
         $factoryFileName = $factoryReflection->getFileName();
         $factoryMethods = $factoryReflection->getMethods();
