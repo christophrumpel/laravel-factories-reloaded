@@ -10,8 +10,8 @@ This package generates `class-based` model factories, which you can use instead 
 
 ## Laravel 8 Support
 
-The new version v2 now supports Laravel 8. Since L8 changed their own implementation of factories a lot, this new v2 version ONLY works with Laravel 8.
-If you are not using L8 yet, use the latest 1.* version of this package.
+The new version v3 now supports Laravel 8 and PHP 8+. Since L8 changed their own implementation of factories a lot, this new v2 version ONLY works with Laravel 8.
+If you are not using L8 yet, use the latest 1.* version of this package, if you need PHP 7 support, use the latest 2.* version.
 
 
 ## Benefits
