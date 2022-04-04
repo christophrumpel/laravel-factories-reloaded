@@ -93,8 +93,8 @@ class LaravelFactoryExtractor
 
     public function getDefinitions(): string
     {
-        $classInfo = (new BetterReflection())->classReflector()
-            ->reflect(get_class($this->factory));
+        $classInfo = (new BetterReflection())->reflector()
+            ->reflectClass(get_class($this->factory));
 
         return $classInfo->getMethod('definition')
             ->getBodyCode();
@@ -227,8 +227,8 @@ class LaravelFactoryExtractor
 
     public function getStates(): string
     {
-        $factoryReflection = (new BetterReflection())->classReflector()
-            ->reflect(get_class($this->factory));
+        $factoryReflection = (new BetterReflection())->reflector()
+            ->reflectClass(get_class($this->factory));
 
         $factoryFileName = $factoryReflection->getFileName();
         $factoryMethods = $factoryReflection->getMethods();
